@@ -1,0 +1,13 @@
+# OS clutter
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Tooling
+node_modules/
+.vercel/
+.netlify/
+
+# Not part of Lumi (an earlier character idea)
+design/smudge-options.html
+design/pip track one.png

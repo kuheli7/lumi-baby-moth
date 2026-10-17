@@ -1,0 +1,21 @@
+/* Lumi motion, copied unchanged from design/lumi-v2.html. The SVG uses these class names, so the site styles avoid them. */
+  /* motion: body and wings share one beat. The wings ride along with the body, swing from
+     their root on the back, and lag a moment behind so they dip (and lift) a little further. */
+  .bob { animation: bob 2.6s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .wl { transform-origin: 118px 162px; animation: flapL 2.6s ease-in-out -2.4s infinite; }
+  .wr { transform-origin: 122px 160px; animation: flapR 2.6s ease-in-out -2.4s infinite; }
+  @keyframes flapL { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(5deg); } }
+  @keyframes flapR { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(-5deg); } }
+  .ray { animation: twinkle 1.6s ease-in-out infinite; }
+  @keyframes twinkle { 50% { opacity: .25; } }
+  .blink { transform-origin: center; transform-box: fill-box; animation: blink 4.5s infinite; }
+  @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+  /* asleep: one slow breath for the whole body (wings ride along), z's drifting up one after another */
+  .breathe { transform-origin: 125px 240px; animation: breathe 4s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform: scale(1.01, 1.02); } }
+  .zz text { animation: zz 3s ease-in-out infinite; }
+  .zz text:nth-child(2) { animation-delay: -1s; }
+  .zz text:nth-child(3) { animation-delay: -2s; }
+  @keyframes zz { 0%, 100% { opacity: .95; translate: 0 0; } 50% { opacity: .55; translate: 0 -3px; } }
+  @media (prefers-reduced-motion: reduce) { .bob, .wl, .wr, .ray, .blink, .breathe, .zz text { animation: none; } }

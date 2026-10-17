@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumi Style Picker</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1b1730;
+    --card: #fff8f1;
+    --ink: #5c4033;
+    --berry: #a34063;
+    --gold: #ffd35c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg) radial-gradient(circle at 20% 10%, #3a2f63 0, transparent 40%),
+                radial-gradient(circle at 80% 90%, #4a2950 0, transparent 40%);
+    color: var(--card);
+    font-family: "Patrick Hand", "Comic Sans MS", cursive;
+    font-size: 20px;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .stars span {
+    position: absolute; width: 3px; height: 3px; background: #fff; border-radius: 50%;
+    animation: twinkle 2.5s infinite ease-in-out;
+  }
+  @keyframes twinkle { 50% { opacity: .2; } }
+  main { position: relative; z-index: 1; max-width: 1150px; margin: 0 auto; }
+  h1 {
+    font-family: "Press Start 2P", monospace; font-size: clamp(16px, 4vw, 28px);
+    text-align: center; color: var(--gold); text-shadow: 3px 3px 0 var(--berry); line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .sub { text-align: center; margin: 0 0 32px; opacity: .9; }
+  h2 {
+    font-family: "Press Start 2P", monospace; font-size: 14px; color: #ffb3c8;
+    margin: 48px 0 16px; text-align: center; line-height: 1.6;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); color: var(--ink); border: 4px solid var(--ink);
+    border-radius: 14px; box-shadow: 6px 6px 0 var(--berry); overflow: hidden;
+    transition: transform .2s;
+  }
+  .card:hover { transform: translateY(-4px) rotate(-1deg); }
+  .bar {
+    background: #e8c9f0; border-bottom: 4px solid var(--ink); padding: 6px 10px;
+    font-family: "Press Start 2P", monospace; font-size: 9px; display: flex; justify-content: space-between;
+  }
+  .bar i { font-style: normal; letter-spacing: 3px; }
+  .art { display: flex; justify-content: center; padding: 12px; background: #fdf1df; }
+  .art.dark { background: #241f3a; }
+  .art svg { width: 100%; max-width: 200px; height: auto; overflow: visible; }
+  .info { padding: 10px 14px 14px; }
+  .info h3 { margin: 0 0 4px; font-size: 24px; }
+  .info p { margin: 0 0 6px; line-height: 1.25; font-size: 18px; }
+  .tag { display: inline-block; background: var(--gold); border: 2px solid var(--ink); border-radius: 999px; padding: 0 10px; font-size: 15px; }
+  .moods { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  .mood { background: var(--card); color: var(--ink); border: 4px solid var(--ink); border-radius: 14px; text-align: center; padding: 10px; }
+  .mood svg { width: 100%; max-width: 150px; height: auto; overflow: visible; }
+  .mood b { display: block; font-size: 22px; }
+  .sheet {
+    background: var(--card); color: var(--ink); border: 4px solid var(--ink); border-radius: 14px;
+    box-shadow: 6px 6px 0 var(--berry); padding: 18px 20px; max-width: 760px; margin: 0 auto;
+  }
+  .sheet dt { font-family: "Press Start 2P", monospace; font-size: 11px; color: var(--berry); margin-top: 12px; }
+  .sheet dd { margin: 4px 0 0; line-height: 1.3; }
+  .sheet ul { margin: 6px 0 0; padding-left: 22px; }
+  .note { text-align: center; margin-top: 36px; font-size: 22px; }
+  .pixel svg { shape-rendering: crispEdges; }
+  /* gentle wing flutter */
+  .wl, .wr { transform-origin: 100px 132px; animation: flapL 1.6s ease-in-out infinite; }
+  .wr { animation-name: flapR; }
+  @keyframes flapL { 50% { transform: rotate(7deg); } }
+  @keyframes flapR { 50% { transform: rotate(-7deg); } }
+  @media (prefers-reduced-motion: reduce) { .wl, .wr, .stars span { animation: none; } }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<main>
+  <h1>Lumi, the baby moth</h1>
+  <p class="sub">Pick a look. The wings flutter and the eyes follow your cursor 🦋</p>
+
+  <div class="grid">
+    <article class="card">
+      <div class="bar"><span>1.classic</span><i>_□x</i></div>
+      <div class="art" id="v1"></div>
+      <div class="info"><h3>Peach Classic</h3><p>The original. Peach and lilac wings with berry spots, cozy and warm.</p><span class="tag">original</span></div>
+    </article>
+    <article class="card">
+      <div class="bar"><span>2.luna</span><i>_□x</i></div>
+      <div class="art" id="v2"></div>
+      <div class="info"><h3>Luna Lumi</h3><p>Mint wings with long swirly tails, inspired by real luna moths. The most elegant.</p><span class="tag">fancy</span></div>
+    </article>
+    <article class="card">
+      <div class="bar"><span>3.midnight</span><i>_□x</i></div>
+      <div class="art dark" id="v3"></div>
+      <div class="info"><h3>Midnight Lumi</h3><p>Lilac-blue wings with glowing star spots. Built for a dark night-sky site.</p><span class="tag">night owl</span></div>
+    </article>
+    <article class="card">
+      <div class="bar"><span>4.berry</span><i>_□x</i></div>
+      <div class="art" id="v4"></div>
+      <div class="info"><h3>Berry Artist</h3><p>Strawberry-pink wings and a berry beret. Matches the official haX.baby colors.</p><span class="tag">most artsy</span></div>
+    </article>
+    <article class="card pixel">
+      <div class="bar"><span>5.pixel</span><i>_□x</i></div>
+      <div class="art" id="v5"></div>
+      <div class="info"><h3>Pixel Lumi</h3><p>A chunky 90s sprite. Great as a desktop icon, favicon, or cursor buddy.</p><span class="tag">GeoCities</span></div>
+    </article>
+  </div>
+
+  <h2>Mood sheet<br>for the feeding toy</h2>
+  <div class="moods">
+    <div class="mood"><div id="mNormal"></div><b>curious</b>default</div>
+    <div class="mood"><div id="mShiny"></div><b>SHINY!!</b>spots something new</div>
+    <div class="mood"><div id="mHappy"></div><b>fed! 🍪</b>after a cookie</div>
+    <div class="mood"><div id="mSad"></div><b>hurt</b>wings droop</div>
+    <div class="mood"><div id="mDead"></div><b>flop</b>plays dead x_x</div>
+  </div>
+
+  <h2>Character sheet<br>(draft)</h2>
+  <dl class="sheet">
+    <dt>1. NAME</dt>
+    <dd>Lumi</dd>
+    <dt>2. WHAT THEY ARE</dt>
+    <dd>A fuzzy baby moth the size of a marshmallow. A natural night owl: curious, easily distracted, and happy in seconds (especially with cookies). When its feelings get hurt, its wings droop. When they get <i>really</i> hurt, it flops over and plays dead.</dd>
+    <dt>3. WHAT THEY DO</dt>
+    <dd>Night-shift Hobby Hopper and Curator of Useless Facts. Lumi flies toward every glowing thing and picks up a new hobby each night:
+      <ul>
+        <li>🎨 watercolor moons</li>
+        <li>✨ resin "jar of stars" charms</li>
+        <li>📿 bead jewellery made from dew drops</li>
+        <li>🎸 one guitar string it found (still learning)</li>
+        <li>🧠 a lamp-lit museum of useless facts</li>
+      </ul>
+    </dd>
+    <dt>4. THEIR STORY</dt>
+    <dd>Lumi hatched inside a forgotten paint box under a desk lamp. That lamp was the first light it ever saw, and it has been chasing lights (and new hobbies) ever since. It has never finished a single one… except the little lantern it carries. In the final scene, that lantern lights up the whole site.</dd>
+    <dt>5. TAGLINE</dt>
+    <dd>"Ooh, shiny. New hobby."</dd>
+  </dl>
+
+  <p class="note">Tell Claude: which look (1–5), and whether the character sheet feels like you.</p>
+</main>
+
+<script>
+const PALS = {
+  peach:    { wu: "#ffd9b8", wl: "#e8c9f0", spot: "#fff8f1", spotIn: "#a34063", body: "#f3dcc0", stripe: "#e2c29f", fluff: "#fff3e0", head: "#fffaf2", ant: "#5c4033", tip: "#ffd35c" },
+  luna:     { wu: "#bfeccf", wl: "#a8e0d0", spot: "#fff8f1", spotIn: "#e98aa8", body: "#e9f7ec", stripe: "#c7e6cf", fluff: "#f4fff6", head: "#fbfffb", ant: "#5f8466", tip: "#ffd35c" },
+  midnight: { wu: "#7b74c9", wl: "#a99be3", spot: "#ffe9a8", spotIn: "#fff8f1", body: "#d9d3f2", stripe: "#bdb3e6", fluff: "#eeeaff", head: "#f8f6ff", ant: "#cfc6ff", tip: "#ffe9a8" },
+  berry:    { wu: "#ffb3c8", wl: "#ffd9e3", spot: "#fff8f1", spotIn: "#a34063", body: "#ffe6d6", stripe: "#f5c8b4", fluff: "#fff3ec", head: "#fffaf2", ant: "#5c4033", tip: "#ff8fab" },
+};
+
+const star = (x, y, s, c) =>
+  `<path d="M${x} ${y - s} L${x + s * .3} ${y - s * .3} L${x + s} ${y} L${x + s * .3} ${y + s * .3} L${x} ${y + s} L${x - s * .3} ${y + s * .3} L${x - s} ${y} L${x - s * .3} ${y - s * .3} Z" fill="${c}"/>`;
+
+let uid = 0;
+function lumi({ pal = PALS.peach, mood = "normal", tails = false, beret = false, starSpots = false } = {}) {
+  const p = pal;
+  const id = "glow" + (uid++);
+  const dead = mood === "dead";
+
+  let fluff = "";
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2;
+    fluff += `<circle cx="${(100 + Math.cos(a) * 34).toFixed(1)}" cy="${(136 + Math.sin(a) * 12).toFixed(1)}" r="11" fill="${p.fluff}"/>`;
+  }
+
+  // Wing pose: droopy when sad, lifted when happy/shiny
+  const tilt = { sad: -18, happy: 12, shiny: 16 }[mood] || 0;
+  const tailL = tails ? `<path d="M68 176 Q40 206 26 224 Q24 230 32 226 Q52 212 80 186 Z" fill="${p.wl}"/>` : "";
+  const tailR = tails ? `<path d="M132 176 Q160 206 174 224 Q176 230 168 226 Q148 212 120 186 Z" fill="${p.wl}"/>` : "";
+  const spotsL = starSpots
+    ? star(38, 102, 11, p.spot) + star(24, 84, 5, p.spot) + star(56, 174, 6, p.spot)
+    : `<circle cx="38" cy="102" r="12" fill="${p.spot}"/><circle cx="38" cy="102" r="5.5" fill="${p.spotIn}"/>
+       <circle cx="22" cy="86" r="4" fill="${p.spot}"/><circle cx="56" cy="174" r="6" fill="${p.spot}"/>`;
+  const spotsR = starSpots
+    ? star(162, 102, 11, p.spot) + star(176, 84, 5, p.spot) + star(144, 174, 6, p.spot)
+    : `<circle cx="162" cy="102" r="12" fill="${p.spot}"/><circle cx="162" cy="102" r="5.5" fill="${p.spotIn}"/>
+       <circle cx="178" cy="86" r="4" fill="${p.spot}"/><circle cx="144" cy="174" r="6" fill="${p.spot}"/>`;
+
+  const wingsL = `<g transform="rotate(${tilt} 100 132)"><g class="${dead ? "" : "wl"}">
+      ${tailL}
+      <ellipse cx="52" cy="110" rx="50" ry="32" fill="${p.wu}" transform="rotate(-28 52 110)"/>
+      <ellipse cx="62" cy="168" rx="34" ry="24" fill="${p.wl}" transform="rotate(25 62 168)"/>
+      ${spotsL}</g></g>`;
+  const wingsR = `<g transform="rotate(${-tilt} 100 132)"><g class="${dead ? "" : "wr"}">
+      ${tailR}
+      <ellipse cx="148" cy="110" rx="50" ry="32" fill="${p.wu}" transform="rotate(28 148 110)"/>
+      <ellipse cx="138" cy="168" rx="34" ry="24" fill="${p.wl}" transform="rotate(-25 138 168)"/>
+      ${spotsR}</g></g>`;
+
+  const face = "#5c4033";
+  const eyes = {
+    normal: [83, 117].map(cx => `<g class="pupil"><circle cx="${cx}" cy="102" r="12" fill="#1d1a24"/><circle cx="${cx + 4}" cy="97" r="4.5" fill="#fff"/><circle cx="${cx - 3}" cy="106" r="2" fill="#fff"/></g>`).join(""),
+    shiny: [83, 117].map(cx => `<circle cx="${cx}" cy="102" r="13" fill="#1d1a24"/>${star(cx, 101, 8, "#ffd35c")}<circle cx="${cx - 5}" cy="108" r="2" fill="#fff"/>`).join(""),
+    happy: [83, 117].map(cx => `<path d="M${cx - 10} 106 Q${cx} 92 ${cx + 10} 106" fill="none" stroke="${face}" stroke-width="4.5" stroke-linecap="round"/>`).join(""),
+    sad: [83, 117].map(cx => `<g class="pupil"><circle cx="${cx}" cy="105" r="11" fill="#1d1a24"/><circle cx="${cx + 3}" cy="101" r="4" fill="#fff"/></g>`).join("")
+      + `<path d="M72 86 L90 82 M128 86 L110 82" stroke="${face}" stroke-width="3" stroke-linecap="round"/>`
+      + `<path d="M74 114 Q70 122 74 126 Q78 122 74 114 Z M126 114 Q122 122 126 126 Q130 122 126 114 Z" fill="#7cc8ff"/>`,
+    dead: [83, 117].map(cx => `<path d="M${cx - 8} 94 L${cx + 8} 110 M${cx + 8} 94 L${cx - 8} 110" stroke="${face}" stroke-width="4.5" stroke-linecap="round"/>`).join(""),
+  }[mood];
+  const mouth = {
+    normal: `<path d="M95 122 Q100 127 105 122" fill="none" stroke="${face}" stroke-width="2.5" stroke-linecap="round"/>`,
+    shiny: `<ellipse cx="100" cy="125" rx="5" ry="6" fill="#7a2e45"/>`,
+    happy: `<path d="M91 120 Q100 136 109 120 Z" fill="#7a2e45"/><ellipse cx="100" cy="129" rx="4.5" ry="2.5" fill="#ff8fab"/>`,
+    sad: `<path d="M94 127 Q100 120 106 127" fill="none" stroke="${face}" stroke-width="2.5" stroke-linecap="round"/>`,
+    dead: `<path d="M92 123 L108 123" stroke="${face}" stroke-width="2.5" stroke-linecap="round"/><path d="M100 123 Q100 134 104 134 Q108 134 108 123 Z" fill="#ff8fab"/>`,
+  }[mood];
+
+  // What Lumi holds: lantern by default, cookie when fed
+  const lit = mood === "normal" || mood === "shiny";
+  const holding = mood === "happy"
+    ? `<circle cx="100" cy="198" r="15" fill="#d9a066" stroke="${face}" stroke-width="3"/>
+       <circle cx="94" cy="193" r="2.5" fill="${face}"/><circle cx="105" cy="196" r="2.5" fill="${face}"/><circle cx="98" cy="204" r="2.5" fill="${face}"/>
+       <circle cx="120" cy="208" r="2" fill="#d9a066"/><circle cx="80" cy="212" r="1.5" fill="#d9a066"/>`
+    : `${lit ? `<circle cx="100" cy="204" r="34" fill="url(#${id})"/>` : ""}
+       <path d="M93 192 Q100 182 107 192" fill="none" stroke="${face}" stroke-width="3"/>
+       <rect x="90" y="192" width="20" height="22" rx="5" fill="${lit ? "#ffd35c" : "#d8cbb8"}" stroke="${face}" stroke-width="3"/>`;
+
+  const extras = mood === "shiny"
+    ? star(30, 40, 9, "#ffd35c") + star(172, 34, 7, "#ffd35c") + star(178, 150, 5, "#ffd35c") : "";
+  const beretSvg = beret
+    ? `<ellipse cx="110" cy="64" rx="30" ry="10" fill="#a34063" transform="rotate(-14 110 64)"/><path d="M110 55 L113 47" stroke="#a34063" stroke-width="4" stroke-linecap="round"/>
+       <circle cx="98" cy="66" r="3" fill="#ffd35c"/><circle cx="122" cy="60" r="2.5" fill="#8fd3ff"/>` : "";
+
+  return `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg">
+  <defs><radialGradient id="${id}"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient></defs>
+  ${extras}
+  <g ${dead ? 'transform="rotate(172 100 125)"' : ""}>
+    ${wingsL}${wingsR}
+    <ellipse cx="100" cy="170" rx="30" ry="36" fill="${p.body}"/>
+    <path d="M74 165 Q100 175 126 165 M76 182 Q100 192 124 182" fill="none" stroke="${p.stripe}" stroke-width="4" stroke-linecap="round"/>
+    ${fluff}
+    <path d="M88 64 Q76 36 62 28 M112 64 Q124 36 138 28" stroke="${p.ant}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M80 50 l-7 3 M74 40 l-7 2 M120 50 l7 3 M126 40 l7 2" stroke="${p.ant}" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="62" cy="28" r="6" fill="${p.tip}"/><circle cx="138" cy="28" r="6" fill="${p.tip}"/>
+    <circle cx="100" cy="100" r="42" fill="${p.head}"/>
+    <circle cx="91" cy="60" r="8" fill="${p.fluff}"/><circle cx="100" cy="57" r="8" fill="${p.fluff}"/><circle cx="109" cy="60" r="8" fill="${p.fluff}"/>
+    ${beretSvg}
+    ${eyes}${mouth}
+    <ellipse cx="70" cy="118" rx="8" ry="5" fill="#ffb3c8"/><ellipse cx="130" cy="118" rx="8" ry="5" fill="#ffb3c8"/>
+    ${holding}
+    <ellipse cx="88" cy="196" rx="6" ry="5" fill="${p.fluff}"/><ellipse cx="112" cy="196" rx="6" ry="5" fill="${p.fluff}"/>
+  </g></svg>`;
+}
+
+// ---------- Pixel Lumi ----------
+const pixelMap = [
+  "....Y..........Y....",
+  ".....K........K.....",
+  "......K......K......",
+  "AA.....KKKKKK.....AA",
+  "AAA...KHHHHHHK...AAA",
+  "AASA.KHHHHHHHHK.ASAA",
+  "AAAA.KHKKHHKKHK.AAAA",
+  "AAAAAKHKKHHKKHKAAAAA",
+  ".AAAAKHPHHHHPHKAAAA.",
+  "..AAAKHHHKKHHHKAAA..",
+  "...LLFKKHHHHKKFLL...",
+  "..LLLFFFKKKKFFFLLL..",
+  "..LSLLFBBBBBBFLLSL..",
+  "..LLLL.BTTTTB.LLLL..",
+  "...LL..BBBBBB..LL...",
+  ".......KYYYYK.......",
+  ".......KYYYYK.......",
+  "........KKKK........",
+];
+const pixelColors = { Y: "#ffd35c", K: "#5c4033", H: "#fffaf2", A: "#ffd9b8", S: "#a34063", B: "#f3dcc0", T: "#e2c29f", L: "#e8c9f0", F: "#fff3e0", P: "#ffb3c8" };
+function pixelLumi() {
+  const w = Math.max(...pixelMap.map(r => r.length));
+  let rects = "";
+  pixelMap.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (pixelColors[ch]) rects += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pixelColors[ch]}"/>`;
+  }));
+  return `<svg viewBox="-1 -2 ${w + 2} ${pixelMap.length + 4}" xmlns="http://www.w3.org/2000/svg">${rects}</svg>`;
+}
+
+const set = (id, html) => { document.getElementById(id).innerHTML = html; };
+set("v1", lumi({ pal: PALS.peach }));
+set("v2", lumi({ pal: PALS.luna, tails: true }));
+set("v3", lumi({ pal: PALS.midnight, starSpots: true }));
+set("v4", lumi({ pal: PALS.berry, beret: true }));
+set("v5", pixelLumi());
+set("mNormal", lumi({ mood: "normal" }));
+set("mShiny", lumi({ mood: "shiny" }));
+set("mHappy", lumi({ mood: "happy" }));
+set("mSad", lumi({ mood: "sad" }));
+set("mDead", lumi({ mood: "dead" }));
+
+// Pupils follow the pointer (mouse or touch)
+addEventListener("pointermove", e => {
+  document.querySelectorAll(".pupil").forEach(p => {
+    const r = p.getBoundingClientRect();
+    const dx = e.clientX - (r.left + r.width / 2);
+    const dy = e.clientY - (r.top + r.height / 2);
+    const len = Math.hypot(dx, dy) || 1;
+    const m = Math.min(3, len / 40);
+    p.setAttribute("transform", `translate(${(dx / len) * m} ${(dy / len) * m})`);
+  });
+});
+
+// Twinkly background stars
+const stars = document.getElementById("stars");
+for (let i = 0; i < 60; i++) {
+  const s = document.createElement("span");
+  s.style.left = Math.random() * 100 + "%";
+  s.style.top = Math.random() * 100 + "%";
+  s.style.animationDelay = Math.random() * 2.5 + "s";
+  stars.appendChild(s);
+}
+</script>
+</body>
+</html>
