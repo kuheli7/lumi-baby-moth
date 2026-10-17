@@ -393,7 +393,8 @@ h1, h2 { font-family: var(--head); font-weight: 600; color: var(--berry); margin
 .clock { flex: none; font: 700 15px var(--mono); padding: 3px 10px; border: 2px inset var(--lilac-soft); border-radius: 6px; background: #efe9ff; }
 .start-menu {
   position: absolute; left: 8px; bottom: calc(var(--taskbar) + 4px); width: 250px; max-width: calc(100vw - 16px);
-  display: flex; flex-direction: column; padding: 0 0 8px; overflow: hidden;
+  display: flex; flex-direction: column; padding: 0 0 8px; overflow: hidden auto;
+  max-height: calc(100vh - var(--taskbar) - 16px); max-height: calc(100dvh - var(--taskbar) - 16px);
   background: var(--paper); border: 3px solid var(--ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--berry);
 }
 .start-menu[hidden] { display: none; }

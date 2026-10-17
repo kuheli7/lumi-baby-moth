@@ -19,8 +19,6 @@
   // ---------- sound: tiny synth notes made with Web Audio, no files ----------
   // The AudioContext is only created after the visitor has clicked or typed, so browsers never block it.
   let gestured = false;
-  addEventListener("pointerdown", () => { gestured = true; }, { capture: true, once: true });
-  addEventListener("keydown", () => { gestured = true; }, { capture: true, once: true });
   const activated = () => (navigator.userActivation ? navigator.userActivation.hasBeenActive : gestured);
 
   const sfx = (() => {
@@ -94,6 +92,11 @@
     };
     return {
       play,
+      // start (or wake) the audio inside a real tap or key press; iPhones only allow it there
+      unlock() {
+        const c = ready();
+        return !!c && c.state === "running";
+      },
       get muted() { return muted; },
       setMuted(m) {
         muted = m;
@@ -102,6 +105,14 @@
       },
     };
   })();
+
+  const GESTURES = ["pointerdown", "touchend", "click", "keydown"];
+  const unlockAudio = (e) => {
+    // a finger touching down doesn't count as a gesture yet; lifting it does
+    if (e.type !== "pointerdown" || e.pointerType === "mouse") gestured = true;
+    if (sfx.unlock()) GESTURES.forEach(t => removeEventListener(t, unlockAudio, true));
+  };
+  GESTURES.forEach(t => addEventListener(t, unlockAudio, { capture: true, passive: true }));
 
   // every button clicks softly unless it makes its own sound
   document.addEventListener("click", (e) => {
