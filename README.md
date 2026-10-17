@@ -1,5 +1,7 @@
 # Lumi's Night Shift 🏮
 
+**Live site: https://kuheli7.github.io/lumi-baby-moth/**
+
 The homepage of **Lumi**, a marshmallow-sized baby moth who starts a new hobby every night and never finishes any.
 Built for the haX.baby *Baby's First Website* hackathon (Track 2: original character), 17–19 October 2026.
 
