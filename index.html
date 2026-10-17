@@ -76,6 +76,13 @@
             <li>if it <b>flops</b>, only a cookie can bring it back.</li>
             <li>leave it alone and it falls asleep.</li>
           </ul>
+          <form class="chat" id="chat" autocomplete="off">
+            <label for="chat-input">talk to Lumi</label>
+            <div class="chat-row">
+              <input id="chat-input" maxlength="80" placeholder="say hi, ask for a fact…">
+              <button type="submit">say ✦</button>
+            </div>
+          </form>
         </div>
       </div>
     </section>
@@ -204,6 +211,7 @@
     <hr>
     <button id="menu-lights">🏮 light the lantern</button>
     <button id="menu-trail">✨ moth dust: on</button>
+    <button id="menu-chaos">🌀 chaos mode: off</button>
   </div>
   <div class="tray-windows" id="tray-windows" aria-label="Minimized windows"></div>
   <button class="mute" id="mute" aria-pressed="false">🔊 sound on</button>

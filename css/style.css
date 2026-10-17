@@ -220,6 +220,14 @@ h1, h2 { font-family: var(--head); font-weight: 600; color: var(--berry); margin
 .hint { margin: 0; font-size: 16px; opacity: .8; }
 .howto { margin: 12px 0 0; padding-left: 20px; font-size: 17px; }
 .howto li::marker { content: "✦ "; color: var(--gold); }
+.chat { margin-top: 12px; text-align: left; }
+.chat label { font-family: var(--head); font-weight: 600; font-size: 17px; }
+.chat-row { display: flex; gap: 8px; margin-top: 2px; }
+.chat input {
+  flex: 1; min-width: 0; padding: 5px 10px; border: 2.5px solid var(--ink); border-radius: 999px;
+  background: #fff; font-size: 17px; box-shadow: inset 2px 2px 0 #eee3f7;
+}
+.win-body .chat button { flex: none; padding: 3px 14px; }
 
 /* ---------- character sheet ---------- */
 .sheet dl { margin: 0; display: grid; gap: 10px; }
@@ -413,6 +421,24 @@ h1, h2 { font-family: var(--head); font-weight: 600; color: var(--berry); margin
 }
 @keyframes burst { 55% { opacity: 1; } to { transform: translate(-50%, -50%) scale(90); opacity: 0; } }
 
+/* ---------- chaos mode: every window does its own thing ---------- */
+body.chaos { font-family: "Comic Sans MS", "Chalkboard SE", var(--body); }
+body.chaos .bar, body.chaos .win.front .bar {
+  background: linear-gradient(90deg, #ff9ec4, #ffe08a, #a0e7ff, #c9a7ea, #ff9ec4); background-size: 300% 100%;
+  color: var(--ink); animation: rainbow 5s linear infinite;
+}
+@keyframes rainbow { to { background-position: 300% 0; } }
+body.chaos .marquee-track { animation-duration: 9s; }
+body.chaos .win { transition: transform .5s cubic-bezier(.3, 1.6, .5, 1); }
+body.chaos .win.dragging { transition: none; }
+body.chaos .win:hover { animation: jiggle .45s ease-in-out; }
+@keyframes jiggle { 25% { scale: 1.01; } 50% { scale: .995; } 75% { scale: 1.005; } }
+body.chaos .welcome h1 { animation: hue 3s linear infinite; }
+@keyframes hue { to { filter: hue-rotate(360deg); } }
+body.chaos .icon-pic { display: inline-block; animation: bop 1.2s ease-in-out infinite; }
+body.chaos .icon:nth-child(even) .icon-pic { animation-delay: -.6s; }
+@keyframes bop { 50% { translate: 0 -5px; rotate: 8deg; } }
+
 /* ---------- lit: the lantern lights up the whole site ---------- */
 body.lit .win { box-shadow: 0 0 34px rgba(255, 214, 120, .55), 6px 6px 0 var(--gold); }
 body.lit .moon { box-shadow: inset -16px 6px 0 0 #fffbe6; filter: drop-shadow(0 0 30px rgba(255, 238, 170, .9)); }
@@ -463,6 +489,7 @@ body.lit .icon:hover, body.lit .icon:focus-visible { border-color: var(--ink); }
   .marquee { white-space: normal; }
   .marquee-track { animation: none; display: block; }
   .marquee-track span + span { display: none; }
-  .spark, .blinky, .room-lantern svg, .lantern-btn, .win.pop, .stage.squish, .stage.shiver, .story-art.turn, .bubble.say { animation: none !important; }
+  .spark, .blinky, .room-lantern svg, .lantern-btn, .win.pop, .stage.squish, .stage.shiver, .story-art.turn, .bubble.say,
+  body.chaos .bar, body.chaos .win:hover, body.chaos .welcome h1, body.chaos .icon-pic { animation: none !important; }
   .burst, .rain { display: none; }
 }

@@ -904,6 +904,59 @@
   showFact();
 
   // ======================================================================
+  //  Talk to Lumi: it chats back (keyword replies in Lumi's voice)
+  // ======================================================================
+  // [pattern, mood or "", replies]; the first match wins
+  const CHAT = [
+    [/\b(stupid|ugly|hate|dumb|boring|annoying|go away)\b/, "sad", ["…that hurt my feelings. *droops*", "*sniff* i'm only marshmallow-sized, you know."]],
+    [/\b(cookies?|snacks?|food|hungry|eat)\b/, "starry", ["did someone say COOKIE?? the jar is right there. 🍪", "food is my second favourite hobby. the first is also food."]],
+    [/\bfacts?\b/, "wink", null],
+    [/\b(love|cute|adorable|sweet|pretty|best)\b/, "happy", ["*blushes so hard my fluff turns pink*", "stop it. (don't stop it.)"]],
+    [/\b(sad|cry|lonely|tired of|bad day)\b/, "happy", ["here, have a tiny fluffy hug. *hug*", "you can borrow my lantern for a bit. it helps."]],
+    [/\b(guitar|music|songs?|sing)\b/, "starry", ["i know one song. on one string. the guitar is in my hobby room…"]],
+    [/\b(hobby|hobbies|art|paint|draw|craft)\b/, "curious", ["my newest hobby is talking to you. it's 2% finished.", "come see my hobby room! bring the lantern, it's dark."]],
+    [/\b(finish|finished|done|complete)\b/, "wink", ["finishing things is not my hobby. starting things is.", "i finished ONE thing. ask the story about it."]],
+    [/\b(moon|stars?|shiny|light|lamp|lantern|sparkle)\b/, "starry", ["OOH. shiny. tell me more.", "the lantern is the only thing i ever finished. isn't it pretty?"]],
+    [/\b(sleep|sleepy|night|bed|nap)\b/, "curious", ["sleep? at night? i've heard of it. never tried it.", "nights are for hobbies. days are for naps."]],
+    [/\b(who|what are you|your name|moth)\b/, "curious", ["i'm Lumi! a baby moth. marshmallow-sized. professional hobby starter."]],
+    [/\b(bye|goodnight|good night|see you|cya)\b/, "happy", ["goodnight!! leave the lantern on for me. 🏮", "bye bye! come back soon, i'll have new hobbies."]],
+    [/\b(hi|hii+|hello|hey|yo|hiya)\b/, "happy", ["hi!! you're my favourite visitor. (you're also my only visitor right now.)", "hello hello! want a cookie? i mean, can i have a cookie?"]],
+  ];
+  const SHRUG = ["ooh. i don't know what that means, but i love it.", "*nods wisely* (i did not understand)", "that sounds like a new hobby. writing it down… lost the pencil."];
+  const chatForm = $("#chat"), chatInput = $("#chat-input");
+  let chatTimer = 0;
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const said = chatInput.value.trim().toLowerCase();
+    if (!said) return;
+    chatInput.value = "";
+    pal.lastActive = Date.now();
+    if (pal.mood === "sleepy") wake();
+    say("…");
+    clearTimeout(chatTimer);
+    chatTimer = setTimeout(() => {
+      if (pal.mood === "flop") { say("x_x (Lumi can't talk right now. it's busy being flopped. try a cookie.)"); return; }
+      const rule = CHAT.find(([re]) => re.test(said));
+      const reply = rule ? (rule[2] ? pick(rule[2]) : `fact! ${pick(FACTS)}`) : pick(SHRUG);
+      const mood = rule ? rule[1] : "curious";
+      if (mood === "sad") {
+        clearTimeout(pal.timer);
+        setMood("sad");
+        bump("shiver");
+        sfx.play.sad();
+        pal.pokes = Math.max(pal.pokes, 4);
+        clearInterval(pal.calm);
+        pal.calm = setInterval(calmDown, 3500);
+        say(reply);
+        return;
+      }
+      if (calm() || pal.mood === "fed") moodFor(mood, 2600);
+      sfx.play.pop();
+      say(reply);
+    }, 450);
+  });
+
+  // ======================================================================
   //  Guestbook (kept in this browser)
   // ======================================================================
   const SEED = [
@@ -1042,4 +1095,25 @@
   if (reduceMotion) trailItem.hidden = true;
   trailItem.addEventListener("click", () => { dust.on = !dust.on; showTrail(); });
   showTrail();
+
+  // ======================================================================
+  //  Chaos mode: every window tilts its own way (gentler on small screens)
+  // ======================================================================
+  const chaosItem = $("#menu-chaos");
+  function setChaos(on) {
+    document.body.classList.toggle("chaos", on);
+    chaosItem.textContent = `🌀 chaos mode: ${on ? "on" : "off"}`;
+    const spread = matchMedia("(max-width: 699px)").matches ? 1.6 : 3.4;
+    wins.forEach(w => {
+      if (on) w.style.setProperty("--tilt", ((Math.random() * 2 - 1) * spread).toFixed(2) + "deg");
+      else w.style.removeProperty("--tilt");
+    });
+  }
+  chaosItem.addEventListener("click", () => {
+    const on = !document.body.classList.contains("chaos");
+    setChaos(on);
+    toggleMenu(false);
+    if (on) { sfx.play.giggle(); react("starry", "CHAOS MODE!! this is my favourite hobby now.", 2600); toast("🌀 chaos mode on. everything is fine."); }
+    else react("wink", "phew. tidy again. (for now.)");
+  });
 })();
