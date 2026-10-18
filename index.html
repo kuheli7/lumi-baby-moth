@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="css/lumi.css">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/attic2.css">
+<link rel="stylesheet" href="css/sheet.css">
 </head>
 <body data-view="home">
 <!-- psst. Lumi has a secret. try typing "cookie" anywhere on the page. -->
@@ -70,6 +71,7 @@
         <a class="btn btn-dark" href="#attic2"><span class="btn-ico" aria-hidden="true">🏠</span>Lumi's attic 2 (new!)</a>
         <a class="btn btn-berry" href="#play"><span class="btn-ico" aria-hidden="true">★</span>play with Lumi</a>
         <a class="btn btn-outline" href="#hobbies"><span class="btn-ico" aria-hidden="true">✦</span>explore a hobby</a>
+        <a class="btn btn-gold" href="#sheet"><span class="btn-ico" aria-hidden="true">📋</span>Lumi's character sheet</a>
       </div>
       <div class="cookies-today">
         <span>cookies today</span>
@@ -190,6 +192,29 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ================= character sheet ================= -->
+  <section class="view" data-view="sheet" aria-labelledby="h-sheet" hidden>
+    <div class="panel wide sheet-page">
+      <header class="view-head">
+        <a class="back" href="#home" aria-label="Back to home"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+        <h1 id="h-sheet" tabindex="-1">Character Sheet</h1>
+        <p>everything you need to draw Lumi without guessing</p>
+      </header>
+      <div class="cs-top">
+        <div class="cs-hero" id="cs-hero"></div>
+        <dl class="cs-facts" id="cs-facts"></dl>
+      </div>
+      <h2 class="cs-h">Views</h2>
+      <div class="cs-views" id="cs-views"></div>
+      <h2 class="cs-h">Colour palette</h2>
+      <ul class="cs-palette" id="cs-palette"></ul>
+      <h2 class="cs-h">Rules for drawing Lumi</h2>
+      <ul class="cs-rules" id="cs-rules"></ul>
+      <h2 class="cs-h">All eighteen moods</h2>
+      <ul class="cs-moods" id="cs-moods"></ul>
     </div>
   </section>
 
@@ -325,6 +350,7 @@
   <nav class="menu-list" aria-label="All pages">
     <a href="#home">home</a>
     <a href="#about">about Lumi</a>
+    <a href="#sheet">character sheet</a>
     <a href="#hobbies">hobbies</a>
     <a href="#room">Lumi's attic</a>
     <a href="#attic2">Lumi's attic 2</a>
@@ -350,6 +376,7 @@
 <script src="js/dress.js"></script>
 <script src="js/attic2-quests.js"></script>
 <script src="js/attic2.js"></script>
+<script src="js/sheet.js"></script>
 <script src="js/game.js"></script>
 <script src="js/pages.js"></script>
 </body>
