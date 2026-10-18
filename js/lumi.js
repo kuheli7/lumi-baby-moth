@@ -1,23 +1,20 @@
-// Lumi, the baby moth: palette, drawing helpers and lumi(mood), which returns an SVG string.
-// Copied unchanged from design/lumi-v2.html (the finished character art). Do not edit here; edit the design file and recopy.
-// Palette sampled from the reference art (stalks and eyes deepened on request)
+// Lumi's art: palette, drawing helpers and sticker(mood), which returns an SVG string.
+// Copied unchanged from design/lumi-stickers.html by tools/sync-art.mjs. Edit the design file, then re-run it.
+// Palette sampled from the reference art (same as Lumi v4)
 const C = {
   fur: "#fef7ed", line: "#f0c9a8", flick: "#efd0b4",
   stalk: "#4e3427", frame: "#6f4e2c",
   ring: "#fbf1f0", spot: "#c66d74", blush: "#f8b0bf",
-  mouth: "#5e3b30", nose: "#4f3026",
+  mouth: "#5e3b30", nose: "#4f3026", lid: "#1f1517", lip: "#7a2e3a",
   eye: "#080506", eyeTint: "#3f3134", eyeTintDark: "#22181a", sparkle: "#fbe3a4",
-  gold: "#f6cf6a", tear: "#8fd0ff", heart: "#ee8196", shadow: "#faeadb",
+  gold: "#f6cf6a", heart: "#ee8196", shadow: "#faeadb",
+  card: "#fcf2e2", cardLine: "#a99179", label: "#4a2c1a",
 };
 
 const f1 = (n) => n.toFixed(1);
 
 const star4 = (x, y, s, fill, extra = "") =>
   `<path d="M${x} ${y - s} Q${x + s * .2} ${y - s * .2} ${x + s} ${y} Q${x + s * .2} ${y + s * .2} ${x} ${y + s} Q${x - s * .2} ${y + s * .2} ${x - s} ${y} Q${x - s * .2} ${y - s * .2} ${x} ${y - s} Z" fill="${fill}" ${extra}/>`;
-
-// Sparkle like the sticker sheet: a concave 4-point star, a little taller than wide, with softened tips
-const sparkle = (x, y, w, h, fill, k = .27) =>
-  `<path d="M${f1(x)} ${f1(y - h)} Q${f1(x + w * k)} ${f1(y - h * k)} ${f1(x + w)} ${f1(y)} Q${f1(x + w * k)} ${f1(y + h * k)} ${f1(x)} ${f1(y + h)} Q${f1(x - w * k)} ${f1(y + h * k)} ${f1(x - w)} ${f1(y)} Q${f1(x - w * k)} ${f1(y - h * k)} ${f1(x)} ${f1(y - h)} Z" fill="${fill}" stroke="${fill}" stroke-width=".8" stroke-linejoin="round"/>`;
 
 const star5 = (x, y, R, r, fill) => {
   let d = "";
@@ -79,12 +76,9 @@ const qpt = (p0, p1, p2, t) => {
 };
 
 // Traditional cloud: evenly spaced, same-sized scallops that all bulge outward (no dents).
-// The notches sit on the ellipse; each scallop is an arc a little flatter than a semicircle.
 // `pear` > 0 narrows the top and fills out the bottom; `flat` < 1 flattens the bottom (for sitting);
 // `trim` = [angleDeg, amount, spreadDeg] pulls the outline in around one spot.
-// `slant` leans each tuft downward like the reference: a shallow start from the upper notch,
-// then a rounder drop that tucks back in at the lower notch (sides only, the crown stays even).
-function scallop(cx, cy, rx, ry, n, seed, kR = .58, pear = 0, flat = 1, trim = null, slant = 0) {
+function scallop(cx, cy, rx, ry, n, seed, kR = .58, pear = 0, flat = 1, trim = null) {
   const rand = seeded(seed);
   // sample the outline by arc length so every scallop comes out the same size
   const M = 360, pts = [], len = [0];
@@ -107,30 +101,22 @@ function scallop(cx, cy, rx, ry, n, seed, kR = .58, pear = 0, flat = 1, trim = n
   for (let i = 1; i <= n; i++) {
     const p = notches[i - 1], q = notches[i % n];
     const L = Math.hypot(q[0] - p[0], q[1] - p[1]), R = L * (kR + (rand() - .5) * .06);
-    if (!slant) { d += ` A${f1(R)} ${f1(R)} 0 0 1 ${f1(q[0])} ${f1(q[1])}`; continue; }
-    // same bump as the arc, drawn as a cubic so the two ends can lean differently
-    const ux = (q[0] - p[0]) / L, uy = (q[1] - p[1]) / L, nx = uy, ny = -ux;
-    const half = Math.asin(Math.min(1, L / 2 / R)), k = (4 / 3) * Math.tan(half / 2) * R;
-    const s = slant * uy, D = .55;                       // + leans toward q, - toward p
-    const a1 = half - s * D, a2 = half + s * D;
-    const k1 = k * (1 - .12 * s), k2 = k * (1 + .12 * s);
-    const c1 = [p[0] + k1 * (Math.cos(a1) * ux + Math.sin(a1) * nx), p[1] + k1 * (Math.cos(a1) * uy + Math.sin(a1) * ny)];
-    const c2 = [q[0] + k2 * (-Math.cos(a2) * ux + Math.sin(a2) * nx), q[1] + k2 * (-Math.cos(a2) * uy + Math.sin(a2) * ny)];
-    d += ` C${f1(c1[0])} ${f1(c1[1])} ${f1(c2[0])} ${f1(c2[1])} ${f1(q[0])} ${f1(q[1])}`;
+    d += ` A${f1(R)} ${f1(R)} 0 0 1 ${f1(q[0])} ${f1(q[1])}`;
   }
   return (attrs) => `<path d="${d}Z" stroke-linejoin="round" ${attrs}/>`;
 }
 
 // Fluff = outline on the outside of the union only + gradient fill + clipped shading.
-// `line` can be a gradient so the outline warms up toward the bottom.
-function fluff(shape, clipId, fill, shading = "", stroke = 4.4, line = C.line) {
-  return `<clipPath id="${clipId}">${shape("")}</clipPath>
-    ${shape(`fill="${line}" stroke="${line}" stroke-width="${stroke}"`)}
+// part "line" or "fill" draws just one half, so parts that join can share one outline (see joined)
+function fluff(shape, clipId, fill, shading = "", stroke = 4.4, line = C.line, part = "all") {
+  const ln = shape(`fill="${line}" stroke="${line}" stroke-width="${stroke}"`);
+  const fl = `<clipPath id="${clipId}">${shape("")}</clipPath>
     ${shape(`fill="${fill}"`)}
     <g clip-path="url(#${clipId})">${shading}</g>`;
+  return part === "line" ? ln : part === "fill" ? fl : ln + fl;
 }
 
-// Feet get a border that is lighter on the side facing the light and darker on the far side.
+// Feet (and the brown paws) get a border that is lighter on the side facing the light.
 // The gradient runs in the foot's own rotated space, so the light direction is rotated into it.
 const foot = (cx, cy, rx, ry, deg, id, seed, light = [130, 186]) => {
   const a = -deg * Math.PI / 180, R = Math.max(rx, ry);
@@ -152,27 +138,34 @@ const EYE_L = { x: 91.5, y: 124, side: -1, seed: 11, rot: 5 };
 const EYE_R = { x: 150.5, y: 119, side: 1, seed: 11 };
 const EYE_RX = 15.5, EYE_RY = 16.5;
 
+// Same order as the sticker sheet (three rows of six)
+const MOODS = ["curious", "happy", "excited", "shy", "proud", "love",
+  "surprised", "confused", "sad", "hurt", "sleepy", "flop",
+  "fed", "thinking", "peek", "chase", "starry", "determined"];
+const LABELS = {
+  curious: "curious", happy: "happy", excited: "excited", shy: "shy", proud: "proud", love: "love",
+  surprised: "surprised", confused: "confused", sad: "sad", hurt: "hurt", sleepy: "sleepy", flop: "flop",
+  fed: "fed!", thinking: "thinking", peek: "peek", chase: "chasing shiny things", starry: "starry", determined: "determined",
+};
+
 let uid = 0;
-function lumi(mood = "curious") {
-  const id = "l" + uid++;
-  const droopy = mood === "sad";
-  const lit = !["sad", "fed", "flop"].includes(mood);
+function sticker(mood) {
+  const id = "s" + uid++;
   const blur = (n) => `filter="url(#${id}b${n})"`;
   const LINE = `url(#${id}line)`;
   // Blush: soft blurred pink with a crisp gradient border (lighter on top, deeper pink below)
-  const blush = (x, y, rx, ry, seed, rot = 0) => {
+  const blush = (x, y, rx = 11, ry = 8.5, seed = 21, rot = 0) => {
     const d = blob(x, y, rx, ry, seed, .07, rot);
     return `<path d="${d}" fill="${C.blush}" opacity=".9" ${blur(1)}/>
       <path d="${d}" fill="none" stroke="url(#${id}blushLine)" stroke-width="1.5" opacity=".9"/>`;
   };
 
-  // ---------- Wings: each one grows from a root at the centre of the back ----------
-  // Upper (peach) wings: rounded ovals slanting down and outward; their inner ends tuck behind the head
+  // ---------- Wings (the v4 pair, each swinging from its root on the back) ----------
   const upL = blob(57, 137, 58, 44, 31, .02, -28, 10);
   const upR = blob(184, 133, 56, 43, 33, .02, 28, 10);
   const loL = "M120 172 C100 168 78 172 60 178 C40 184 30 200 34 214 C38 230 58 236 74 228 C92 218 108 194 120 172 Z";
   const loR = "M120 170 C140 166 160 168 178 174 C198 180 208 194 204 208 C200 224 182 230 168 222 C150 212 132 192 120 170 Z";
-  const wingsL = `<g class="wl">
+  const wingL = `<g class="wl">
     <path d="${upL}" fill="url(#${id}peachL)"/>
     <path d="${upL}" fill="url(#${id}wingBlush)"/>
     <path d="M58 139.5 Q21 143.5 6 150" transform="rotate(-11 27 144)" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
@@ -182,7 +175,7 @@ function lumi(mood = "curious") {
     <path d="${loL}" fill="url(#${id}lilacL)"/>
     <path d="M70 203.5 Q47 206.5 36 211.5" transform="rotate(-11 50 207)" fill="none" stroke="url(#${id}veinL)" stroke-width="1.8" stroke-linecap="round"/>
     <path d="${blob(50, 207, 6.6, 6.2, 9, .07)}" fill="#fff"/></g>`;
-  const wingsR = `<g class="wr">
+  const wingR = `<g class="wr">
     <path d="${upR}" fill="url(#${id}peachR)"/>
     <path d="${upR}" fill="url(#${id}wingBlush)"/>
     <path d="M182 135 Q219 138 233 145" transform="rotate(11 213 139)" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
@@ -192,15 +185,19 @@ function lumi(mood = "curious") {
     <path d="${loR}" fill="url(#${id}lilacR)"/>
     <path d="M168 196 Q191.5 199.75 201 204.5" transform="rotate(11 188 200)" fill="none" stroke="url(#${id}veinR)" stroke-width="1.8" stroke-linecap="round"/>
     <path d="${blob(188, 200, 6.2, 5.8, 13, .07)}" fill="#fff"/></g>`;
+  // Free-standing wings for the poses that are not sitting upright (same fills as the v4 pair)
+  const peachWing = (cx, cy, rx, ry, rot, seed, spot, side = "L") => {
+    const d = blob(cx, cy, rx, ry, seed, .02, rot, 10);
+    return `<path d="${d}" fill="url(#${id}peach${side})"/><path d="${d}" fill="url(#${id}wingBlush)"/>
+      <path d="${blob(spot[0], spot[1], spot[2], spot[2] * .97, 2, .05)}" fill="${C.ring}"/>
+      <path d="${blob(spot[0] - .3, spot[1] + .4, spot[2] * .53, spot[2] * .5, 5, .06)}" fill="${C.spot}"/>`;
+  };
+  const lilacWing = (cx, cy, rx, ry, rot, seed, dot, side = "L") =>
+    `<path d="${blob(cx, cy, rx, ry, seed, .03, rot, 10)}" fill="url(#${id}lilac${side})"/>
+     <path d="${blob(dot[0], dot[1], dot[2], dot[2] * .94, 9, .07)}" fill="#fff"/>`;
 
   // ---------- Antennae: stalks run into the centre of each orb so they always connect ----------
-  const ant = droopy
-    ? [{ b: [101, 70], c: [83, 46.5], o: [61, 58.5], r: 14 },
-       { b: [139, 66], c: [157, 42.5], o: [179, 54.5], r: 14 }]
-    // twig: [where on the stalk, tip offset, bend offset]; the bend sits above the tip so the twig arches over and curves down
-    : [{ b: [101, 70], c: [94.5, 42.5], o: [74.5, 26.5], r: 16, twig: [.42, [-12, 3], [-5.5, -4.2]], rays: [-172, 158, -128] },
-       { b: [139, 66], c: [145.5, 40.5], o: [166.5, 21.5], r: 16, twig: [.42, [12, 2], [6.5, -4.6]], rays: [-60, -12, 32] }];
-  // `halo` adds a soft glow behind the orb (used while sleeping, when the orbs are the night lights)
+  // twig: [where on the stalk, tip offset, bend offset]; `halo` adds a soft glow behind the orb
   const drawAnt = (a, w0 = 6.4, w1 = 4.9) => {
     let twig = "";
     if (a.twig) {
@@ -214,134 +211,155 @@ function lumi(mood = "curious") {
       const r = deg * Math.PI / 180;
       return `<line class="ray" x1="${f1(ox + Math.cos(r) * (a.r + 5))}" y1="${f1(oy + Math.sin(r) * (a.r + 5))}" x2="${f1(ox + Math.cos(r) * (a.r + 10))}" y2="${f1(oy + Math.sin(r) * (a.r + 10))}" stroke="#fcd96f" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>`;
     }).join("");
-    // The stalk is drawn over the head and ends on it with a rounded root
     const [bx, by] = a.b;
-    return `${a.halo ? `<circle cx="${ox}" cy="${oy}" r="${a.r + 6}" fill="#ffe7a0" opacity=".45" ${blur(5)}/>` : ""}
+    return `<circle cx="${ox}" cy="${oy}" r="${a.r + 6}" fill="#ffe7a0" opacity="${a.halo ?? .4}" ${blur(5)}/>
       <path d="${taper(a.b, a.c, a.o, w0, w1)}" fill="${C.stalk}"/>
       <circle cx="${f1(bx)}" cy="${f1(by)}" r="${f1(w0 / 2)}" fill="${C.stalk}"/>${twig}
       <circle cx="${ox}" cy="${oy}" r="${a.r}" fill="url(#${id}orb)" stroke="url(#${id}orbRim)" stroke-width="2.7"/>
       <ellipse cx="${f1(ox - a.r * .3)}" cy="${f1(oy - a.r * .32)}" rx="${f1(a.r * .32)}" ry="${f1(a.r * .24)}" fill="#fffdf4" opacity=".85" ${blur(1)}/>
       ${rays}`;
   };
-  const antenna = ant.map(a => drawAnt(a)).join("");
+  const ants = (list, w0, w1) => list.map(a => drawAnt(a, w0, w1)).join("");
 
-  // ---------- Fluff: big oval cloud head overlapping a smaller chubby body ----------
-  // Body: pear-shaped, narrow under the head, flat-bottomed where it sits, lower-left bulge trimmed.
-  // Head: classic scalloped cloud with the chin pulled in a little; the body's top hides behind it.
-  const body = fluff(scallop(119, 196, 46, 34, 13, 7, .55, .22, .65, [152, .16, 28]), `${id}bc`, `url(#${id}furB)`, `
-    <ellipse cx="119" cy="234" rx="54" ry="8" fill="#fbebdc" opacity=".55" ${blur(5)}/>`, 5.8, LINE);
-  const head = `<g transform="rotate(${TILT} 120 123)">${fluff(scallop(120, 123, 71, 61.5, 16, 3, .55, 0, 1, [90, .07, 32]), `${id}hc`, `url(#${id}furH)`, `
-    <ellipse cx="120" cy="189" rx="72" ry="14" fill="#f6e2cc" opacity=".45" ${blur(6)}/>`, 5.8, LINE)}</g>`;
+  // ---------- Fluff: the v4 oval cloud head and pear-shaped body ----------
+  // A few tan flicks on the crown, like the stray tufts in the sticker art (skip: indexes to leave out)
+  const TUFTS = ["M88 87 q4 -2.5 8 -1.5", "M116 78 q4 -1.5 8 0", "M146 86 q3.5 -1 7 1", "M70 108 q2 -3 5 -4", "M168 104 q3 1 4.5 4"];
+  const tufts = (skip = []) => `<g fill="none" stroke="#ecc8a6" stroke-width="2.2" stroke-linecap="round" opacity=".7">
+    ${TUFTS.filter((_, i) => !skip.includes(i)).map(d => `<path d="${d}"/>`).join("")}</g>`;
+  const headShape = scallop(120, 123, 71, 61.5, 16, 3, .55, 0, 1, [90, .07, 32]);
+  const head = (t = "", sfx = "", part = "all", skip = []) => `<g transform="${t}"><g transform="rotate(${TILT} 120 123)">${fluff(headShape, `${id}hc${sfx}`, `url(#${id}furH)`, `
+    <ellipse cx="120" cy="189" rx="72" ry="14" fill="#f6e2cc" opacity=".45" ${blur(6)}/>`, 5.8, LINE, part)}${part === "line" ? "" : tufts(skip)}</g></g>`;
+  // The sticker art sits on a chunkier body than v4, so the width (and scallop count) can grow per mood
+  const body = (t = "", [rx = 46, ry = 34, n = 13, pear = .22] = [], part = "all") => `<g transform="${t}">${fluff(scallop(119, 196, rx, ry, n, 7, .55, pear, .65, [152, .16, 28]), `${id}bc`, `url(#${id}furB)`, `
+    <ellipse cx="119" cy="${196 + ry}" rx="${rx + 8}" ry="8" fill="#fbebdc" opacity=".55" ${blur(5)}/>`, 5.8, LINE, part)}</g>`;
+  // Any other cloud (lying down, flopped): same outline and fill treatment
+  const cloud = (cx, cy, rx, ry, n, seed, flat, sfx, fill = "furH", part = "all") => fluff(scallop(cx, cy, rx, ry, n, seed, .55, 0, flat), `${id}cl${sfx}`, `url(#${id}${fill})`, `
+    <ellipse cx="${cx}" cy="${cy + ry}" rx="${rx}" ry="${f1(ry * .22)}" fill="#f6e2cc" opacity=".45" ${blur(6)}/>`, 5.8, LINE, part);
+  // Head and body are one ball of fluff in the sticker art, with no line across the neck: draw every
+  // part's outline first, then every fill, so the outline only shows around the outside
+  const joined = (...parts) => parts.map(p => p("line")).join("") + parts.map(p => p("fill")).join("");
+  // Keeps only the part of what it wraps that lies over the path d: lets the head redraw its outline
+  // across a wing tucked between body and head without bringing back the neck line
+  const onlyOver = (mid, d, s) => `<mask id="${id}${mid}" maskUnits="userSpaceOnUse" x="-30" y="-10" width="300" height="300">
+    <path d="${d}" fill="#fff"/></mask><g mask="url(#${id}${mid})">${s}</g>`;
 
-  // ---------- Face parts (separate groups so moods can swap them) ----------
-  // The eye is a hair lighter at the top so the shine's dark shadow line can read against it.
-  // The brown glow behind the star has a darker band along its lower side: a dark copy sits
-  // slightly lower, and the brown sits on top of it.
-  const eyeBase = (e, s = 1, dy = 0) => {
+  // ---------- Eyes ----------
+  // The eye is a hair lighter at the top; a darker band along its lower side holds the reflection
+  const eyeBase = (e, s = 1) => {
     const rx = EYE_RX * s, ry = EYE_RY * s;
-    // `rot` turns one eye's shape (and its brown glow) a little around the eye's centre
-    return `<g transform="rotate(${e.rot || 0} ${e.x} ${e.y + dy})">
-      <path d="${blob(e.x, e.y + dy, rx, ry, e.seed, .03, TILT, 10)}" fill="url(#${id}eyeG)"/>
-      <path d="${blob(e.x + 1, e.y + dy + ry * .53, rx * .62, ry * .3, e.seed + 3, .08, TILT)}" fill="${C.eyeTintDark}"/>
-      <path d="${blob(e.x + 1, e.y + dy + ry * .45, rx * .62, ry * .3, e.seed + 3, .08, TILT)}" fill="${C.eyeTint}"/></g>`;
+    return `<g transform="rotate(${e.rot || 0} ${e.x} ${e.y})">
+      <path d="${blob(e.x, e.y, rx, ry, e.seed, .03, TILT, 10)}" fill="url(#${id}eyeG)"/>
+      <path d="${blob(e.x + 1, e.y + ry * .53, rx * .62, ry * .3, e.seed + 3, .08, TILT)}" fill="${C.eyeTintDark}"/>
+      <path d="${blob(e.x + 1, e.y + ry * .45, rx * .62, ry * .3, e.seed + 3, .08, TILT)}" fill="${C.eyeTint}"/></g>`;
   };
-  // White shine with a thin crisp shadow line on its lower-right edge (a slightly larger copy nudged
-  // down-right), a little darker than the eye around it
-  const hl = (e, s = 1, dy = 0) => {
-    const x = e.x + 3.2 * s, y = e.y + dy - 7.2 * s;
+  // White shine with a thin crisp shadow line on its lower-right edge
+  const hl = (e, s = 1, dx = 3.2, dy = -7.2) => {
+    const x = e.x + dx * s, y = e.y + dy * s;
     return `<path d="${blob(x + .5 * s, y + .6 * s, 5.8 * s, 5.5 * s, e.seed + 1, .06)}" fill="#000"/>
       <path d="${blob(x, y, 5.2 * s, 4.9 * s, e.seed + 1, .06)}" fill="#fff"/>`;
   };
-  // Eye star like the reference: a tall oval crossed by a slightly shorter one, with a small round
-  // centre that softens the inner corners; tilted a little more than the head.
-  // Border: the shapes are stroked first and filled on top, so only the outer edge shows;
-  // it runs from a deeper gold on the left to a bright cream on the right.
-  const ovalStar = (x, y, s, fill) => {
-    const shapes = (attrs) => `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(1.9 * s)}" ry="${f1(5 * s)}" ${attrs}/>
-      <ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(4.6 * s)}" ry="${f1(1.8 * s)}" ${attrs}/>
-      <circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(2.1 * s)}" ${attrs}/>`;
-    return `<g transform="rotate(${TILT - 3} ${f1(x)} ${f1(y)})">
-      ${shapes(`fill="url(#${id}starLine)" stroke="url(#${id}starLine)" stroke-width="${f1(1.3 * s)}"`)}
-      ${shapes(`fill="${fill}"`)}</g>`;
+  const openEye = (e, s = 1) => `<g class="pupil"><g class="blink">${eyeBase(e, s)}${hl(e, s, e.hx, e.hy)}</g></g>`;
+  // Closed eyes: ^ (happy) or ‿ (content / asleep), thick near-black strokes with round ends
+  const closedEye = (x, y, w, up, rot = 0, sw = 4.4) => {
+    const d = up ? `M${x - w} ${y + 4} Q${x} ${y - 10} ${x + w} ${y + 4}` : `M${x - w} ${y - 3} Q${x} ${y + 8} ${x + w} ${y - 3}`;
+    return `<path d="${d}" fill="none" stroke="${C.lid}" stroke-width="${sw}" stroke-linecap="round" transform="rotate(${rot} ${x} ${y})"/>`;
   };
-  const sparkleAt = (e) => ovalStar(e.x + (e.side < 0 ? -5 : 6.5), e.y + (e.side < 0 ? 7.5 : 6.5), .78, C.sparkle);
-  const openEye = (e) => `<g class="pupil"><g class="blink">${eyeBase(e)}${hl(e)}${sparkleAt(e)}</g></g>`;
-  const arc = (e, up) => {
-    const a = up ? `M${e.x - 12} ${e.y + 4} Q${e.x} ${e.y - 11} ${e.x + 12} ${e.y + 4}` : `M${e.x - 12} ${e.y - 1} Q${e.x} ${e.y + 10} ${e.x + 12} ${e.y - 1}`;
-    return `<path d="${a}" fill="none" stroke="${C.nose}" stroke-width="${up ? 4 : 3.6}" stroke-linecap="round" transform="rotate(${TILT + (e.rot || 0)} ${e.x} ${e.y})"/>`;
+  // Worried eye: the top is cut by a line that rises toward the nose. A dark lid runs the whole
+  // length of the cut, a little past the outer edge, and hooks upward past the inner corner;
+  // a blue tear pools at the outer bottom edge
+  const tear = (x, y, rx = 7.5, ry = 6.2, rot = 0, op = 1) => `<g transform="rotate(${rot} ${x} ${y})" opacity="${op}">
+    <path d="${blob(x, y, rx, ry, 17, .06)}" fill="url(#${id}tear)" stroke="#86aef0" stroke-width="1.2"/>
+    <ellipse cx="${f1(x - rx * .3)}" cy="${f1(y - ry * .3)}" rx="${f1(rx * .32)}" ry="${f1(ry * .24)}" fill="#fff" opacity=".85"/></g>`;
+  // An eye with its top cut off by a straight line from a point on the inner edge (inDeg above
+  // the middle) to one on the outer edge (outDeg): inner high reads worried, inner low reads fierce
+  // bow lifts the middle of the cut into a gentle arch. Returns the cut's ends, its curve's control
+  // point and unit vectors along it and up from it, for drawing a lid on top
+  const cutEye = (e, s, inDeg, outDeg, tag, bow = 0) => {
+    const rx = EYE_RX * s, ry = EYE_RY * s, k = e.side, ti = inDeg * Math.PI / 180, to = outDeg * Math.PI / 180;
+    const pin = [e.x - k * rx * Math.cos(ti), e.y - ry * Math.sin(ti)];
+    const pout = [e.x + k * rx * Math.cos(to), e.y - ry * Math.sin(to)];
+    const d = [pout[0] - pin[0], pout[1] - pin[1]], len = Math.hypot(d[0], d[1]);
+    const u = [d[0] / len, d[1] / len], up = u[0] > 0 ? [u[1], -u[0]] : [-u[1], u[0]];
+    const c = [(pin[0] + pout[0]) / 2 + up[0] * bow * 2, (pin[1] + pout[1]) / 2 + up[1] * bow * 2];
+    const a = [pin[0] - d[0], pin[1] - d[1]], b = [pout[0] + d[0], pout[1] + d[1]];
+    const cid = `${id}${tag}${k < 0 ? "L" : "R"}`;
+    return [pin, `<clipPath id="${cid}"><path d="M${f1(a[0])} ${f1(a[1])} L${f1(pin[0])} ${f1(pin[1])} Q${f1(c[0])} ${f1(c[1])} ${f1(pout[0])} ${f1(pout[1])} L${f1(b[0])} ${f1(b[1])} L${f1(b[0])} ${f1(e.y + ry * 2)} L${f1(a[0])} ${f1(e.y + ry * 2)} Z"/></clipPath>
+      <g clip-path="url(#${cid})">${eyeBase(e, s)}</g>`, pout, c, u, up];
   };
-  // Starry eyes (sticker sheet "starry"): glossy black inside a thin white rim, a big gold sparkle a
-  // little toward the nose, a small one low on the outer side, a white glint above and two faint specks
-  const starEye = (e) => {
-    const s = e.side, x = e.x, y = e.y;
-    return `<g transform="rotate(${e.rot || 0} ${x} ${y})">
-      <path d="${blob(x, y, EYE_RX + 1.5, EYE_RY + 1.5, e.seed, .03, TILT, 10)}" fill="#fff"/>
-      <path d="${blob(x, y, EYE_RX, EYE_RY, e.seed, .03, TILT, 10)}" fill="url(#${id}eyeG)"/>
-      <circle cx="${f1(x - s * 1.5)}" cy="${f1(y + 11.5)}" r="2.3" fill="#3b2e3e" opacity=".85"/>
-      <circle cx="${f1(x - s * 7.5)}" cy="${f1(y + 7)}" r="1.1" fill="#5b4b57"/>
-      <circle cx="${f1(x + s * 6)}" cy="${f1(y - 9.5)}" r=".9" fill="#5b4b57"/>
-      <g transform="rotate(${TILT} ${x} ${y})">
-        ${sparkle(x - s * 2.1, y - 1, 8.4, 9.6, "#fcde88")}
-        ${sparkle(x + s * 7.6, y + 7.2, 3.5, 3.9, "#f9d48c")}</g>
-      <path d="${blob(x - s * 7.7, y - 8.7, 2.6, 2.4, e.seed + 2, .08)}" fill="#fff"/></g>`;
+  const worriedEye = (e, s = 1, outDeg = 10, tearOp = 1) => {
+    const k = e.side, [pin, eye, pout, c] = cutEye(e, s, 52, outDeg, "we", 2.6 * s);
+    // Piece [t0, t1] of the cut's curve (t past 1 runs on beyond the outer edge), as a quadratic
+    const at = (t) => [0, 1].map(i => (1 - t) * (1 - t) * pin[i] + 2 * (1 - t) * t * c[i] + t * t * pout[i]);
+    const piece = (t0, t1) => {
+      const p0 = at(t0), dt = (t1 - t0) / 2;
+      return [p0, [0, 1].map(i => p0[i] + dt * (2 * (1 - t0) * (c[i] - pin[i]) + 2 * t0 * (pout[i] - c[i]))), at(t1)];
+    };
+    // The lid follows the arched cut, thickest in the middle; at the inner corner it turns up in a short hook
+    const back = [pin[0] - (c[0] - pin[0]) * .2, pin[1] - (c[1] - pin[1]) * .2];
+    const tip = [back[0] - k * .6 * s, back[1] - 3.4 * s];
+    return `${eye}
+      <path d="${taper(...piece(0, .5), 2.8 * s, 3.8 * s)} ${taper(...piece(.5, 1.06), 3.8 * s, 1.3 * s)}" fill="${C.eye}"/>
+      <circle cx="${f1(pin[0])}" cy="${f1(pin[1])}" r="${f1(1.4 * s)}" fill="${C.eye}"/>
+      <path d="${taper(pin, back, tip, 2.8 * s, 1.2 * s)}" fill="${C.eye}"/>
+      <circle cx="${f1(e.x - k * 3.5 * s)}" cy="${f1(e.y - 3 * s)}" r="${f1(4.6 * s)}" fill="#fff"/>
+      ${tear(e.x + k * 8.5 * s, e.y + 11 * s, 7.6 * s, 6.2 * s, k * -12, tearOp)}`;
   };
-  const sadEye = (e) => `<g class="pupil">${eyeBase(e, .92, 2)}${hl(e, .92, 2)}</g>`;
+  // Determined: the cut drops toward the nose like a lowered brow, with a dark lid along it that pokes
+  // a little past the eye at the outer end and only just at the inner one; the shine sits on the inner side
+  const fierceEye = (e, s = 1, inDeg = 18, outDeg = 60) => {
+    const [pin, eye, pout, , u] = cutEye(e, s, inDeg, outDeg, "fe"), extIn = .6 * s, extOut = 2.2 * s;
+    const a = [pin[0] - u[0] * extIn, pin[1] - u[1] * extIn], b = [pout[0] + u[0] * extOut, pout[1] + u[1] * extOut];
+    return `${eye}
+      <path d="M${f1(a[0])} ${f1(a[1])} L${f1(b[0])} ${f1(b[1])}" stroke="${C.eye}" stroke-width="${f1(3.8 * s)}" stroke-linecap="round"/>
+      <circle cx="${f1(e.x - e.side * 5.5 * s)}" cy="${f1(e.y - 1 * s)}" r="${f1(4.2 * s)}" fill="#fff"/>`;
+  };
+  // Starry: a big gold sparkle, a small one toward the outer edge and a white glint toward the nose
+  const starEye = (e, s = 1, spin = 0) => {
+    const k = e.side, gold = "#f8d779";
+    const big = [e.x - k * 1 * s, e.y - 2 * s], small = [e.x + k * 7.5 * s, e.y + 8 * s];
+    const turn = (p) => `transform="rotate(${spin} ${f1(p[0])} ${f1(p[1])})"`;
+    return `${eyeBase(e, s)}
+      ${star4(big[0], big[1], 8.6 * s, gold, `stroke="${gold}" stroke-width="${f1(1.4 * s)}" stroke-linejoin="round" ${turn(big)}`)}
+      ${star4(small[0], small[1], 3.8 * s, gold, turn(small))}
+      <circle cx="${f1(e.x - k * 9 * s)}" cy="${f1(e.y - 9 * s)}" r="${f1(2.2 * s)}" fill="#fff"/>`;
+  };
+  const xEye = (x, y, r = 8) => `<path d="M${x - r} ${y - r} L${x + r} ${y + r} M${x + r} ${y - r} L${x - r} ${y + r}" stroke="${C.lid}" stroke-width="5.4" stroke-linecap="round"/>`;
 
-  const eyes = {
-    curious: openEye(EYE_L) + openEye(EYE_R),
-    happy: arc(EYE_L, true) + arc(EYE_R, true),
-    wink: openEye(EYE_L) + arc(EYE_R, true),
-    starry: starEye(EYE_L) + starEye(EYE_R),
-    fed: arc(EYE_L, true) + arc(EYE_R, true),
-    sad: sadEye(EYE_L) + sadEye(EYE_R),
-  }[mood] || "";
-  // Two soft fur marks above the eyes, like little brows
-  const furBrows = mood === "sad" ? "" : `<g fill="none" stroke="${C.flick}" stroke-width="2.2" stroke-linecap="round" opacity=".9">
-    <path d="M84 103 q6 -4 13 -3.5"/><path d="M141 98 q7 -3.5 13 -2" transform="rotate(-4 147.5 96.5)"/></g>`;
-  const brows = mood === "sad"
-    ? `<path d="M81 105 Q89 99 100 99 M161 99 Q152 94 141 96" fill="none" stroke="${C.nose}" stroke-width="2.6" stroke-linecap="round"/>` : "";
-  const tears = mood === "sad"
-    ? `<path d="M82 142 Q78 150 82 154 Q86 150 82 142 Z M160 137 Q156 145 160 149 Q164 145 160 137 Z" fill="${C.tear}"/>` : "";
-  // Mouths are drawn around (120,144) and moved under the nose, following the head tilt
-  const mouthShape = {
-    curious: `<path d="M114.6 144.2 Q120.2 149.8 125.9 144.7" fill="none" stroke="${C.mouth}" stroke-width="2.5" stroke-linecap="round"/>`,
-    happy: `<path d="M113.5 143 Q120 154 126.5 143 Z" fill="#8a3a4c"/><ellipse cx="120" cy="149.3" rx="3.3" ry="1.8" fill="#ff8fab"/>`,
-    wink: `<path d="M114 143 Q120 152 126 143 Z" fill="#8a3a4c"/>`,
-    // a small round "oh!" with a pink tongue at the bottom (no nose, like the sticker)
-    starry: `<path d="M120 141.2 C123.6 141.2 125.9 145 125.9 147.6 C125.9 150.6 123.3 152 120 152 C116.7 152 114.1 150.6 114.1 147.6 C114.1 145 116.4 141.2 120 141.2 Z" fill="#76222d"/>
-      <path d="M116 148.4 Q120 145 124 148.4 Q123.6 150.9 120 151 Q116.4 150.9 116 148.4 Z" fill="#d47083"/>`,
-    fed: `<path d="M113.5 143 Q120 154 126.5 143 Z" fill="#8a3a4c"/><circle cx="130" cy="151" r="1.8" fill="#c98b4e"/>`,
-    sad: `<path d="M115.5 148 Q120 143.5 124.5 148" fill="none" stroke="${C.mouth}" stroke-width="2.2" stroke-linecap="round"/>`,
-  }[mood] || "";
-  const shiny = mood === "starry";
-  const face = `
-    ${furBrows}
-    <g class="blush" data-part="blush">
-      ${shiny ? blush(77, 145, 12.6, 10.6, 21, -13) + blush(166, 139, 12.6, 10.6, 23, 10)
-        : blush(79, 143, 11, 8.5, 21, -13) + blush(164, 137, 11, 8.5, 23, 10)}</g>
-    <g class="eyes" data-part="eyes">${eyes}</g>
-    <g class="brows" data-part="brows">${brows}</g>
-    <g class="tears" data-part="tears">${tears}</g>
-    <g class="nose" data-part="nose">${shiny ? "" : `<path d="${blob(121.3, 129.5, 2.5, 1.9, 6, .1, TILT)}" fill="${C.nose}"/>`}</g>
-    <g class="mouth" data-part="mouth"><g transform="translate(1.6 -9.5) rotate(${TILT} 120 146)">${mouthShape}</g></g>`;
+  // ---------- Mouths and nose ----------
+  const wMouth = (x, y, w, rot = 0) => `<path d="M${x - w} ${y - 2.2} Q${x - w * .5} ${y + 3.6} ${x} ${y - .6} Q${x + w * .5} ${y + 3.6} ${x + w} ${y - 2.2}" fill="none" stroke="${C.lip}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" transform="rotate(${rot} ${x} ${y})"/>`;
+  const frown = (x, y, w, rot = 0) => `<path d="M${x - w} ${y + 2.4} Q${x} ${y - 4.4} ${x + w} ${y + 2.4}" fill="none" stroke="${C.lip}" stroke-width="2.6" stroke-linecap="round" transform="rotate(${rot} ${x} ${y})"/>`;
+  const nose = (x, y, fill = C.nose) => `<path d="${blob(x, y, 2.4, 1.8, 6, .1, TILT)}" fill="${fill}"/>`;
+  const oMouth = (x, y, rx = 4, ry = 5.5) => `<path d="${blob(x, y, rx, ry, 3, .06)}" fill="#8a3a4c"/>
+    <ellipse cx="${x}" cy="${f1(y + ry * .45)}" rx="${f1(rx * .62)}" ry="${f1(ry * .34)}" fill="#ff8fab"/>`;
+  const laugh = (x, y, w, rot = 0) => `<g transform="rotate(${rot} ${x} ${y})">
+    <path d="M${x - w} ${y - 1} Q${x} ${y - 2.5} ${x + w} ${y - 1} Q${f1(x + w * .75)} ${f1(y + w * 1.15)} ${x} ${f1(y + w * 1.1)} Q${f1(x - w * .75)} ${f1(y + w * 1.15)} ${x - w} ${y - 1} Z" fill="#8a3a4c" stroke="#8a3a4c" stroke-width="1.2" stroke-linejoin="round"/>
+    <ellipse cx="${x}" cy="${f1(y + w * .74)}" rx="${f1(w * .5)}" ry="${f1(w * .3)}" fill="#ff8fab"/></g>`;
+  const smile = (x, y, w, rot = 0) => `<path d="M${x - w} ${y - 1.5} Q${x} ${y + 5.5} ${x + w} ${y - 2.5}" fill="none" stroke="${C.lip}" stroke-width="2.6" stroke-linecap="round" transform="rotate(${rot} ${x} ${y})"/>`;
 
-  // ---------- Lantern / cookie (lower-right front) + small fluffy paws ----------
-  // Lantern: a rounded square of glowing glass with a brown border, an arched handle on top,
-  // and a separate shorter line underneath for the base with a crisp darker shadow below it; tilted a little
-  const lantern = `<g transform="rotate(-6 120 199)">
-    <path d="M112 183.5 C110.5 166 129.5 166 128 183.5" fill="none" stroke="${C.frame}" stroke-width="3.6" stroke-linecap="round"/>
+  // ---------- Props: lantern (v4), cookie, fur paws, brown paws ----------
+  const lanternArt = (lit, handle = true) => `
+    ${handle ? `<path d="M112 183.5 C110.5 166 129.5 166 128 183.5" fill="none" stroke="${C.frame}" stroke-width="3.6" stroke-linecap="round"/>`
+      : `<path d="M109 184 L109 180.5 Q109 177.5 112 177.5 L128 177.5 Q131 177.5 131 180.5 L131 184 Z" fill="${C.frame}"/>
+         <circle cx="111.5" cy="176.5" r="2.6" fill="${C.frame}"/><circle cx="128.5" cy="176.5" r="2.6" fill="${C.frame}"/>`}
     <rect x="105" y="183" width="30" height="30" rx="7" fill="url(#${id}${lit ? "glass" : "glassOff"})" stroke="url(#${id}frameG)" stroke-width="3.4"/>
     ${star5(120, 198, 7.2, 3.2, lit ? "#ffffff" : "#f6efe0")}
     <path d="M109.5 216.8 Q120 219.6 130.5 216.8" fill="none" stroke="#45301e" stroke-width="3.4" stroke-linecap="round"/>
-    <path d="M109.5 215.9 L130.5 215.9" stroke="${C.frame}" stroke-width="3.4" stroke-linecap="round"/></g>`;
-  const cookie = `
-    <path d="${blob(120, 198, 15, 14.5, 13, .05)}" fill="#d9a066" stroke="#c08a55" stroke-width="2"/>
-    <path d="M130 187 Q137 192 135 200 Q129 196 130 187 Z" fill="#fef7ed"/>
-    <circle cx="114" cy="193" r="2.6" fill="${C.nose}"/><circle cx="124" cy="196" r="2.6" fill="${C.nose}"/><circle cx="117" cy="204" r="2.6" fill="${C.nose}"/>`;
-  // Small round paws (almost circles, never exact) holding the lantern's upper sides
-  // The paw border turns warm gold on the side touching the lantern, as if lit by it
-  // (`light` = where the lantern is; null gives a plain fur line)
-  const paw = (x, y, deg, seed, rx = 8.5, ry = 7.6, light = [130, 191], stroke = 5.8) => {
+    <path d="M109.5 215.9 L130.5 215.9" stroke="${C.frame}" stroke-width="3.4" stroke-linecap="round"/>`;
+  // (x, y) is the centre of the glass
+  const lantern = (x, y, s, rot = 0, lit = true, handle = true) => `
+    ${lit ? `<path d="${blob(x, y - 3 * s, 27 * s, 25 * s, 14, .05)}" fill="#ffe8a0" opacity=".55" ${blur(7)}/>` : ""}
+    <g transform="translate(${x} ${y}) rotate(${rot}) scale(${s}) translate(-120 -198)">${lanternArt(lit, handle)}</g>`;
+  // Cookie: round, a little wider than tall, with one bite out of the top
+  const cookie = (x, y, rx, ry) => {
+    const P = (u, v) => `${f1(x + u * rx)} ${f1(y + v * ry)}`;
+    const d = `M${P(.3, -.86)} C${P(.75, -1.08)} ${P(1.02, -.6)} ${P(.99, -.05)} C${P(.96, .6)} ${P(.5, .99)} ${P(0, .97)} C${P(-.5, .99)} ${P(-.96, .6)} ${P(-.99, -.05)} C${P(-1.02, -.6)} ${P(-.75, -1.08)} ${P(-.3, -.86)} A${f1(rx * .32)} ${f1(ry * .36)} 0 0 0 ${P(.3, -.86)} Z`;
+    const chips = [[-.5, -.3], [.42, -.42], [-.08, .1], [.52, .22], [-.55, .42], [.12, .58], [-.2, -.55]]
+      .map(([u, v], i) => `<path d="${blob(x + u * rx, y + v * ry, 2.6, 2.3, 30 + i, .15)}" fill="#6a3f2a"/>`).join("");
+    return `<path d="${d}" fill="url(#${id}cookie)" stroke="#a96f40" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M${P(-.78, -.25)} Q${P(-.7, -.72)} ${P(-.38, -.8)}" fill="none" stroke="#ecc08a" stroke-width="2" stroke-linecap="round" opacity=".8"/>${chips}`;
+  };
+  // Small round fur paws; the border turns warm gold on the side facing `light` (a lit lantern)
+  const paw = (x, y, deg, seed, rx = 8.5, ry = 7.6, light = null) => {
     let grad = "", line = LINE;
     if (light) {
       let dx = light[0] - x, dy = light[1] - y;
@@ -354,152 +372,414 @@ function lumi(mood = "curious") {
     }
     return `${grad}
       ${fluff((a) => `<path d="${blob(x, y, rx, ry, seed, .04, deg)}" ${a}/>`,
-        `${id}paw${seed}`, C.fur, `<ellipse cx="${x}" cy="${f1(y + ry * .76)}" rx="${f1(rx * .94)}" ry="${f1(ry * .45)}" fill="#f6e4d2" opacity=".7" ${blur(1)}/>`, stroke, line)}`;
+        `${id}paw${seed}`, C.fur, `<ellipse cx="${x}" cy="${f1(y + ry * .76)}" rx="${f1(rx * .94)}" ry="${f1(ry * .45)}" fill="#f6e4d2" opacity=".7" ${blur(1)}/>`, 4.6, line)}`;
   };
-  // Shiny: no lantern, both paws held up together under the chin (sticker sheet "starry").
-  // Like the sticker, each paw is a faint arc over its top that firms up down its inner side. Behind
-  // them, a soft-edged patch repaints the head and body fur without the chin line, so the paws melt
-  // into the fluff and the chin line fades out under them.
-  const chest = "M86 192 L86.4 172 C86.6 160 94 155 102.4 155.2 C110 155.4 113.6 160 113.6 163 L134.6 160 C135.5 154 140 150.2 147.5 150.1 C153 150 159.5 153 161.5 160 C163 167 162 175 157 183 L152 193 L90 194 Z";
-  const raised = `
-    <mask id="${id}rpm" maskUnits="userSpaceOnUse" x="60" y="130" width="130" height="80"><path d="${chest}" fill="#fff" ${blur(2)}/></mask>
-    <g mask="url(#${id}rpm)">
-      <path d="${chest}" fill="url(#${id}furB)"/>
-      <g transform="rotate(${TILT} 120 123)" clip-path="url(#${id}hc)">
-        <rect x="60" y="130" width="130" height="70" fill="url(#${id}furH)"/>
-        <ellipse cx="120" cy="189" rx="72" ry="14" fill="#f6e2cc" opacity=".45" ${blur(6)}/></g>
-      <ellipse cx="124" cy="179" rx="12" ry="10" fill="#f6e2cc" opacity=".45" ${blur(5)}/></g>
-    <linearGradient id="${id}pawArc" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f9e4d0"/><stop offset=".4" stop-color="#f0c6a4"/><stop offset="1" stop-color="#e9b892"/></linearGradient>
-    <g fill="none" stroke="url(#${id}pawArc)" stroke-width="2.9" stroke-linecap="round">
-      <path d="M88.6 161 C91 156.6 96 155.2 102.4 155.4 C110 155.6 113.6 160 113.4 167 C113.2 174 111 181 106.5 186"/>
-      <path d="M158.8 156 C156 151.6 151.5 150.2 147.5 150.3 C140 150.5 135 155 134.4 163 C133.9 170 137 177 142 182.5"/></g>`;
-  const holding = shiny ? raised : `
-    ${lit ? `<path d="${blob(130, 187, 32, 30, 14, .05)}" fill="#ffe8a0" opacity=".55" ${blur(7)}/>` : ""}
-    <g transform="translate(130 154) scale(1.24) translate(-120 -169)">${mood === "fed" ? cookie : lantern}</g>
-    ${paw(111, 183, -20, 41)}${paw(149, 180, 20, 47)}`;
-
-  // ---------- Background decor + mood extras ----------
-  const decor = `<g class="decor" opacity=".85">
-    ${star4(22, 44, 5, C.gold)}${star4(222, 62, 4, C.gold)}${star4(228, 200, 5, C.gold)}${star4(12, 214, 4, C.gold)}
-    <circle cx="44" cy="70" r="1.6" fill="${C.gold}"/><circle cx="214" cy="226" r="1.5" fill="${C.gold}"/><circle cx="30" cy="236" r="1.4" fill="${C.gold}"/>
-    ${heart(200, 66, .8, `fill="none" stroke="${C.heart}" stroke-width="2"`, 14)}
-    ${heart(222, 240, .6, `fill="none" stroke="${C.heart}" stroke-width="2.2"`, -12)}</g>`;
-  const extras = {
-    starry: sparkle(28, 62, 7, 9.5, C.gold) + sparkle(222, 84, 6.2, 8, C.gold) + star4(232, 176, 5, C.gold),
-    happy: heart(206, 46, 1, `fill="${C.heart}"`, 12),
-    fed: heart(206, 46, 1, `fill="${C.heart}"`, 12),
-    // three soft lilac z's drifting up and to the right, growing as they go
-    sleepy: `<g class="zz" font-family="Fredoka, sans-serif" font-weight="600" fill="#bba7ea">
-      <text x="162" y="102" font-size="15" transform="rotate(-8 167 97)">z</text>
-      <text x="179" y="86" font-size="19" transform="rotate(-8 185 80)">Z</text>
-      <text x="199" y="68" font-size="23" transform="rotate(-8 206 61)">Z</text></g>`,
-  }[mood] || "";
-  const sleepDecor = `<g class="decor" opacity=".85">
-    ${star4(20, 88, 6, C.gold)}<circle cx="40" cy="64" r="1.6" fill="${C.gold}"/><circle cx="12" cy="120" r="1.4" fill="${C.gold}"/></g>`;
-
-  // Soft ground shadow just under the feet; it stays put while Lumi bobs
-  const ground = `<ellipse cx="119" cy="240" rx="80" ry="6.6" fill="${C.shadow}" ${blur(2)}/>`;
-  const sitting = `
-    ${wingsL}${wingsR}
-    ${body}
-    ${head}
-    ${antenna}
-    ${face}
-    ${foot(82, 223, 6.7, 10.3, -44, id, 2)}
-    ${foot(157, 222, 7, 10.8, 44, id, 5)}
-    ${holding}`;
-
-  // ---------- Flop: belly down, feet in the air, X eyes ----------
-  const flop = `
-    <ellipse cx="120" cy="241" rx="90" ry="6.4" fill="${C.shadow}" ${blur(2)}/>
-    <path d="${blob(150, 172, 46, 40, 4, .03, -12)}" fill="url(#${id}peachL)"/>
-    <path d="${blob(176, 160, 11, 10.4, 2, .05)}" fill="${C.ring}"/><path d="${blob(176.4, 160.4, 6, 5.6, 5, .06)}" fill="${C.spot}"/>
-    <path d="${blob(80, 196, 36, 24, 6, .04, -8)}" fill="url(#${id}lilacL)"/>
-    <path d="${blob(64, 194, 6.5, 6, 9, .07)}" fill="#fff"/>
-    ${foot(44, 196, 6.5, 10, -58, id, 2, [90, 130])}
-    ${foot(62, 184, 6.5, 10, -28, id, 5, [90, 130])}
-    ${fluff(scallop(96, 216, 37, 14, 9, 11, .55), `${id}fb`, `url(#${id}furB)`, "", 5, LINE)}
-    ${fluff(scallop(152, 198, 39, 31, 11, 5, .55), `${id}fh`, `url(#${id}furH)`, "", 5, LINE)}
-    <path d="${taper([166, 170], [188, 158], [204, 175], 6, 4.7)}" fill="${C.stalk}"/>
-    <path d="${taper([150, 166], [158, 144], [182, 136], 6, 4.7)}" fill="${C.stalk}"/>
-    <circle cx="166" cy="170" r="3" fill="${C.stalk}"/><circle cx="150" cy="166" r="3" fill="${C.stalk}"/>
-    <circle cx="204" cy="175" r="11" fill="url(#${id}orb)" stroke="url(#${id}orbRim)" stroke-width="2.4"/><circle cx="182" cy="136" r="11" fill="url(#${id}orb)" stroke="url(#${id}orbRim)" stroke-width="2.4"/>
-    ${blush(126, 214, 8, 6, 21)}${blush(178, 214, 8, 6, 23)}
-    <path d="M131 191 L143 203 M143 191 L131 203 M161 191 L173 203 M173 191 L161 203" stroke="${C.eye}" stroke-width="4.5" stroke-linecap="round"/>
-    <path d="M146 212 L158 212" stroke="${C.mouth}" stroke-width="2" stroke-linecap="round"/>
-    <path d="M151 212 Q151 222 155 222 Q159 222 158 212 Z" fill="#ff8fab"/>
-    ${star4(116, 150, 6, C.gold)}${star4(134, 136, 4, C.gold)}${star4(100, 140, 3.5, C.gold)}`;
-
-  // ---------- Sleepy: curled up asleep, head resting on its paws, tilted onto one side (lumi.exe v7) ----------
-  // The head is the same cloud as the sitting pose, drawn in its own coordinates and then set down:
-  // shrunk a little and tilted so it rests on the paws. toW() maps head coordinates into the scene.
-  const SH = { x: 131, y: 181, rot: 22, s: .86 };
-  // One outline width for head, body and paws: the head's 5.8 after it is shrunk into the scene
-  const SW = f1(5.8 * SH.s);
-  const toW = (x, y) => {
-    const a = SH.rot * Math.PI / 180, dx = (x - 120) * SH.s, dy = (y - 123) * SH.s;
-    return [SH.x + dx * Math.cos(a) - dy * Math.sin(a), SH.y + dx * Math.sin(a) + dy * Math.cos(a)];
+  // A big glossy heart to hug (love); r is half its width
+  const bigHeart = (x, y, r, rot = 0) => {
+    const P = (u, v) => `${f1(u * r)} ${f1(v * r)}`;
+    const d = `M${P(0, -.42)} C${P(-.22, -.95)} ${P(-1.02, -.92)} ${P(-1, -.28)} C${P(-.98, .28)} ${P(-.4, .62)} ${P(0, .9)} C${P(.4, .62)} ${P(.98, .28)} ${P(1, -.28)} C${P(1.02, -.92)} ${P(.22, -.95)} ${P(0, -.42)} Z`;
+    return `<g transform="translate(${x} ${y}) rotate(${rot})"><g class="beat">
+      <path d="${d}" fill="url(#${id}heartG)" stroke="#e98aa0" stroke-width="2.2" stroke-linejoin="round"/>
+      <ellipse cx="${f1(-r * .52)}" cy="${f1(-r * .42)}" rx="${f1(r * .2)}" ry="${f1(r * .11)}" transform="rotate(-40 ${f1(-r * .52)} ${f1(-r * .42)})" fill="#fff" opacity=".75"/></g></g>`;
   };
-  // Closed eyes: thick dark crescents (‿) with rounded ends, outer ends tipped up a little
-  const sleepEye = (x, y, rot) => `<path d="M${x - 13} ${y - 2} Q${x} ${y + 12.5} ${x + 13} ${y - 2} Q${x} ${y + 4.5} ${x - 13} ${y - 2} Z" fill="${C.eye}" stroke="${C.eye}" stroke-width="2.6" stroke-linejoin="round" transform="rotate(${rot} ${x} ${y})"/>`;
-  // Blush with three tiny darker strokes
-  const hatch = (x, y) => [-4.5, 0, 4.5].map(k => `<path d="M${f1(x + k - 1.2)} ${f1(y + 2)} L${f1(x + k + 1.2)} ${f1(y - 2)}"/>`).join("");
-  const sleepHead = `<g transform="translate(${SH.x} ${SH.y}) rotate(${SH.rot}) scale(${SH.s}) translate(-120 -123)">
-    ${fluff(scallop(120, 123, 71, 61.5, 16, 3, .55, 0, 1, [90, .07, 32]), `${id}shc`, `url(#${id}furH)`, `
-      <ellipse cx="120" cy="189" rx="72" ry="14" fill="#f6e2cc" opacity=".45" ${blur(6)}/>`, 5.8, LINE)}
-    ${blush(72, 160, 12.5, 9.5, 21, -8)}${blush(168, 160, 12.5, 9.5, 23, 8)}
-    <g stroke="#f0a3b4" stroke-width="1.4" stroke-linecap="round" opacity=".7">${hatch(72, 160)}${hatch(168, 160)}</g>
-    ${sleepEye(88, 144, 7)}${sleepEye(152, 144, -7)}
-    <path d="M112.5 160.5 Q113.5 165.5 116.5 164.5 Q119 163.5 120 161 Q121 163.5 123.5 164.5 Q126.5 165.5 127.5 160.5" fill="none" stroke="${C.mouth}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></g>`;
-  // One antenna stands up with its twig, the other flops over to the right; both orbs keep glowing
-  const sleepAnt = [
-    { b: toW(101, 70), c: [133, 110], o: [138, 90], r: 14.5, twig: [.45, [-10, 3], [-5, -3.5]], rays: [-143, -117, -92], halo: 1 },
-    { b: toW(139, 66), c: [183, 121], o: [206, 141], r: 14.5, twig: [.4, [4, 8], [5, 3]], rays: [-62, -38, -14], halo: 1 },
-  ].map(a => drawAnt(a, 5.8, 4.4)).join("");
-  const sleep = `
-    <ellipse cx="125" cy="240" rx="110" ry="6.4" fill="${C.shadow}" ${blur(2)}/>
-    <path d="${blob(44, 212, 36, 34, 14, .05)}" fill="#ffe8a0" opacity=".6" ${blur(7)}/>
-    <ellipse cx="44" cy="241" rx="34" ry="5" fill="#fde7a8" opacity=".8" ${blur(2)}/>
-    <g class="breathe">
-      <path d="${blob(60, 134, 52, 42, 31, .02, -22, 10)}" fill="url(#${id}peachL)"/>
-      <path d="${blob(60, 134, 52, 42, 31, .02, -22, 10)}" fill="url(#${id}wingBlush)"/>
-      <path d="${blob(55, 123, 14, 13.6, 2, .05)}" fill="${C.ring}"/>
-      <path d="${blob(54.6, 123.6, 7.5, 7.1, 5, .06)}" fill="${C.spot}"/>
-      <path d="${blob(35, 151, 2.8, 2.5, 8, .1)}" fill="#fff" opacity=".85"/>
-      <path d="${blob(67, 197, 36, 18, 9, .03, -58)}" fill="url(#${id}lilacL)"/>
-      <path d="${blob(62, 185, 4.2, 4, 9, .07)}" fill="#fff"/>
-      <path d="${blob(203, 176, 40, 60, 33, .02, 12, 10)}" fill="url(#${id}peachR)"/>
-      <path d="${blob(203, 176, 40, 60, 33, .02, 12, 10)}" fill="url(#${id}wingBlush)"/>
-      <path d="${blob(218, 186, 13.4, 13, 3, .05)}" fill="${C.ring}"/>
-      <path d="${blob(218.4, 186.4, 7.2, 6.9, 7, .06)}" fill="${C.spot}"/>
-      <path d="${blob(221, 215, 2.6, 2.3, 4, .1)}" fill="#fff" opacity=".85"/>
-      <path d="${blob(204, 227, 16, 12, 13, .04, -10)}" fill="url(#${id}lilacR)"/>
-      ${fluff(scallop(172, 207, 29, 30, 10, 7, .55, 0, .7), `${id}sbc`, `url(#${id}furB)`, `
-        <ellipse cx="172" cy="236" rx="34" ry="8" fill="#fbebdc" opacity=".55" ${blur(5)}/>`, SW, LINE)}
-      ${sleepHead}
-      ${sleepAnt}
-      ${paw(93, 229, 6, 51, 17.5, 10.5, [44, 212], SW)}
-      ${paw(139, 231, 10, 53, 16, 10, null, SW)}
-    </g>
-    <g transform="translate(44 214) scale(1.4) translate(-120 -198) rotate(6 120 199)">${lantern}</g>`;
+  // Brown paws (the sticker art uses them for cookie-holding, clasping and reaching)
+  const bpaw = (x, y, rx, ry, deg, seed, light = [x - 20, y - 30]) => foot(x, y, rx, ry, deg, id, seed, light);
 
-  return `<svg viewBox="0 -8 240 252" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+  // ---------- Little marks around the stickers ----------
+  const strokes = (list, color, w = 2.6, cls = "") => `<g class="${cls}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round">${list.map(d => `<path d="${d}"/>`).join("")}</g>`;
+  const dash = (x, y, len, deg) => {
+    const r = deg * Math.PI / 180, dx = Math.cos(r) * len / 2, dy = Math.sin(r) * len / 2;
+    return `M${f1(x - dx)} ${f1(y - dy)} L${f1(x + dx)} ${f1(y + dy)}`;
+  };
+  // Gold sparkle with a pale centre, like the ones floating around the stickers
+  const sparkle = (x, y, s) => star4(x, y, s, C.gold) + star4(x, y, s * .42, "#fff6d8");
+  const question = (x, y, size, color) => `<g transform="rotate(10 ${x} ${y})"><text class="wobble" x="${x}" y="${f1(y + size * .36)}" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="${size}" fill="${color}">?</text></g>`;
+  const ground = (cx = 119, cy = 236, rx = 84) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="6.6" fill="${C.shadow}" ${blur(2)}/>`;
+
+  // ---------- Sitting rig: v4 parts, each with its own placement per mood ----------
+  // o = { fig, wl, wr, body, head: transforms (fig turns wings, body and head together);
+  //       ant: antennae; feet, face, hands: markup in final position; back, front: unbobbed }
+  const sit = (o) => `
+    ${o.back || ""}
+    ${o.ground ?? ground()}
+    <g class="bob"><g class="${o.cls || ""}">
+      <g transform="${o.fig || ""}">
+        <g transform="${o.wl || ""}">${wingL}</g><g transform="${o.wr || ""}">${wingR}</g>
+        ${joined(p => body(o.body, o.bodySize, p), p => head(o.head, "", p))}
+      </g>
+      ${ants(o.ant)}
+      ${o.feet}
+      ${o.face}
+      ${o.hands || ""}
+    </g></g>
+    ${o.front || ""}`;
+
+  const poses = {
+    // Wide open eyes looking off to one side, a small "o" mouth, lantern held low, a pink "?"
+    curious: () => sit({
+      wl: "translate(1 -7)", wr: "translate(-11 -8)",
+      body: "translate(-4 -4)", bodySize: [52, 34, 15, .06], head: "translate(-2 -6)",
+      ant: [
+        { b: [86, 71], c: [76, 54], o: [46, 54], r: 16, twig: [.5, [-6, 7], [-5, 2]] },
+        { b: [124, 60], c: [127, 35], o: [148, 20], r: 16, twig: [.45, [9, 1], [5, -4]] },
+      ],
+      feet: foot(93, 221, 7.5, 10.5, -70, id, 2),
+      face: `${blush(86, 151, 12.5, 9.5, 21, -10)}${blush(173, 133, 12.5, 9.5, 23, 10)}
+        ${openEye({ x: 99, y: 129, side: -1, seed: 11, rot: 5 })}${openEye({ x: 154, y: 118, side: 1, seed: 11 })}
+        ${oMouth(132, 138, 5, 6)}`,
+      hands: `${lantern(135, 202, 1.35, 0)}${paw(112, 183, -20, 41, 9.5, 8.5, [135, 200])}${paw(160, 179, 20, 47, 9.5, 8.5, [135, 200])}`,
+      back: question(201, 61, 40, "#f29aac"),
+    }),
+
+    // Eyes squeezed shut in a ^ ^ grin, mouth open in a laugh, little pink joy lines
+    happy: () => sit({
+      wl: "translate(-4 5)", wr: "translate(-7 0)",
+      body: "translate(-4 -4)", bodySize: [52, 34, 15, .06], head: "translate(-3 -4)",
+      ant: [
+        { b: [98, 61], c: [88, 39], o: [68, 28], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
+        { b: [136, 59], c: [146, 38], o: [168, 29], r: 16, twig: [.5, [10, 2], [5, -3]] },
+      ],
+      feet: foot(95, 223, 7, 10, -60, id, 2),
+      face: `${blush(73, 153, 13, 10, 21, -10)}${blush(173, 136, 13, 10, 23, 10)}
+        ${closedEye(88, 131, 14, true, -6)}${closedEye(154, 120, 14, true, -6)}
+        ${laugh(123, 140, 10, -6)}`,
+      hands: `${lantern(128, 205, 1.35, 0)}${paw(103, 188, -20, 41, 9.5, 8.5, [128, 203])}${paw(153, 184, 20, 47, 9.5, 8.5, [128, 203])}`,
+      back: strokes([dash(28, 68, 11, 58), dash(16, 84, 11, 15), dash(208, 71, 11, -58), dash(219, 85, 11, -15)], "#f28ea3", 3.6),
+    }),
+
+    // Sparkles in both eyes, mouth open, little brown fists up, bouncing
+    excited: () => sit({
+      cls: "bounce",
+      wl: "translate(4 -10)", wr: "translate(1 -9)",
+      body: "translate(5 -3)", bodySize: [55, 34, 15, .06], head: "translate(6 6)",
+      ant: [
+        { b: [104, 79], c: [93, 59], o: [66, 43], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
+        { b: [146, 74], c: [153, 53], o: [179, 36], r: 16, twig: [.5, [10, 2], [5, -3]] },
+      ],
+      feet: foot(83, 219, 9, 12, -40, id, 2) + foot(158, 223, 9, 11.5, 50, id, 5),
+      face: `${blush(94, 164, 13, 10.5, 21, -10)}${blush(189, 146, 13, 10.5, 23, 10)}
+        ${starEye({ x: 108, y: 139, side: -1, seed: 11, rot: 5 }, 1.18)}${starEye({ x: 168, y: 129, side: 1, seed: 11 }, 1.18)}
+        ${oMouth(143, 154, 7.5, 9.5)}`,
+      hands: `${bpaw(121, 196, 8, 10, 20, 7)}${bpaw(168, 191, 8, 10, -20, 8)}`,
+      back: `${sparkle(23, 59, 12)}${sparkle(216, 63, 10)}`,
+    }),
+
+    // Leaning over to hug a big glossy heart, eyes closed happily, pink hearts floating
+    love: () => sit({
+      fig: "rotate(18 120 170)",
+      wl: "translate(1 -11)", wr: "translate(-9 3)",
+      bodySize: [50, 34, 14, .06], head: "translate(-5 9)",
+      ant: [
+        { b: [133, 78], c: [131, 50], o: [109, 31], r: 16, twig: [.45, [-9, 3], [-5, -3]] },
+        { b: [176, 89], c: [189, 72], o: [222, 73], r: 16, twig: [.5, [1, 9], [3, 4]] },
+      ],
+      feet: foot(59, 214, 9.5, 12, -30, id, 2) + foot(133, 226, 8, 10, 10, id, 5),
+      face: `${blush(83, 136, 12.5, 10, 21, 10)}${blush(178, 169, 12.5, 10, 23, 25)}
+        ${closedEye(104, 129, 14, true, 18)}${closedEye(166, 149, 14, true, 18)}
+        ${smile(133, 151, 6.5, 18)}`,
+      hands: `${bigHeart(134, 204, 38, 6)}${paw(101.7, 189.4, 6, 41, 10, 9.5)}${paw(168.4, 225, 31, 47, 10, 9.5)}`,
+      back: `${heart(48, 48, 1.75, `fill="${C.heart}" opacity=".9"`, -12)}${heart(228, 116, 1.25, `fill="${C.heart}" opacity=".9"`, 12)}
+        ${strokes([dash(83, 55, 5, -40)], "#e9c3a4", 2.4)}`,
+    }),
+
+    // Eyes wide, mouth a round "o", lantern clutched in front, a pink "!!"
+    surprised: () => sit({
+      wl: "translate(2 -8)", wr: "translate(-6 -3)",
+      body: "translate(-2 -4)", bodySize: [56, 34, 15, .06], head: "translate(-2 -5)",
+      ant: [
+        { b: [103, 64], c: [99, 39], o: [75, 21], r: 16, twig: [.5, [-10, 3], [-5, -3]] },
+        { b: [149, 66], c: [158, 52], o: [188, 46], r: 16, twig: [.4, [9, 4], [5, -2]] },
+      ],
+      feet: foot(74, 218, 8.5, 11, -45, id, 2) + foot(159, 219, 8.5, 11, 45, id, 5),
+      face: `${blush(76, 141, 13, 10, 21, -8)}${blush(165, 146, 13, 10, 23, 8)}
+        ${openEye({ x: 93, y: 120, side: -1, seed: 11, rot: 5 }, 1.03)}${openEye({ x: 151, y: 121, side: 1, seed: 11 }, 1.03)}
+        ${oMouth(122, 139, 6.5, 8.5)}`,
+      hands: `${lantern(118, 207, 1.35, 0)}${paw(94, 191, -20, 41, 9.5, 8.5, [118, 205])}${paw(143, 191, 20, 47, 9.5, 8.5, [118, 205])}`,
+      back: `${strokes(["M11 39 L15.5 59", "M27 37 L29 57"], "#f28ea3", 5.5)}
+        <circle cx="17.5" cy="69" r="3.3" fill="#f28ea3"/><circle cx="30" cy="66.5" r="3.3" fill="#f28ea3"/>`,
+    }),
+
+    // Whole body tipped over to one side, one antenna curled into a question mark, a brown "?"
+    confused: () => sit({
+      fig: "rotate(-15 120 170)",
+      wl: "translate(10 -4)", wr: "translate(5 4)",
+      body: "translate(-4 0)", bodySize: [54, 34, 15, .06], head: "translate(8 3)",
+      ant: [
+        { b: [76, 86], c: [64, 66], o: [28, 73], r: 16, twig: [.55, [-1, 8], [-4, 3]] },
+        { b: [118, 68], c: [140, 28], o: [99, 23], r: 16, twig: [.18, [-8, 1], [-4, -3]] },
+      ],
+      feet: foot(101, 221, 8, 9.5, -70, id, 2) + foot(122, 223, 7.5, 9, -80, id, 5) + foot(158, 214, 8.5, 10, 60, id, 6),
+      face: `${blush(93, 168, 12.5, 10, 21, -15)}${blush(179, 129, 12.5, 10, 23, -15)}
+        ${openEye({ x: 103, y: 146, side: -1, seed: 11 }, .95)}${openEye({ x: 158, y: 121, side: 1, seed: 11 }, .95)}
+        ${frown(139, 148, 4.5, -24)}`,
+      back: question(181, 56, 40, "#5e4030"),
+    }),
+
+    // Paws pressed together under the chin, a small pout, three dots filling in
+    thinking: () => sit({
+      wl: "translate(-2 -4)", wr: "translate(-3 -9)",
+      body: "translate(4 -11)", bodySize: [52, 34, 15, .06], head: "translate(0 -8)",
+      ground: ground(124, 222, 84),
+      ant: [
+        { b: [94, 66], c: [88, 43], o: [60, 31], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
+        { b: [141, 61], c: [149, 43], o: [176, 33], r: 16, twig: [.5, [10, 2], [5, -3]] },
+      ],
+      feet: foot(99, 211, 8.5, 11, -50, id, 2) + foot(166, 209, 8.5, 11, 50, id, 5),
+      face: `${blush(98, 148, 13, 10, 21, -10)}${blush(184, 129, 13, 10, 23, 10)}
+        ${openEye({ x: 111, y: 126, side: -1, seed: 11, rot: 5 }, .94)}${openEye({ x: 168, y: 114, side: 1, seed: 11 }, .94)}
+        ${frown(144, 134, 4)}`,
+      hands: `${paw(130, 163, -8, 41, 12, 15)}${paw(157, 162, 8, 47, 12, 15)}`,
+      back: `<g class="dots" fill="#e7a2a4"><circle cx="201" cy="69" r="3.4"/><circle cx="214" cy="69" r="3.4"/><circle cx="227" cy="69" r="3.4"/></g>`,
+    }),
+
+    // Gold sparkles in both eyes, paws up at the chest, sparkles all around
+    starry: () => sit({
+      wl: "translate(-3 -21)", wr: "translate(-12 -3)",
+      body: "translate(-8 -12)", bodySize: [52, 34, 15, .06], head: "translate(-3 -4)",
+      ground: ground(112, 220, 84),
+      ant: [
+        { b: [108, 61], c: [101, 43], o: [81, 28], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
+        { b: [146, 66], c: [158, 48], o: [181, 39], r: 16, twig: [.45, [9, 4], [5, -2]] },
+      ],
+      feet: foot(76, 206, 8.5, 11, -50, id, 2) + foot(139, 209, 8.5, 11, 40, id, 5),
+      face: `${blush(66, 131, 13, 10.5, 21, -8)}${blush(157, 143, 13, 10.5, 23, 8)}
+        ${starEye({ x: 85, y: 112, side: -1, seed: 11, rot: 5 }, 1.08, 12)}${starEye({ x: 144, y: 119, side: 1, seed: 11 }, 1.08, 12)}
+        ${oMouth(112, 132, 3.4, 4.8)}`,
+      hands: `${paw(92, 159, -10, 41, 11, 12.5)}${paw(133, 163, 10, 47, 11, 12.5)}`,
+      back: `${sparkle(24, 49, 13)}${sparkle(215, 73, 11)}`,
+    }),
+
+    // Charging forward with the lantern held out in front, lowered brows, a little smirk, speed lines
+    determined: () => `
+      ${strokes(["M18 13 L66 34", "M38 38 L71 53", "M-12 149 L19 164", "M4 173 L41 188", "M-4 186 L28 199"], "#f3dcc2", 5.5)}
+      ${strokes(["M231 93 L222 100 L232 104", dash(236, 56, 7, -60), dash(243, 64, 6, -25)], "#f4c752", 2.8, "glint")}
+      <g class="lean">
+        ${peachWing(43, 103, 43, 40, -15, 31, [50, 94, 13], "L")}
+        ${peachWing(203, 150, 27, 34, 15, 33, [206, 148, 11], "R")}
+        ${lilacWing(42, 156, 22, 28, -10, 9, [41, 156, 7], "L")}
+        ${lilacWing(168, 191, 26, 18, 10, 13, [169, 193, 6], "R")}
+        ${joined(p => cloud(128, 182, 46, 26, 12, 7, .7, "b", "furB", p), p => head("translate(132 119) rotate(10) translate(-120 -123)", "", p))}
+        ${ants([
+          { b: [126, 63], c: [116, 43], o: [93, 30], r: 16, twig: [.5, [-7, 6], [-5, 1]] },
+          { b: [176, 78], c: [189, 68], o: [216, 70], r: 16, twig: [.5, [1, 9], [3, 4]] },
+        ])}
+        ${blush(94, 133, 12, 9.5, 21, 10)}${blush(183, 156, 12, 9.5, 23, 10)}
+        <g transform="rotate(18 113 128)">${fierceEye({ x: 113, y: 128, side: -1, seed: 11 }, .98)}</g>${fierceEye({ x: 174, y: 139, side: 1, seed: 11 }, .98)}
+        ${smile(143, 147, 7.5, 10)}
+        ${lantern(73, 174, 1.6, 12)}
+        ${bpaw(109, 203, 10, 12.5, -60, 7)}
+      </g>`,
+
+    // Eyes low in the face, lantern held up under the chin, three pink blush lines
+    shy: () => sit({
+      wl: "translate(5 -3)", wr: "translate(-1 8)",
+      body: "translate(2 2)", bodySize: [57, 34, 16, .06], head: "translate(1 9)",
+      ant: [
+        { b: [88, 84], c: [71, 62], o: [47, 56], r: 16, twig: [.45, [-10, 5], [-5, -1]] },
+        { b: [116, 78], c: [119, 46], o: [135, 28], r: 16, twig: [.45, [10, 1], [5, -4]] },
+      ],
+      feet: foot(77, 223, 7, 10.5, -44, id, 2) + foot(160, 220, 7, 10.8, 44, id, 5),
+      face: `${blush(73, 179, 12, 9, 21, -10)}${blush(164, 163, 12, 9, 23, 10)}
+        ${openEye({ x: 88, y: 158, side: -1, seed: 11, rot: 5 }, .98)}${openEye({ x: 144, y: 148, side: 1, seed: 11 }, .98)}
+        ${nose(116, 165, "#d7a28c")}`,
+      hands: `${lantern(121, 209, 1.25, -3)}${paw(91, 193, -20, 41, 9, 8, [121, 205])}${paw(142, 184, 20, 47, 9, 8, [121, 205])}`,
+      back: strokes([dash(178, 64, 9, -80), dash(189, 68, 9, -60), dash(199, 73, 9, -40)], "#f28ea3", 3),
+    }),
+
+    // Head tipped to the side, eyes closed in a content ‿, lantern lifted up on one side
+    proud: () => {
+      const H = "translate(-22 0) rotate(18 121 121.5)";
+      return sit({
+        wl: "translate(-2 -21)", wr: "translate(-13 6)",
+        body: "translate(-8 -4) rotate(8 119 196)", bodySize: [50, 34, 14], head: H,
+        ant: [
+          { b: [96, 66], c: [99, 36], o: [76, 24], r: 16, twig: [.5, [-10, 2], [-5, -4]] },
+          { b: [134, 73], c: [152, 56], o: [181, 44], r: 16, twig: [.4, [9, 6], [6, 0]] },
+        ],
+        feet: foot(86, 224, 7, 10.5, -12, id, 2) + foot(134, 222, 7, 10.5, 12, id, 5),
+        face: `<g transform="${H}">${blush(79, 143, 12, 9.5, 21, -13)}${blush(164, 137, 12, 9.5, 23, 10)}
+          ${closedEye(EYE_L.x, EYE_L.y, 12.5, false, TILT)}${closedEye(EYE_R.x, EYE_R.y, 12.5, false, TILT)}
+          ${wMouth(121.6, 134.5, 6.5, TILT)}</g>`,
+        hands: `${lantern(68.5, 187, 1.35, -8)}${paw(55, 162, -20, 41, 9.5, 8.5, [68, 187])}${paw(106, 174, 20, 47, 9.5, 8.5, [68, 187])}`,
+        back: `${star4(23, 53, 15, "#fff3cf", `stroke="${C.gold}" stroke-width="3" stroke-linejoin="round"`)}${star4(209, 83, 8, C.gold)}`,
+      });
+    },
+
+    // Slumped, tears welling, one antenna drooping; the lantern is set down on the ground beside it
+    sad: () => sit({
+      wl: "translate(-4 -15)", wr: "translate(-2 -10)",
+      body: "translate(-1 -6)", bodySize: [60, 33, 16, .06], head: "translate(0 2)",
+      ant: [
+        { b: [86, 77], c: [80, 46], o: [39, 59], r: 15.5, twig: [.45, [-4, 10], [-6, 4]] },
+        { b: [127, 64], c: [129, 40], o: [141, 21], r: 15.5, twig: [.45, [10, 0], [5, -5]] },
+      ],
+      feet: foot(117, 215, 8, 9.5, -20, id, 2) + foot(156, 210, 8.5, 9.5, 30, id, 5),
+      face: `${blush(76, 158, 13, 10, 21, -10)}${blush(176, 139, 13, 10, 23, 10)}
+        ${worriedEye({ x: 94, y: 141, side: -1, seed: 11, rot: 5 }, 1.08, -2)}${worriedEye({ x: 156, y: 128, side: 1, seed: 11 }, 1.08, 22)}
+        ${frown(129, 147, 6)}`,
+      front: lantern(79, 202, 1.45, -3, true, false),
+      back: `${strokes(["M190 56 q3 -7 9 -4", "M203 71 q4 -6 9 -2"], "#e9c3a4", 3)}
+        ${strokes([dash(18, 76, 6, 40), dash(14, 83, 5, 10)], "#f7d67a", 2.4, "glint")}`,
+    }),
+
+    // Both antennae arched over, worried eyes with tears, brown paws clasped at the chest
+    hurt: () => sit({
+      cls: "shiver",
+      wl: "translate(-4 4) rotate(-4 60 170)", wr: "translate(1 -13)",
+      body: "translate(-7 -7)", bodySize: [60, 34, 16, .06], head: "translate(109 118) scale(1.07) translate(-120 -123)",
+      ant: [
+        { b: [80, 67], c: [55, 27], o: [21, 94], r: 15.5, twig: [.5, [-1, 9], [-5, 3]] },
+        { b: [126, 58], c: [136, 14], o: [159, 79], r: 15.5, twig: [.5, [5, 8], [5, 2]] },
+      ],
+      feet: foot(76, 216, 8, 10.5, -35, id, 2) + foot(146, 218, 8, 10.5, 25, id, 5) + foot(183, 203, 7.5, 10, 40, id, 6),
+      face: `${blush(59, 158, 13, 10, 21, -10)}${blush(158, 151, 13, 10, 23, 10)}
+        ${worriedEye({ x: 76, y: 148, side: -1, seed: 11, rot: 5 }, 1, 2, .88)}${worriedEye({ x: 136, y: 144, side: 1, seed: 11 }, 1, 8, .88)}
+        ${frown(106, 155, 5.5)}`,
+      hands: `${strokes(["M107 195.8 Q102.5 199.5 98 200.6", "M117.5 194.6 Q123 197.6 128.5 197.6"], "#e6c4a4", 2.4)}
+        ${bpaw(105.5, 180.5, 7.4, 10.5, -12, 7)}${bpaw(114.5, 181.3, 8.6, 12.3, -6, 8)}
+        <path d="M109.5 171.5 Q104.6 177 106 183 Q106.8 186.6 108 188.5" fill="none" stroke="#3f281d" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>`,
+      back: `${strokes(["M188 60 q3 -7 9 -3", "M201 70 q4 -6 9 -2"], "#a99be6", 3)}
+        ${strokes(["M-10 190 q-4 6 0 12", "M-4 194 q-3 5 0 9", "M232 178 q4 6 0 12", "M226 182 q3 5 0 9"], "#d9bfa6", 2.4)}
+        ${strokes([dash(2, 112, 6, 30), dash(-2, 120, 5, 0)], "#f7d67a", 2.4, "glint")}`,
+    }),
+
+    // Closed happy eyes, a bitten cookie held in brown paws, hearts and crumbs
+    fed: () => sit({
+      wl: "translate(5 -11)", wr: "translate(-1 -14)",
+      body: "translate(3 -10)", bodySize: [64, 36, 18, .06], head: "translate(1 -9)",
+      ground: ground(121, 224, 86),
+      ant: [
+        { b: [93, 64], c: [76, 38], o: [59, 26], r: 16, twig: [.45, [-10, 2], [-5, -4]] },
+        { b: [138, 58], c: [147, 34], o: [169, 24], r: 16, twig: [.45, [10, 0], [5, -5]] },
+      ],
+      feet: foot(66, 208, 7, 10.5, -50, id, 2) + foot(159, 210, 7, 10.5, 45, id, 5),
+      face: `${blush(84, 146, 13, 11, 21, -10)}${blush(179, 128, 13, 11, 23, 10)}
+        ${closedEye(99, 125, 13, true, -10)}${closedEye(161, 114, 13, true, -10)}
+        ${wMouth(132, 133, 9, -8)}`,
+      hands: `${cookie(137, 168, 27, 23)}
+        <path d="${blob(173, 148, 2.4, 2, 3, .2)}" fill="#c48a50"/><path d="${blob(178, 154, 2, 1.7, 4, .2)}" fill="#c48a50"/>
+        ${bpaw(119, 193, 9, 11.5, 35, 7)}${bpaw(158, 172, 9, 12, -15, 8)}`,
+      back: `${heart(26, 62, 1.8, `fill="${C.heart}"`, -14)}${heart(208, 57, 1.15, `fill="${C.heart}"`, 14)}
+        <path d="${blob(46, 226, 3, 2.6, 5, .2)}" fill="#c48a50"/>`,
+    }),
+
+    // Curled up asleep with the lantern beside it as a night light
+    sleepy: () => `
+      <ellipse cx="118" cy="226" rx="112" ry="7" fill="${C.shadow}" ${blur(2)}/>
+      <path d="${blob(40, 188, 34, 32, 14, .05)}" fill="#ffe8a0" opacity=".55" ${blur(7)}/>
+      <g class="breathe">
+        ${peachWing(35, 123, 41, 30, -8, 31, [33, 123, 13], "L")}
+        ${lilacWing(24, 176, 30, 23, -10, 9, [16, 178, 6], "L")}
+        ${peachWing(219, 170, 18, 29, 10, 33, [212, 178, 9.5], "R")}
+        ${lilacWing(211, 203, 19, 13, 0, 13, [208, 205, 4.5], "R")}
+        ${cloud(127, 166, 73, 58, 17, 5, .62, "s")}
+        ${ants([
+          { b: [119, 126], c: [108, 103], o: [81, 101], r: 15, twig: [.45, [-2, 9], [-5, 4]], halo: .5 },
+          { b: [173, 144], c: [190, 126], o: [223, 138], r: 15, twig: [.5, [0, 9], [3, 4]], halo: .5 },
+        ], 5.8, 4.4)}
+        ${blush(76, 190, 12, 9, 21, 15)}${blush(163, 218, 11, 8, 23, 15)}
+        ${closedEye(96, 188, 12, false, 17)}${closedEye(153, 206, 12, false, 17)}
+        ${wMouth(120, 205, 6, 17)}
+        ${paw(73, 207, 10, 51, 11, 8.5, [40, 196])}
+      </g>
+      ${lantern(39, 196, 1.5, 0)}
+      <g class="zz" font-family="Fredoka, sans-serif" font-weight="600" fill="#b9a6ee">
+        <text x="154" y="98" font-size="18" transform="rotate(-6 161 91)">z</text>
+        <text x="180" y="82" font-size="22" transform="rotate(-6 189 74)">Z</text>
+        <text x="208" y="65" font-size="26" transform="rotate(-6 218 56)">Z</text></g>
+      ${strokes([dash(66, 78, 6, -60), dash(60, 84, 5, -30), dash(240, 120, 6, -120), dash(244, 128, 5, -150)], "#f7d67a", 2.4, "glint")}`,
+
+    // Belly-flop: lying flat, wings sticking up, three feet out to the left, X eyes
+    flop: () => `
+      <ellipse cx="112" cy="205" rx="118" ry="10" fill="#f6e3cc" opacity=".85" ${blur(2)}/>
+      ${peachWing(93, 87, 48, 38, -20, 4, [93, 84, 13], "L")}
+      <g transform="rotate(-90 44 126)">${lilacWing(44, 126, 46, 39, -25, 6, [31, 119, 10], "L")}</g>
+      ${joined(p => cloud(60, 179, 50, 29, 11, 11, .7, "b", "furB", p), p => cloud(142, 160, 75, 50, 16, 5, .55, "h", "furH", p))}
+      ${foot(3, 179, 8.5, 13.5, 70, id, 2, [40, 150])}
+      ${foot(31, 191, 10.5, 17, 63, id, 5, [40, 150])}
+      ${foot(83, 201, 9.5, 14.5, 75, id, 6, [40, 150])}
+      ${ants([
+        { b: [176, 136], c: [170, 112], o: [203, 114], r: 14, twig: [.45, [8, 3], [4, -3]] },
+        { b: [203, 153], c: [215, 144], o: [233, 164], r: 14, twig: [.5, [2, 9], [3, 4]] },
+      ], 5.8, 4.4)}
+      ${blush(118, 198, 13, 10, 21)}${blush(204, 191, 12, 10, 23)}
+      ${xEye(138, 181)}${xEye(184, 179)}
+      ${strokes(["M38 70 q4 -3 8 0", "M14 158 q3 3 0 6"], "#e2c4a6", 2.2)}${star4(174, 93, 5, "#ead2b6")}${star4(186, 100, 3, "#ead2b6")}`,
+
+    // Peeking out from behind a door: one eye, one antenna, a paw gripping the edge
+    peek: () => {
+      const hid = (s) => `<g clip-path="url(#${id}doorClip)">${s}</g>`;
+      return `
+      <clipPath id="${id}doorClip"><rect x="-30" y="-10" width="193" height="260"/></clipPath>
+      ${strokes([dash(44, 69, 9, 55), dash(38, 85, 9, 5)], "#f4c752", 3.2, "glint")}
+      <g class="lean">
+        ${hid(`
+          ${peachWing(71, 123, 32, 55, 0, 31, [68, 128, 13], "L")}
+          ${lilacWing(119, 186, 35, 29, -12, 9, [120, 192, 7], "L")}
+          ${foot(156, 210, 8, 10.5, 10, id, 2)}
+          ${head("translate(157 107) scale(.95 1) translate(-120 -123)")}
+          ${ants([{ b: [127, 49], c: [118, 29], o: [94, 22], r: 16, twig: [.45, [-9, 3], [-5, -3]] }])}
+          ${blush(129, 144, 12, 10, 21)}
+          ${openEye({ x: 139, y: 118, side: 1, seed: 11 }, 1.12)}`)}
+      </g>
+      <path d="M163 44 L196 44 Q216 44 216 64 L216 229 L163 229 Z" fill="url(#${id}door)" opacity=".9"/>
+      ${strokes(["M184 130 q3 4 2 9", "M194 138 q2 3 1 7"], "#ead6c0", 2.4)}
+      <path d="M163 3 L163 229" stroke="#5e4030" stroke-width="4.2" stroke-linecap="round"/>
+      <g class="lean">${paw(158, 159, 0, 53, 10.5, 10, null)}</g>`;
+    },
+
+    // Mid-hop after a glowing butterfly: three-quarter view, antennae swept back, paws reaching
+    chase: () => {
+      const H = "translate(113 108) scale(.9) translate(-120 -123)";
+      const fur = (part) => `<g transform="rotate(-25 108 170)">${fluff(scallop(108, 170, 35, 25, 10, 7, .55, .1, .8), `${id}cb`, `url(#${id}furB)`, "", 5.8, LINE, part)}</g>`;
+      return `
+      ${strokes(["M-10 110 q4 3 8 1"], "#e2c4a6", 2.2)}
+      <path d="M232 80 Q246 116 214 134 Q190 148 172 190" fill="none" stroke="#f2c14e" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"/>
+      ${star4(138, 26, 9, C.gold)}
+      <g class="fly">
+        <path d="${blob(198, 50, 11, 18, 4, .04, -18)}" class="flutter" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.6"/>
+        <path d="${blob(205, 70, 8, 8, 6, .05)}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4"/>
+        <path d="${blob(221, 40, 15, 22, 2, .04, 22)}" class="flutter" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.6"/>
+        <path d="${blob(219, 64, 9, 9, 8, .05)}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4"/>
+        <path d="M207 34 Q209 52 210 70" fill="none" stroke="#e9b53e" stroke-width="2.4" stroke-linecap="round"/>
+      </g>
+      <g class="hop">
+        ${peachWing(40, 152, 30, 44, 15, 31, [34, 148, 11], "L")}
+        ${foot(39, 204, 7.5, 11, 60, id, 2, [80, 160])}
+        ${foot(86, 203, 7.5, 11, 30, id, 5, [80, 160])}
+        ${fur("line")}${head(H, "", "line")}${fur("fill")}
+        ${lilacWing(68, 183, 36, 28, -10, 9, [66, 188, 7], "L")}
+        ${onlyOver("chm", blob(68, 183, 36, 28, 9, .03, -10, 10), head(H, "", "line"))}
+        ${head(H, "", "fill", [4])}
+        ${ants([
+          { b: [93, 55], c: [80, 32], o: [56, 31], r: 15.5, twig: [.5, [-2, 9], [-5, 4]] },
+          { b: [76, 74], c: [60, 64], o: [34, 83], r: 15.5, twig: [.5, [0, 9], [-3, 5]] },
+        ])}
+        ${blush(120, 122, 13, 10, 21)}<path d="${blob(176, 97, 4, 6, 4, .1)}" fill="${C.blush}" opacity=".9" ${blur(1)}/>
+        ${openEye({ x: 135, y: 101, side: 1, seed: 11 }, .92)}
+        <g transform="rotate(-22 171 88)"><g class="blink"><path d="${blob(171, 88, 4.2, 10, 12, .05)}" fill="url(#${id}eyeG)"/>
+          <ellipse cx="170.6" cy="84.2" rx="1.6" ry="2.9" fill="#fff"/></g></g>
+        <path d="${blob(162, 103, 4.6, 5.8, 3, .08)}" fill="#8a3a4c"/><ellipse cx="162.5" cy="106" rx="3" ry="2" fill="#ff8fab"/>
+        ${bpaw(130.5, 175, 8.6, 13, 30, 7)}
+        ${bpaw(165.6, 147.6, 7.2, 11.8, 20, 8)}${bpaw(157.6, 145, 7.2, 11.6, 13, 3)}
+      </g>
+      ${strokes([dash(14, 60, 6, -40), dash(8, 72, 5, 0), dash(28, 46, 5, -70), dash(14, 104, 5, 20)], "#f7d67a", 2.4, "glint")}`;
+    },
+  };
+
+  return `<svg viewBox="-24 -4 282 282" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lumi, ${LABELS[mood]}">
     <defs>
       <filter id="${id}b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation=".7"/></filter>
       <filter id="${id}b2" x="-20%" y="-100%" width="140%" height="300%"><feGaussianBlur stdDeviation="1.8"/></filter>
       <filter id="${id}b5" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
       <filter id="${id}b6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
       <filter id="${id}b7" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
-      <!-- lilac wing veins: white near the body fading to a deeper lilac at the tip -->
       <linearGradient id="${id}veinL" gradientUnits="userSpaceOnUse" x1="70" y1="203.5" x2="36" y2="211.5">
         <stop offset="0" stop-color="#ffffff" stop-opacity=".3"/><stop offset=".3" stop-color="#ece0f9"/><stop offset="1" stop-color="#d9c4f0"/></linearGradient>
       <linearGradient id="${id}veinR" gradientUnits="userSpaceOnUse" x1="168" y1="196" x2="201" y2="204.5">
         <stop offset="0" stop-color="#ffffff" stop-opacity=".3"/><stop offset=".3" stop-color="#ece0f9"/><stop offset="1" stop-color="#d9c4f0"/></linearGradient>
       <linearGradient id="${id}blushLine" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#fbc4ce"/><stop offset="1" stop-color="#e7809a"/></linearGradient>
-      <linearGradient id="${id}starLine" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#c9963f"/><stop offset=".5" stop-color="#e8c272"/><stop offset="1" stop-color="#fff6dc"/></linearGradient>
       <linearGradient id="${id}eyeG" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#1a1214"/><stop offset=".55" stop-color="${C.eye}"/></linearGradient>
       <linearGradient id="${id}line" x1="0" y1="0" x2="0" y2="1">
@@ -508,7 +788,6 @@ function lumi(mood = "curious") {
         <stop offset="0" stop-color="#fffaf3"/><stop offset=".75" stop-color="${C.fur}"/><stop offset="1" stop-color="#fbeedf"/></radialGradient>
       <radialGradient id="${id}furB" gradientUnits="userSpaceOnUse" cx="119" cy="190" r="62">
         <stop offset="0" stop-color="#fffcf7"/><stop offset=".75" stop-color="#fef9f1"/><stop offset="1" stop-color="#fcf0e4"/></radialGradient>
-      <!-- orb rim: a thin, gentle gold edge, a touch warmer at the bottom -->
       <linearGradient id="${id}orbRim" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#ffe196"/><stop offset=".45" stop-color="#fdd477"/><stop offset="1" stop-color="#eda43e"/></linearGradient>
       <radialGradient id="${id}orb" cx=".38" cy=".34" r=".7">
@@ -518,8 +797,6 @@ function lumi(mood = "curious") {
       <linearGradient id="${id}glassOff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3eadb"/><stop offset="1" stop-color="#e2d3b8"/></linearGradient>
       <linearGradient id="${id}frameG" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0" stop-color="#86603a"/><stop offset=".5" stop-color="${C.frame}"/><stop offset="1" stop-color="#583c22"/></linearGradient>
-      <linearGradient id="${id}cap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6438"/><stop offset="1" stop-color="${C.frame}"/></linearGradient>
-      <!-- soft pink blush along the bottom of the peach wings, fading out by the middle -->
       <linearGradient id="${id}wingBlush" x1="0" y1="0" x2="0" y2="1">
         <stop offset=".5" stop-color="#f8b9ac" stop-opacity="0"/><stop offset="1" stop-color="#f8b9ac" stop-opacity=".5"/></linearGradient>
       <radialGradient id="${id}peachL" cx=".85" cy=".5" r=".95">
@@ -531,9 +808,14 @@ function lumi(mood = "curious") {
       <radialGradient id="${id}lilacR" cx=".7" cy=".55" r=".8">
         <stop offset="0" stop-color="#f1e4fb"/><stop offset=".6" stop-color="#e7cef6"/><stop offset="1" stop-color="#dcc0f1"/></radialGradient>
       <radialGradient id="${id}foot" cx=".4" cy=".3"><stop offset="0" stop-color="#94705a"/><stop offset="1" stop-color="#734f3d"/></radialGradient>
+      <linearGradient id="${id}tear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3dcfb"/><stop offset="1" stop-color="#7fa9ee"/></linearGradient>
+      <radialGradient id="${id}cookie" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#e6b679"/><stop offset=".7" stop-color="#d69c5e"/><stop offset="1" stop-color="#c88a4f"/></radialGradient>
+      <radialGradient id="${id}heartG" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fdd0d9"/><stop offset=".55" stop-color="#f6a3b6"/><stop offset="1" stop-color="#ec8aa2"/></radialGradient>
+      <radialGradient id="${id}fly" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#fffbe8"/><stop offset=".6" stop-color="#ffefb0"/><stop offset="1" stop-color="#fde08a"/></radialGradient>
+      <linearGradient id="${id}door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7e7d2"/><stop offset="1" stop-color="#f9eddc" stop-opacity=".6"/></linearGradient>
     </defs>
-    ${mood === "sleepy" ? sleepDecor : decor}
-    ${extras}
-    ${mood === "flop" ? flop : mood === "sleepy" ? sleep : `${ground}<g class="bob">${sitting}</g>`}
+    <rect x="-23.2" y="-3.2" width="280.4" height="280.4" rx="13" fill="${C.card}" stroke="${C.cardLine}" stroke-width="1.6"/>
+    ${poses[mood]()}
+    <text x="117" y="259" text-anchor="middle" font-family="Patrick Hand, Comic Sans MS, cursive" font-size="${mood === "chase" ? 26 : 28}" fill="${C.label}" stroke="${C.label}" stroke-width=".5" word-spacing="4">${LABELS[mood]}</text>
   </svg>`;
 }
