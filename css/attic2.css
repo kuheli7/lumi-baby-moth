@@ -42,6 +42,8 @@
 .a2-twinkle { animation: a2-twinkle 3.2s ease-in-out infinite; }
 .a2-pulse { animation: a2-pulse 3.6s ease-in-out infinite; }
 @keyframes a2-twinkle { 50% { opacity: .55; } }
+.a2-blink { animation: a2-blink var(--t, 2.4s) ease-in-out var(--d, 0s) infinite; }
+@keyframes a2-blink { 0%, 100% { opacity: .15; } 45%, 55% { opacity: 1; } }
 @keyframes a2-pulse { 50% { opacity: .65; } }
 .a2-stage:not(.steered) .a2-tilt { animation: a2-sway 9s ease-in-out infinite; }
 @keyframes a2-sway { 0%, 100% { rotate: y -4deg; } 50% { rotate: y 4deg; } }
@@ -116,7 +118,7 @@
 .a2-box.gap .f { box-shadow: none; }
 @media (prefers-reduced-motion: reduce) {
   .a2-hover, .a2-shade, .a2-lumi .wl, .a2-lumi .wr { animation: none; }
-  .a2-twinkle, .a2-pulse, .a2-card.pop, .a2-hit:not(.found)::before { animation: none; }
+  .a2-twinkle, .a2-blink, .a2-pulse, .a2-card.pop, .a2-hit:not(.found)::before { animation: none; }
   .a2-stage:not(.steered) .a2-tilt { animation: none; }
 }
 
