@@ -360,6 +360,14 @@
     say(LINES.pick[b.dataset.mood]);
   });
 
+  // a new necklace (or none): redraw Lumi and the mood pictures
+  addEventListener("lumi:wear", () => {
+    const m = pal.mood;
+    pal.mood = "";
+    setMood(m);
+    picker.querySelectorAll(".mood-btn img").forEach(img => { img.src = app.artURL(img.parentNode.dataset.mood); });
+  });
+
   // ---------- dozing off: 40 quiet seconds on the home screen ----------
   addEventListener("pointerdown", (e) => {
     if (pal.mood === "sleepy" && !stage.contains(e.target) && !e.target.closest("#feed, .mood-btn")) wake();

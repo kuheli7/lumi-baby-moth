@@ -38,6 +38,7 @@
   // ---------- the sprite: a still picture of Lumi, swapped per mood ----------
   let spriteMood = "";
   const setSprite = (m) => { if (m !== spriteMood) { spriteMood = m; sprite.src = app.artURL(m, true); } };
+  addEventListener("lumi:wear", () => { const m = spriteMood; spriteMood = ""; if (m) setSprite(m); });
   const spriteW = () => Math.min(W * .26, 132);
   const placeSprite = () => {
     const w = spriteW(), shake = S.shake > 0 ? Math.sin(S.t * 60) * 4 : 0;

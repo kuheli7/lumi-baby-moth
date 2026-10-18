@@ -138,6 +138,7 @@
       return li;
     }));
   }
+  addEventListener("lumi:wear", renderGuests);
   guestForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const name = guestForm.elements.name.value.trim(), msg = guestForm.elements.msg.value.trim();

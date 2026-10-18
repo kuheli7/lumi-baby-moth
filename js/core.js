@@ -20,18 +20,53 @@
   const store = app.store;
 
   // ---------- Lumi's art ----------
+  // The bead necklace you can string in the attic. It goes in just after the fluff, so the face, paws
+  // and lantern stay in front of it, and turns with the head; only the sitting poses have a neck for it.
+  const NECK_MOODS = ["curious", "happy", "excited", "shy", "proud", "love", "surprised", "confused", "sad", "hurt", "fed", "thinking", "starry"];
+  app.necklaceSvg = (beads) => {
+    const n = beads.length, at = (deg, k = 1) => [120 + 68 * k * Math.cos(deg * Math.PI / 180), 123 + 59 * k * Math.sin(deg * Math.PI / 180)];
+    const [x0, y0] = at(142), [x1, y1] = at(38), [cx, cy] = at(90, 1.12);
+    const out = [`<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} Q${cx.toFixed(1)} ${(cy + 8).toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="#cdb6ec" stroke-width="1.8"/>`];
+    // the dew-drop pendant hangs from the middle
+    out.push(`<path d="M120 182 Q126.5 191 120 197 Q113.5 191 120 182Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.6"/><ellipse cx="118" cy="190" rx="1.4" ry="2.4" fill="#fff"/>`);
+    beads.forEach((color, i) => {
+      const [x, y] = at(n === 1 ? 90 : 133 - 86 * i / (n - 1));
+      out.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="${color}" stroke="rgba(90, 60, 110, .35)" stroke-width="1.2"/><circle cx="${(x - 1.9).toFixed(1)}" cy="${(y - 1.9).toFixed(1)}" r="1.7" fill="#fff" opacity=".85"/>`);
+    });
+    return out.join("");
+  };
+  let necklace = store.get("necklace", null);
+  const wear = (svg, mood, beads) => {
+    if (!Array.isArray(beads) || !beads.length || !NECK_MOODS.includes(mood)) return svg;
+    const head = svg.match(/<g transform="([^"]*)"><g transform="rotate\((-?[\d.]+) 120 123\)">/);
+    const fig = svg.match(/<g transform="([^"]*)">\s*<g transform="[^"]*"><g class="wl">/);
+    const halo = svg.search(/<circle cx="[\d.]+" cy="[\d.]+" r="[\d.]+" fill="#ffe7a0"/);
+    if (!head || halo < 0) return svg;
+    const worn = `<g transform="${fig ? fig[1] : ""}"><g transform="${head[1]}"><g transform="rotate(${head[2]} 120 123)">${app.necklaceSvg(beads)}</g></g></g>`;
+    return svg.slice(0, halo) + worn + svg.slice(halo);
+  };
   // sticker() draws Lumi on a sticker card with a label underneath; the site only wants Lumi itself.
   // The cream ground shadow suits the cream panels; on the night sky (sky = true) it glows, so it goes.
-  app.art = (mood, sky = false) => {
-    const svg = sticker(mood)
+  // beads: try a necklace on without wearing it (the bead table's preview)
+  app.art = (mood, sky = false, beads = necklace) => {
+    const svg = wear(sticker(mood)
       .replace(/<rect x="-23\.2"[^>]*\/>/, "")
-      .replace(/<text x="117" y="259"[\s\S]*?<\/text>/, "");
+      .replace(/<text x="117" y="259"[\s\S]*?<\/text>/, ""), mood, beads);
     return sky ? svg.replace(/<ellipse [^>]*fill="#faeadb"[^>]*\/>/g, "") : svg;
   };
   // A still picture of a mood (an <img> source). Pictures are drawn once and are cheap to move around,
   // so they're used for thumbnails and the game; the live SVG is kept where the eyes follow you.
-  const pictures = {};
+  let pictures = {};
   app.artURL = (mood, sky = false) => (pictures[mood + (sky ? ".sky" : "")] ||= URL.createObjectURL(new Blob([app.art(mood, sky)], { type: "image/svg+xml" })));
+  // putting on (or taking off) the necklace redraws every picture; screens listening for "lumi:wear" redraw theirs
+  app.necklace = () => necklace;
+  app.wear = (beads) => {
+    necklace = beads && beads.length ? beads.slice(0, 9) : null;
+    store.set("necklace", necklace);
+    Object.values(pictures).forEach(u => URL.revokeObjectURL(u));
+    pictures = {};
+    dispatchEvent(new Event("lumi:wear"));
+  };
 
   app.COOKIE = `<svg viewBox="103 181 34 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="${blob(120, 198, 15, 14.5, 13, .05)}" fill="#d9a066" stroke="#c08a55" stroke-width="2"/>

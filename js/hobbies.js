@@ -305,6 +305,7 @@
     roomCard.innerHTML = `<h3>${h.name}</h3>
       <p>${line ? `<b>Lumi:</b> ${line} ` : ""}${h.note}</p>
       ${h.progress === undefined ? "" : `<div class="progress"><span>progress</span><span class="progress-bar"><i style="--p:${h.progress}%"></i></span><span>${h.progress}%</span></div>`}
+      ${h.id === "beads" ? `<button class="btn btn-gold small" data-beads data-sfx="none">📿 string a necklace</button>` : ""}
       ${h.lullaby ? `<button class="btn btn-lilac small" data-lullaby data-sfx="none">${asleep ? "☀️ wake Lumi up" : "♪ play the lullaby"}</button>` : ""}
       ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>` : ""}
       ${h.link ? `<a class="btn btn-lilac small" href="${h.link[0]}">${h.link[1]}</a>` : ""}`;
@@ -396,6 +397,68 @@
     app.toast("Lumi: *yawn* …i wasn't asleep. (i was asleep.)");
   }
   document.addEventListener("click", (e) => { if (e.target.closest("[data-lullaby]")) lullaby(); });
+
+  // ---------- the bead tray: string a necklace and Lumi wears it all over the site ----------
+  const BEADS = [["#f6a9bd", "pink"], ["#e1707f", "berry"], ["#f4b68a", "peach"], ["#f6cf6a", "gold"],
+    ["#a8d8a0", "mint"], ["#8fc3e8", "dew-drop blue"], ["#c9a7ea", "lilac"], ["#fffaf4", "pearl"]];
+  let strung = [];
+  function beadTray() {
+    strung = (app.necklace() || []).slice();
+    roomCard.hidden = false;
+    roomCard.innerHTML = `<h3>string a necklace</h3>
+      <p>tap the beads to string up to nine. Lumi wears it all over the site.</p>
+      <div class="bead-maker">
+        <div class="bead-lumi" id="bead-lumi"></div>
+        <div>
+          <div class="bead-colors" role="group" aria-label="Beads">${BEADS.map(([c, n]) =>
+            `<button class="bead" data-bead="${c}" style="--c:${c}" aria-label="add a ${n} bead" data-sfx="none"></button>`).join("")}</div>
+          <p class="bead-count" id="bead-count" aria-live="polite"></p>
+          <div class="bead-actions">
+            <button class="btn btn-outline small" data-bead-undo>↶ undo</button>
+            <button class="btn btn-gold small" data-bead-wear data-sfx="none">✓ put it on Lumi</button>
+            <button class="btn btn-outline small" data-bead-off>take it off</button>
+          </div>
+        </div>
+      </div>`;
+    showStrung();
+  }
+  function showStrung() {
+    const lumi = $("#bead-lumi");
+    if (!lumi) return;
+    lumi.innerHTML = app.art("excited", false, strung);
+    const worn = app.necklace(), same = worn && worn.join() === strung.join();
+    $("#bead-count").textContent = same ? `Lumi is wearing this one (${strung.length} beads)` : strung.length ? `${strung.length} of 9 beads` : "no beads yet";
+    $("[data-bead-undo]", roomCard).disabled = !strung.length;
+    $("[data-bead-wear]", roomCard).disabled = !strung.length || same;
+    $("[data-bead-off]", roomCard).hidden = !worn;
+    app.look();
+  }
+  roomCard.addEventListener("click", (e) => {
+    const t = e.target;
+    if (t.closest("[data-beads]")) { beadTray(); return; }
+    const bead = t.closest("[data-bead]");
+    if (bead) {
+      if (strung.length >= 9) { app.toast("nine beads is the limit. (Lumi's neck is very small.)"); return; }
+      strung.push(bead.dataset.bead);
+      sfx.play.plip();
+      showStrung();
+    } else if (t.closest("[data-bead-undo]")) {
+      strung.pop();
+      showStrung();
+    } else if (t.closest("[data-bead-wear]")) {
+      app.wear(strung);
+      sfx.play.shiny();
+      app.toast("📿 Lumi is wearing your necklace! (go and see it on the home screen)");
+      app.lumi.react("love", "is this… for me?? i'm never taking it off. (finished hobby count: still 1.)", 4000);
+      showStrung();
+    } else if (t.closest("[data-bead-off]")) {
+      app.wear(null);
+      strung = [];
+      app.toast("Lumi took the necklace off and put it back in the bead tray.");
+      showStrung();
+    }
+  });
+  addEventListener("lumi:wear", () => lumiPicture(asleep ? "sleepy" : "curious"));
 
   app.onView("room", () => { sizeRoom(); drawLamp(); }, () => wakeUp(true));
   addEventListener("resize", sizeRoom);

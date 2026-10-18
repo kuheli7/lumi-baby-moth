@@ -334,6 +334,17 @@ body.lit .sky-lit { opacity: 1; }
 /* asleep in bed: the sleepy picture has its lantern lower left, so it's placed by that instead */
 .room.asleep .room-lumi { width: 18%; transform: translate(-22.3%, -70.9%); }
 .room.bedtime .room-dark { background: rgba(8, 6, 24, .97); }
+.bead-maker { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; }
+.bead-lumi svg { display: block; width: 100%; height: auto; overflow: visible; }
+.bead-colors { display: flex; flex-wrap: wrap; gap: 8px; }
+.bead {
+  width: 36px; height: 36px; padding: 0; border-radius: 50%; border: 2px solid rgba(90, 60, 110, .25);
+  background: radial-gradient(circle at 34% 32%, #fff 0 14%, var(--c) 16%); box-shadow: 0 2px 0 rgba(58, 43, 92, .15);
+}
+.bead:active { translate: 0 2px; box-shadow: none; }
+.bead-count { margin: 8px 0 0; font-size: 16px; color: var(--muted); }
+.bead-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+@media (max-width: 479px) { .bead-maker { grid-template-columns: 104px 1fr; gap: 10px; } .bead { width: 32px; height: 32px; } }
 .hit-tag.spot { background: #ede4fb; border-color: #b9a6ee; color: var(--plum); }
 .room.lit .room-dark, .room.lit .room-glow { opacity: 0; }
 .room-hits { position: absolute; inset: 0; }
