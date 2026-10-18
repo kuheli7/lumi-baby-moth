@@ -155,7 +155,7 @@
       <linearGradient id="a2-blanket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dccff8"/><stop offset="1" stop-color="#b3a0e6"/></linearGradient>
       <radialGradient id="a2-cotton" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#fbf3ea"/><stop offset="1" stop-color="#dcc5ad"/></radialGradient>
     </defs>
-    <g transform="translate(392 474) scale(1.3)">
+    <g transform="translate(392 490) scale(1.18)">
     <ellipse cx="6" cy="1" rx="100" ry="9" fill="#2a1830" opacity=".38"/>
     <ellipse cx="4" cy="0" rx="86" ry="4.5" fill="#2a1830" opacity=".3"/>
     ${foot(-60, 1)}${foot(84, 1)}
@@ -178,9 +178,8 @@
       <circle cx="-42.5" cy="-40" r="2.1" fill="#f4a3b8" stroke="#c97a92" stroke-width="1"/>
       <path d="M-57 -45Q-55 -49 -49 -49.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>
       <path d="M-24 -38Q-23 -46 -15 -46H72Q80 -46 80 -38V-28H-24Z" fill="url(#a2-blanket)" stroke="#9c86d6"/>
-      <path d="M-15 -46L-9 -50H76Q84 -50 84 -43L80 -38Q80 -46 72 -46Z" fill="#e8defb" stroke="#9c86d6" stroke-width="1.6"/>
+      <path d="M-15 -46Q-12 -50 -6 -50H64Q68 -50 68 -46Z" fill="#e8defb" stroke="#9c86d6" stroke-width="1.4" stroke-linejoin="round"/>
       <path d="M-4 -45V-29M14 -45V-29M32 -45V-29M50 -45V-29M66 -45V-29" stroke="#fff" stroke-width="3" opacity=".5"/>
-      <path d="M2 -40Q20 -36 34 -41T64 -39" fill="none" stroke="#9c86d6" stroke-width="1.4" opacity=".5"/>
       <path d="M-24 -38Q-23 -46 -15 -46H-6V-28H-24Z" fill="#f4a3b8" stroke="#c97a92"/><path d="M-19 -44V-30M-13 -45V-30" stroke="#fff" stroke-width="1.5" opacity=".6"/>
       <path d="M-24 -28H80V-23Q67 -17 54 -23Q41 -17 28 -23Q15 -17 2 -23Q-11 -17 -24 -23Z" fill="#c9b7f0" stroke="#9c86d6"/>
       <g fill="#fff" stroke="none" opacity=".75"><circle cx="40" cy="-25" r="1.6"/><circle cx="66" cy="-25" r="1.6"/><circle cx="21" cy="-38" r="1.6"/><circle cx="57" cy="-38" r="1.6"/></g>
@@ -248,13 +247,14 @@
   };
   const stem = (x0, y0, cx, cy, x1, y1, c = "#4d7f45") => `<path d="M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/>`;
   // [tip x, tip y, bend x, bend y, size, shade]; the plant is three layers of leaves (back, middle, front), so they shift apart when the room leans
-  const POTHOS_BACK = [[-14, 400, 10, 436, 1.05, 2], [4, 372, 20, 424, 1.15, 2], [24, 358, 28, 420, 1.2, 2], [44, 366, 36, 422, 1.15, 2],
-    [64, 384, 44, 430, 1.1, 2], [78, 408, 52, 440, 1, 2]];
-  const POTHOS = [[-4, 418, 18, 446, 1, 0], [10, 398, 22, 436, 1.1, 1], [30, 386, 28, 428, 1.2, 0], [50, 396, 36, 432, 1.1, 1],
-    [70, 418, 48, 444, 1, 0], [2, 446, 18, 462, .85, 1], [58, 446, 44, 460, .85, 1], [40, 410, 30, 440, .8, 0]];
+  const POTHOS_BACK = [[-14, 418, 10, 446, 1, 2], [4, 392, 20, 436, 1.05, 2], [24, 388, 28, 434, 1.05, 2], [44, 388, 36, 434, 1.05, 2],
+    [64, 402, 44, 440, 1, 2], [78, 422, 52, 448, .95, 2]];
+  const POTHOS = [[-4, 428, 18, 450, .95, 0], [10, 410, 22, 442, 1, 1], [30, 400, 28, 436, 1.1, 0], [50, 408, 36, 440, 1, 1],
+    [70, 428, 48, 450, .95, 0], [2, 450, 18, 464, .8, 1], [58, 450, 44, 462, .8, 1], [40, 420, 30, 446, .75, 0]];
   const POTHOS_FRONT = [[-4, 462, 12, 458, .9, 3], [16, 438, 24, 452, 1, 3], [44, 442, 38, 454, 1, 3], [10, 484, 14, 472, .7, 3]];
-  // the plant stands a little in from the corner: its front leaves lean the most, and right at the edge they got cut off
-  const PLANT_AT = "translate(50 -8)";
+  // the plant stands a little in from the corner (its front leaves lean the most, and right at the edge they got cut off),
+  // and it is kept small and bushy so the watercolour palette on the desk shows above it
+  const PLANT_AT = "translate(52 68) scale(.85)";
   const pothos = (set, c) => set.map(([ex, ey, cx, cy, s, k]) => stem(30, 468, cx, cy, ex, ey, c) + heart(ex, ey, Math.atan2(ey - cy, ex - cx) * 180 / Math.PI + 90, s, k)).join("");
   const plantBack = svg(`<g transform="${PLANT_AT}">${pothos(POTHOS_BACK, "#2f5a33")}</g>`);
   const plantFront = svg(`<g transform="${PLANT_AT}">${pothos(POTHOS_FRONT, "#5f8f4f")}
@@ -284,6 +284,8 @@
   ].join("");
 
   // z in px (negative is farther away); hits are [id, name, left%, top%, width%, height%]
+  // the bed stands near the front of the rug, so its layer is in front of where Lumi flies; she comes forward to sleep in it
+  const BED_Z = 70;
   const LAYERS = [
     { z: -130, html: wall, cls: "a2-wall", hits: [["window", "the window", 7, 23, 35, 40]] },
     { z: -130, html: sill, cls: "a2-boxes" },
@@ -294,7 +296,7 @@
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
     { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
     { z: 0, html: ground, cls: "a2-ground" },
-    { z: 15, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 45.5, 73.6, 28, 18]] },
+    { z: BED_Z, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 46.5, 77.5, 25.5, 17.5]] },
     { z: 40, html: beam, cls: "a2-boxes" },
     { z: 60, html: lights, cls: "a2-front" },
     { z: 74, html: plantBack, cls: "a2-near" },
@@ -303,6 +305,7 @@
     { z: 100, html: svg(`<rect x="-140" y="-140" width="880" height="800" fill="url(#a2-vig)"/>`), cls: "a2-vignette" },
   ];
   const LUMI_Z = 25;
+  const atDepth = (z) => `translateZ(${z}px) scale(${zoom(z)})`;
   const zoom = (z) => ((PERSPECTIVE - z) / PERSPECTIVE).toFixed(4);
 
   // Lumi's five hobbies (the same ones as in the lantern attic, written out here so Attic 2 stands on its own);
@@ -593,12 +596,13 @@
   const LULLABY = [["E", .5], ["E", .5], ["G", 2], ["E", .5], ["E", .5], ["G", 2], ["E", .5], ["G", .5], ["C", 1], ["B", 1.5], ["A", .5],
     ["A", 1], ["G", 1], ["D", .5], ["E", .5], ["F", 1], ["D", 1], ["D", .5], ["E", .5], ["F", 2], ["D", .5], ["F", .5],
     ["B", .5], ["A", .5], ["G", 1], ["B", 1], ["C", 3]].map(([n, b]) => [N[n], b]);
-  const PILLOW = [380 / VB_W, 428 / VB_H];   // where she curls up, on the sock blanket
+  const PILLOW = [381 / VB_W, 448 / VB_H];   // where she curls up, on the sock blanket
   let asleep = false, tune = null, wasLit = true, nap = 0;
   const lullabyBtn = () => $("[data-a2-lullaby]", card);
   function lullaby() {
     if (bedtime) { wakeUp(); return; }
     bedtime = true;
+    lumi.style.transform = atDepth(BED_Z + 10);
     wasLit = lit;
     clearTimeout(calm);
     feel("sleepy", true);
@@ -624,6 +628,7 @@
   function wakeUp(quiet = false) {
     if (!bedtime) return;
     bedtime = asleep = false;
+    lumi.style.transform = atDepth(LUMI_Z);
     clearTimeout(nap);
     if (tune) { tune.stop(); tune = null; }
     stage.classList.remove("bedtime");
