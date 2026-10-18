@@ -18,10 +18,12 @@
   const storyArt = $("#story-art"), storyText = $("#story-text"), storyPrev = $("#story-prev"), storyNext = $("#story-next"), pager = $("#story-pager");
   let page = 0;
   const isLit = () => document.body.classList.contains("lit");
-  function renderStory(turn = true) {
+  const storyBox = $(".story");
+  function renderStory(turn = 0) {
     const p = STORY[page];
     storyArt.innerHTML = app.art(p.finale && isLit() ? "happy" : p.mood);
-    if (turn && !reduceMotion) restart(storyArt, "turn");
+    // turn: 1 flips the page forward, -1 back
+    if (turn && !reduceMotion) { storyBox.classList.remove("flip-next", "flip-prev"); restart(storyBox, turn > 0 ? "flip-next" : "flip-prev"); }
     storyText.textContent = p.finale && isLit() ? "…and the whole night lit up. The end (for now). ✨" : p.text;
     storyPrev.disabled = page === 0;
     storyNext.classList.toggle("lantern-btn", !!p.finale);
@@ -35,12 +37,50 @@
     pager.innerHTML = STORY.map((_, i) => `<i class="${i === page ? "on" : ""}"></i>`).join("");
     app.look();
   }
-  storyPrev.addEventListener("click", () => { if (page > 0) { page--; renderStory(); } });
+  // turning by swipe, wheel or arrow key stops at the last page; only the button lights the lantern
+  const turnPage = (d) => {
+    const to = page + d;
+    if (to < 0 || to >= STORY.length) return false;
+    page = to;
+    renderStory(d);
+    sfx.play.click();
+    return true;
+  };
+  storyPrev.addEventListener("click", () => { if (page > 0) { page--; renderStory(-1); } });
   storyNext.addEventListener("click", () => {
     if (STORY[page].finale) setLit(!isLit(), storyNext);
-    else { page++; renderStory(); }
+    else { page++; renderStory(1); }
   });
-  app.onView("story", () => renderStory(false));
+  app.onView("story", () => renderStory(0));
+
+  addEventListener("keydown", (e) => {
+    if (app.view() !== "story" || e.target.closest?.("input, textarea") || $("#menu").open) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); turnPage(e.key === "ArrowRight" ? 1 : -1); }
+  });
+  // a sideways swipe on the page (up and down still scrolls)
+  let swipe = null;
+  storyBox.addEventListener("pointerdown", (e) => { swipe = { x: e.clientX, y: e.clientY }; });
+  storyBox.addEventListener("pointerup", (e) => {
+    if (!swipe) return;
+    const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+    swipe = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) turnPage(dx < 0 ? 1 : -1);
+  });
+  storyBox.addEventListener("pointercancel", () => { swipe = null; });
+  // the scroll wheel turns pages once the screen itself has nowhere left to scroll
+  let wheelAt = 0, wheelSum = 0;
+  addEventListener("wheel", (e) => {
+    if (app.view() !== "story" || $("#menu").open) return;
+    const down = e.deltaY > 0, el = document.scrollingElement;
+    const canScroll = down ? el.scrollTop + innerHeight < el.scrollHeight - 2 : el.scrollTop > 0;
+    if (canScroll) { wheelSum = 0; return; }
+    wheelSum += e.deltaY;
+    const now = Date.now();
+    if (now - wheelAt < 700 || Math.abs(wheelSum) < 40) return;
+    wheelAt = now;
+    wheelSum = 0;
+    turnPage(down ? 1 : -1);
+  }, { passive: true });
 
   // the finale: light bursts out of the lantern and the whole sky turns warm
   const lightsItem = $("#menu-lights");
@@ -65,7 +105,7 @@
       sfx.play.yawn();
       app.lumi.react("sleepy", "…back to the cozy dark. goodnight, lantern.", 2600);
     }
-    if (app.view() === "story") renderStory(false);
+    if (app.view() === "story") renderStory(0);
   }
 
   // ======================================================================
