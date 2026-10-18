@@ -16,13 +16,14 @@
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${fill}" stroke="${line}" stroke-width="1.1"/>` +
         `<circle cx="${(x - r * .32).toFixed(1)}" cy="${(y - r * .32).toFixed(1)}" r="${(r * .3).toFixed(1)}" fill="#fff" opacity=".85"/>`;
     }).join("");
-    return `<path d="M8 10 Q32 52 56 10" fill="none" stroke="#a98bd6" stroke-width="1.6" stroke-linecap="round"/>` +
-      `<circle cx="8" cy="10" r="2.4" fill="none" stroke="#d9a520" stroke-width="1.6"/><circle cx="56" cy="10" r="2.4" fill="none" stroke="#d9a520" stroke-width="1.6"/>` +
-      beads +
-      `<circle cx="32" cy="31" r="2.3" fill="none" stroke="#d9a520" stroke-width="1.6"/>` +
+    // the gem pendant is drawn first, so it hangs behind the string and the beads
+    return `<circle cx="32" cy="31" r="2.3" fill="none" stroke="#d9a520" stroke-width="1.6"/>` +
       `<path d="M32 33.5 Q40.5 42 32 55 Q23.5 42 32 33.5Z" fill="#f4b6c9" stroke="#d9a520" stroke-width="1.8" stroke-linejoin="round"/>` +
       `<path d="M28.6 42 Q29 38.6 31.4 36.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".9"/>` +
-      star4(32, 45, 3.4, "#fffaf0") + star4(54, 46, 3.2, "#f6cf6a") + star4(11, 42, 2.6, "#c9a7ea");
+      star4(32, 45, 3.4, "#fffaf0") +
+      `<path d="M8 10 Q32 52 56 10" fill="none" stroke="#a98bd6" stroke-width="1.6" stroke-linecap="round"/>` +
+      `<circle cx="8" cy="10" r="2.4" fill="none" stroke="#d9a520" stroke-width="1.6"/><circle cx="56" cy="10" r="2.4" fill="none" stroke="#d9a520" stroke-width="1.6"/>` +
+      beads + star4(54, 46, 3.2, "#f6cf6a") + star4(11, 42, 2.6, "#c9a7ea");
   })();
 
   // small hand-drawn icons, 64×64
