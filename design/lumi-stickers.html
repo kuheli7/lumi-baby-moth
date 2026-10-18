@@ -344,13 +344,15 @@ function sticker(mood) {
   const ants = (list, w0, w1) => list.map(a => drawAnt(a, w0, w1)).join("");
 
   // ---------- Fluff: the v4 oval cloud head and pear-shaped body ----------
-  // A few tan flicks on the crown, like the stray tufts in the sticker art (skip: indexes to leave out)
-  const TUFTS = ["M88 87 q4 -2.5 8 -1.5", "M116 78 q4 -1.5 8 0", "M146 86 q3.5 -1 7 1", "M70 108 q2 -3 5 -4", "M168 104 q3 1 4.5 4"];
-  const tufts = (skip = []) => `<g fill="none" stroke="#ecc8a6" stroke-width="2.2" stroke-linecap="round" opacity=".7">
-    ${TUFTS.filter((_, i) => !skip.includes(i)).map(d => `<path d="${d}"/>`).join("")}</g>`;
+  // One or two short tan dashes on the forehead, like the stray tufts in the sticker art:
+  // each [x1, y1, x2, y2, opacity] tip to tip, in final position
+  const tufts = (list = [], w = 4) => list.map(([x1, y1, x2, y2, op = 1]) => {
+    const len = Math.hypot(x2 - x1, y2 - y1), k = Math.max(0, len - w) / len / 2, mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    return `<path d="M${f1(mx - (x2 - x1) * k)} ${f1(my - (y2 - y1) * k)} L${f1(mx + (x2 - x1) * k)} ${f1(my + (y2 - y1) * k)}" stroke="#f1d3b7" stroke-width="${w}" stroke-linecap="round" opacity="${op}"/>`;
+  }).join("");
   const headShape = scallop(120, 123, 71, 61.5, 16, 3, .55, 0, 1, [90, .07, 32]);
-  const head = (t = "", sfx = "", part = "all", skip = []) => `<g transform="${t}"><g transform="rotate(${TILT} 120 123)">${fluff(headShape, `${id}hc${sfx}`, `url(#${id}furH)`, `
-    <ellipse cx="120" cy="189" rx="72" ry="14" fill="#f6e2cc" opacity=".45" ${blur(6)}/>`, 5.8, LINE, part)}${part === "line" ? "" : tufts(skip)}</g></g>`;
+  const head = (t = "", sfx = "", part = "all") => `<g transform="${t}"><g transform="rotate(${TILT} 120 123)">${fluff(headShape, `${id}hc${sfx}`, `url(#${id}furH)`, `
+    <ellipse cx="120" cy="189" rx="72" ry="14" fill="#f6e2cc" opacity=".45" ${blur(6)}/>`, 5.8, LINE, part)}</g></g>`;
   // The sticker art sits on a chunkier body than v4, so the width (and scallop count) can grow per mood
   const body = (t = "", [rx = 46, ry = 34, n = 13, pear = .22] = [], part = "all") => `<g transform="${t}">${fluff(scallop(119, 196, rx, ry, n, 7, .55, pear, .65, [152, .16, 28]), `${id}bc`, `url(#${id}furB)`, `
     <ellipse cx="119" cy="${196 + ry}" rx="${rx + 8}" ry="8" fill="#fbebdc" opacity=".55" ${blur(5)}/>`, 5.8, LINE, part)}</g>`;
@@ -514,7 +516,8 @@ function sticker(mood) {
 
   // ---------- Sitting rig: v4 parts, each with its own placement per mood ----------
   // o = { fig, wl, wr, body, head: transforms (fig turns wings, body and head together); lo, loUp: lilac wing scale and lift;
-  //       ant: antennae; feet, face, hands: markup in final position; under: tucked behind the body; back, front: unbobbed }
+  //       ant: antennae; tufts: forehead dashes; feet, face, hands: markup in final position; under: tucked behind the body;
+  //       back, front: unbobbed }
   const sit = (o) => `
     ${o.back || ""}
     ${o.ground ?? ground()}
@@ -524,6 +527,7 @@ function sticker(mood) {
         <g transform="${o.wl || ""}">${wingL(o.lo, o.loUp)}</g><g transform="${o.wr || ""}">${wingR(o.lo, o.loUp)}</g>
         ${joined(p => body(o.body, o.bodySize, p), p => head(o.head, "", p))}
       </g>
+      ${tufts(o.tufts)}
       ${ants(o.ant)}
       ${o.feet || ""}
       ${o.face}
@@ -536,6 +540,7 @@ function sticker(mood) {
     curious: () => sit({
       wl: "translate(1 -7)", wr: "translate(-11 -8)",
       body: "translate(-4 -4)", bodySize: [52, 34, 15, .06], head: "translate(-2 -6)",
+      tufts: [[89.5, 96, 95.5, 93.5, .7]],
       ant: [
         { b: [86, 71], c: [76, 54], o: [46, 54], r: 16, twig: [.5, [-6, 7], [-5, 2]] },
         { b: [124, 60], c: [127, 35], o: [148, 20], r: 16, twig: [.45, [9, 1], [5, -4]] },
@@ -552,6 +557,7 @@ function sticker(mood) {
     happy: () => sit({
       wl: "translate(-4 5)", wr: "translate(-7 0)",
       body: "translate(-4 -4)", bodySize: [52, 34, 15, .06], head: "translate(-3 -4)",
+      tufts: [[85, 99, 96.5, 91.5], [137.2, 89.7, 146.9, 92.8]],
       ant: [
         { b: [98, 61], c: [88, 39], o: [68, 28], r: 16, twig: [.27, [-10, 2], [-5, -3]] },
         { b: [136, 59], c: [146, 38], o: [168, 29], r: 16, twig: [.27, [10, 2], [5, -3]] },
@@ -569,6 +575,7 @@ function sticker(mood) {
       cls: "bounce",
       wl: "translate(4 -10)", wr: "translate(1 -9)",
       body: "translate(5 -3)", bodySize: [55, 34, 15, .06], head: "translate(6 6)",
+      tufts: [[102.5, 109, 111.3, 105], [153, 99.5, 160, 98.5, .55]],
       ant: [
         { b: [104, 79], c: [93, 59], o: [66, 43], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
         { b: [146, 74], c: [153, 53], o: [179, 36], r: 16, twig: [.5, [10, 2], [5, -3]] },
@@ -586,6 +593,7 @@ function sticker(mood) {
       fig: "rotate(18 120 170)",
       wl: "translate(1 -11)", wr: "translate(-9 3)",
       bodySize: [50, 34, 14, .06], head: "translate(-5 9)",
+      tufts: [[113.5, 98.5, 124.5, 98.5]],
       ant: [
         { b: [133, 78], c: [131, 50], o: [109, 31], r: 16, twig: [.45, [-9, 3], [-5, -3]] },
         { b: [176, 89], c: [189, 72], o: [222, 73], r: 16, twig: [.5, [1, 9], [3, 4]] },
@@ -603,6 +611,7 @@ function sticker(mood) {
     surprised: () => sit({
       wl: "translate(2 -8)", wr: "translate(-6 -3)",
       body: "translate(-2 -4)", bodySize: [56, 34, 15, .06], head: "translate(-2 -5)",
+      tufts: [[91.3, 92.2, 102.8, 88.4], [146.5, 92, 151, 91, .55]],
       ant: [
         { b: [103, 64], c: [99, 39], o: [75, 21], r: 16, twig: [.5, [-10, 3], [-5, -3]] },
         { b: [149, 66], c: [158, 52], o: [188, 46], r: 16, twig: [.4, [9, 4], [5, -2]] },
@@ -621,6 +630,7 @@ function sticker(mood) {
       fig: "rotate(-15 120 170)",
       wl: "translate(10 -4)", wr: "translate(5 4)",
       body: "translate(-4 0)", bodySize: [54, 34, 15, .06], head: "translate(8 3)",
+      tufts: [[133, 93.8, 145.6, 90.6], [87.5, 116.6, 95, 107]],
       ant: [
         { b: [76, 86], c: [64, 66], o: [28, 73], r: 16, twig: [.55, [-1, 8], [-4, 3]] },
         { b: [118, 68], c: [140, 28], o: [99, 23], r: 16, twig: [.18, [-8, 1], [-4, -3]] },
@@ -637,6 +647,7 @@ function sticker(mood) {
     thinking: () => sit({
       wl: "translate(-2 -4)", wr: "translate(-3 -9)",
       body: "translate(4 -11)", bodySize: [52, 34, 15, .06], head: "translate(0 -8)",
+      tufts: [[100.3, 96.3, 110.6, 89.7], [149.4, 84.4, 160, 87.8]],
       ground: ground(124, 222, 84),
       ant: [
         { b: [94, 66], c: [88, 43], o: [60, 31], r: 16, twig: [.28, [-10, 2], [-5, -3]] },
@@ -677,6 +688,7 @@ function sticker(mood) {
         ${lilacWing(42, 156, 22, 28, -10, 9, [41, 156, 7], "L")}
         ${lilacWing(168, 191, 26, 18, 10, 13, [169, 193, 6], "R")}
         ${joined(p => cloud(128, 182, 46, 26, 12, 7, .7, "b", "furB", p), p => head("translate(132 119) rotate(10) translate(-120 -123)", "", p))}
+        ${tufts([[121, 90, 131, 94.4], [169.7, 102.5, 176.9, 106.9]])}
         ${ants([
           { b: [126, 63], c: [116, 43], o: [93, 30], r: 16, twig: [.5, [-7, 6], [-5, 1]] },
           { b: [176, 78], c: [189, 68], o: [216, 70], r: 16, twig: [.5, [1, 9], [3, 4]] },
@@ -692,6 +704,7 @@ function sticker(mood) {
     shy: () => sit({
       wl: "translate(5 -3)", wr: "translate(-1 8)",
       body: "translate(2 2)", bodySize: [57, 34, 16, .06], head: "translate(1 9)",
+      tufts: [[76.6, 121.9, 85.6, 116.9], [125.6, 107.2, 135.6, 109.1]],
       ant: [
         { b: [88, 84], c: [71, 62], o: [47, 56], r: 16, twig: [.45, [-10, 5], [-5, -1]] },
         { b: [116, 78], c: [119, 46], o: [135, 28], r: 16, twig: [.45, [10, 1], [5, -4]] },
@@ -710,6 +723,7 @@ function sticker(mood) {
       return sit({
         wl: "translate(-2 -21)", wr: "translate(-13 6)", lo: 1.15, loUp: 10,
         body: "translate(-14 -10) rotate(4 119 196)", bodySize: [46, 31, 13, .1], head: H, ground: ground(111, 233, 76),
+        tufts: [[128.8, 93.4, 137.5, 98.8]],
         ant: [
           { b: [96, 66], c: [99, 36], o: [76, 24], r: 16, twig: [.2, [-10, 2], [-5, -4]] },
           { b: [134, 73], c: [152, 56], o: [181, 44], r: 16, twig: [.4, [9, 6], [6, 0]] },
@@ -727,6 +741,7 @@ function sticker(mood) {
     sad: () => sit({
       wl: "translate(-4 -15)", wr: "translate(-2 -10)",
       body: "translate(-1 -6)", bodySize: [60, 33, 16, .06], head: "translate(0 2)", lo: 1.12,
+      tufts: [[90.6, 99.5, 95, 98.5, .6]],
       ant: [
         { b: [86, 77], c: [80, 46], o: [39, 59], r: 15.5, twig: [.45, [-4, 10], [-6, 4]] },
         { b: [127, 64], c: [129, 40], o: [141, 21], r: 15.5, twig: [.28, [10, 0], [5, -5]] },
@@ -745,6 +760,7 @@ function sticker(mood) {
       cls: "shiver",
       wl: "translate(-4 4) rotate(-4 60 170)", wr: "translate(1 -13)",
       body: "translate(-7 -7)", bodySize: [60, 34, 16, .06], head: "translate(109 118) scale(1.07) translate(-120 -123)",
+      tufts: [[70.6, 103.8, 79.7, 98.8], [123, 94, 132.8, 98]],
       ant: [
         { b: [80, 67], c: [55, 27], o: [21, 94], r: 15.5, twig: [.5, [-1, 9], [-5, 3]] },
         { b: [126, 58], c: [136, 14], o: [159, 79], r: 15.5, twig: [.5, [5, 8], [5, 2]] },
@@ -765,6 +781,7 @@ function sticker(mood) {
     fed: () => sit({
       wl: "translate(5 -11)", wr: "translate(-1 -14)",
       body: "translate(3 -10)", bodySize: [64, 36, 18, .06], head: "translate(1 -9)", lo: 1.18, loUp: 4,
+      tufts: [[92.5, 97.2, 103, 90.6], [145, 84.2, 153.5, 87.3]],
       ground: ground(121, 224, 86),
       ant: [
         { b: [93, 64], c: [76, 38], o: [59, 26], r: 16, twig: [.45, [-10, 2], [-5, -4]] },
@@ -840,7 +857,7 @@ function sticker(mood) {
           <g transform="rotate(120 71 123)">${peachWing(71, 123, 35, 60, 0, 31, [68, 128, 14], "L")}</g>
           ${lilacWing(132, 182, 35, 29, -12, 9, [133, 188, 7], "L")}
           ${foot(153, 211, 8, 11, 62, id, 2)}
-          ${head("translate(157 107) scale(.95 1) translate(-120 -123)")}
+          ${head("translate(157 107) scale(.95 1) translate(-120 -123)")}${tufts([[126.6, 81.3, 134.7, 75.6]])}
           ${ants([{ b: [127, 49], c: [118, 29], o: [94, 22], r: 16, twig: [.45, [-9, 3], [-5, -3]] }])}
           ${blush(129, 144, 12, 10, 21)}
           ${openEye({ x: 139, y: 118, side: 1, seed: 11 }, 1.12)}</g>`)}
@@ -872,7 +889,7 @@ function sticker(mood) {
         ${fur("line")}${head(H, "", "line")}${fur("fill")}
         ${lilacWing(68, 183, 36, 28, -22, 9, [67.1, 188.3, 7], "L")}
         ${onlyOver("chm", blob(68, 183, 36, 28, 9, .03, -22, 10), head(H, "", "line"))}
-        ${head(H, "", "fill", [4])}
+        ${head(H, "", "fill")}${tufts([[116.9, 76.9, 127.5, 69.7]])}
         ${ants([
           { b: [93, 55], c: [80, 32], o: [56, 31], r: 15.5, twig: [.5, [-2, 9], [-5, 4]] },
           { b: [76, 74], c: [60, 64], o: [34, 83], r: 15.5, twig: [.5, [0, 9], [-3, 5]] },
