@@ -43,9 +43,8 @@
     <path d="M26 100C60 112 70 200 52 300C46 330 30 350 14 360C-6 300 -2 160 26 100Z" fill="#9a82d6" stroke="#6f58ae" stroke-width="3"/>
     <path d="M26 112C40 180 38 270 24 340" fill="none" stroke="#c1aef0" stroke-width="3" opacity=".6"/>
     <path d="M276 104C250 130 244 210 256 290C260 322 270 340 282 352C298 280 300 170 276 104Z" fill="#9a82d6" stroke="#6f58ae" stroke-width="3"/>
-    <path d="M30 258C42 250 56 256 60 268" fill="none" stroke="#f6cf6a" stroke-width="5" stroke-linecap="round"/>
     <path d="M24 60C14 100 26 130 12 210" fill="none" stroke="#3f6a40" stroke-width="3"/>
-    ${leaf(18, 90, -20, 1.1)}${leaf(34, 70, 20)}${leaf(8, 130, -40)}${leaf(20, 160, -10, .9)}${leaf(10, 196, -30, .8)}`);
+    ${leaf(20, 89, -30, 1.1)}${leaf(22.4, 68, 25)}${leaf(19.5, 128, -40)}${leaf(18.4, 158, 25, .9)}${leaf(14, 198, -30, .8)}`);
 
   const shelf = svg(`
     <g transform="rotate(-7 300 109)"><rect x="258" y="78" width="84" height="62" fill="#f4e4cc" stroke="#c9a67a" stroke-width="2"/>
@@ -74,7 +73,11 @@
   // things standing on the desk and its lower shelf; the desk itself is real 3D boxes (see desk below).
   // This layer stands at the middle of the desk top's depth (the slab runs from z 45 back to -45), so things sit on it, not in it
   const props = svg(`
-    <rect x="30" y="414" width="64" height="12" rx="2" fill="#b79be8" stroke="#8068c0" stroke-width="2"/><rect x="34" y="402" width="58" height="12" rx="2" fill="#f4a3b8" stroke="#c97a92" stroke-width="2"/>
+    <g stroke-width="2" stroke-linejoin="round"><!-- two books, with their tops and right sides showing -->
+      <path d="M30 414L36 408H100L94 414Z" fill="#cdb8f2" stroke="#8068c0"/><path d="M94 414L100 408V420L94 426Z" fill="#9a80d4" stroke="#8068c0"/>
+      <rect x="30" y="414" width="64" height="12" rx="2" fill="#b79be8" stroke="#8068c0"/>
+      <path d="M34 402L40 396H98L92 402Z" fill="#f9c4d2" stroke="#c97a92"/><path d="M92 402L98 396V408L92 414Z" fill="#e08aa3" stroke="#c97a92"/>
+      <rect x="34" y="402" width="58" height="12" rx="2" fill="#f4a3b8" stroke="#c97a92"/></g>
     <g transform="rotate(-10 62 342)"><rect x="18" y="326" width="84" height="30" rx="6" fill="#f7efe3" stroke="#c9b496" stroke-width="2"/>
       <circle cx="36" cy="338" r="6" fill="#c9a7ea"/><circle cx="54" cy="336" r="6" fill="#f4a3b8"/><circle cx="72" cy="338" r="6" fill="#f6cf6a"/><circle cx="88" cy="342" r="5" fill="#8fc3e8"/><circle cx="46" cy="349" r="5" fill="#a8d8a0"/></g>
     <rect x="130" y="320" width="30" height="36" rx="6" fill="#d8ecf3" fill-opacity=".7" stroke="#9cc3d1" stroke-width="2"/>
@@ -91,10 +94,9 @@
       <path d="M516 190V396M520 190V396M524 190V396" stroke="#fbf7ec" stroke-width="1.3"/>
     </g>
     <g transform="translate(111 -8)">
-      <path d="M404 470q40 8 88 0v10q-44 10-88 0Z" fill="#c9a7ea" stroke="#9a82d6" stroke-width="2"/>
-      <circle cx="440" cy="448" r="36" fill="#f48fae" stroke="#c4577b" stroke-width="3"/>
-      <path d="M411 440q29 12 58-6M408 454q32 12 64-4M418 424q22 10 46 5M422 472q22 6 40-6" fill="none" stroke="#fbc0d0" stroke-width="3" stroke-linecap="round"/>
-      <path d="M404 468q-26 10 -52 2" fill="none" stroke="#f48fae" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="442" cy="482" rx="34" ry="6" fill="#2a1830" opacity=".35"/>
+      <circle cx="440" cy="446" r="36" fill="#f48fae" stroke="#c4577b" stroke-width="3"/>
+      <path d="M411 438q29 12 58-6M408 452q32 12 64-4M418 422q22 10 46 5M418 468q22 8 44-6" fill="none" stroke="#fbc0d0" stroke-width="3" stroke-linecap="round"/>
     </g>`);
 
   // The floor is a real plane lying down (rotated 90 degrees, running from the back wall toward you), and the rug
