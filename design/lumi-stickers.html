@@ -877,8 +877,8 @@ function sticker(mood) {
         : `<animateTransform attributeName="transform" type="scale" values="1 1;${to} 1;1 1" dur=".55s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .6 1;.4 0 .6 1"/>`;
       const butterfly = `
         <g opacity=".92">${flap(.5)}
-          ${wing("M-2 0 C-7 -3 -9 3 -7 6 C-5 9 -1 6 -1 1 Z")}
-          ${wing(`M-3 -3 C-12 -6 -21 -17 -19 -24 C-17 -31 -9 -27 -6 -20 C-4 -14 -3 -8 -3 -3 Z`)}</g>
+          ${wing(blob(-9, -14, 7.5, 12, 4, .02, -28))}
+          ${wing(blob(-4.5, 1.5, 3.8, 5.6, 6, .03, 20))}</g>
         <g>${flap(.35)}
           ${wing("M0 0 C-5 -6 -7 -14 -6 -20 C-5 -29 1 -34 7 -33 C13 -32 16 -24 13 -15 C12 -13 11 -12 10 -11 C15 -10 18 -6 16 -1 C14 3 6 3 0 0 Z")}</g>
         <circle cx="0" cy="0" r="1.6" fill="#e9a93a"/>`;
