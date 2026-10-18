@@ -316,8 +316,8 @@
   addEventListener("pointerdown", queueLook, { passive: true });
 
   // ---------- router: one screen at a time, picked by the URL hash ----------
-  const TITLES = { home: "", about: "About Lumi", hobbies: "Hobbies", room: "Lumi's Attic", dress: "Dress up Lumi", play: "Star Catch", story: "Story", guestbook: "Guestbook", facts: "Useless Facts", credits: "Credits" };
-  const TAB_OF = { room: "hobbies", dress: "hobbies" };
+  const TITLES = { home: "", about: "About Lumi", hobbies: "Hobbies", room: "Lumi's Attic", attic2: "Lumi's Attic 2", dress: "Dress up Lumi", play: "Star Catch", story: "Story", guestbook: "Guestbook", chat: "Talk to Lumi", facts: "Useless Facts", credits: "Credits" };
+  const TAB_OF = { room: "hobbies", attic2: "hobbies", dress: "hobbies" };
   const hooks = {};
   let current = null;
   app.onView = (name, enter, leave) => { hooks[name] = { enter, leave }; };

@@ -1,0 +1,125 @@
+/* Lumi's Attic 2: flat layers at different depths inside a perspective box. The stage clips; the tilt box leans. */
+.a2-layout { display: block; }
+@media (min-width: 900px) { .a2-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; } }
+.a2-stage {
+  position: relative; aspect-ratio: 600 / 520; overflow: hidden; border-radius: 20px; background: #2d2250;
+  width: min(100%, calc((100vh - 230px) * 1.15)); min-width: min(100%, 300px); margin: 0 auto;
+  touch-action: pan-y; -webkit-tap-highlight-color: transparent;
+}
+/* the world is what the stage looks at: as big as the stage here, bigger than the screen on a phone (you pan around it) */
+.a2-world { position: absolute; inset: 0; perspective: 900px; perspective-origin: 50% 45%; }
+/* the tilt box sits at depth 0 in front of the far layers, so it must not catch clicks meant for them */
+.a2-tilt { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; pointer-events: none; }
+.a2-layer, .a2-lumi { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.a2-layer { pointer-events: none; }
+.a2-layer svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* Lumi is the cursor: she follows the pointer (JS sets .a2-roam's translate) and never catches a click herself */
+.a2-lumi { inset: auto auto 10% 29%; width: 42%; pointer-events: none; }
+.a2-roam, .a2-hover { display: block; position: relative; }
+.a2-roam { will-change: translate; }
+.a2-hover { animation: a2-float 3.8s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes a2-float { 0%, 100% { translate: 0 0; rotate: -2deg; } 50% { translate: 0 -4.5%; rotate: 2deg; } }
+.a2-shade { position: absolute; left: 22%; bottom: -3%; width: 56%; height: 7%; border-radius: 50%; background: radial-gradient(closest-side, rgba(30, 14, 40, .45), transparent); animation: a2-shade 3.8s ease-in-out infinite; }
+@keyframes a2-shade { 50% { scale: .8 .8; opacity: .6; } }
+.a2-lumi .wl { animation: a2-flap-l 1.1s ease-in-out infinite; }
+.a2-lumi .wr { animation: a2-flap-r 1.1s ease-in-out infinite; }
+@keyframes a2-flap-l { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(12deg); } }
+@keyframes a2-flap-r { 0%, 100% { transform: rotate(9deg); } 50% { transform: rotate(-12deg); } }
+.a2-lumi svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 0 14px rgba(255, 220, 130, .45)); }
+.a2-glow { position: absolute; left: 12%; top: -4%; width: 76%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 226, 150, .5), transparent 68%); pointer-events: none; }
+.a2-hit { pointer-events: auto; position: absolute; padding: 0; border: 0; background: none; border-radius: 12px; cursor: pointer; }
+.a2-hit:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+/* things you haven't opened yet glow softly (a phone has no hover to show you where to tap) */
+.a2-hit::before { content: ""; position: absolute; inset: -12%; border-radius: 50%; pointer-events: none; opacity: 0; background: radial-gradient(closest-side, rgba(255, 226, 150, .55), transparent); }
+.a2-hit:not(.found)::before { opacity: .55; animation: a2-beckon 2.8s ease-in-out infinite; }
+@keyframes a2-beckon { 50% { opacity: 1; } }
+.a2-hit.found::after { content: "★"; position: absolute; right: -4px; top: -6px; font-size: 18px; color: var(--gold); text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+.a2-tag {
+  position: absolute; left: 50%; top: -6px; translate: -50% -100%; white-space: nowrap; padding: 3px 10px; border-radius: 999px;
+  background: var(--cream); color: var(--ink); font: 600 13px var(--head); opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.a2-hit:hover .a2-tag, .a2-hit:focus-visible .a2-tag { opacity: 1; }
+.a2-twinkle { animation: a2-twinkle 3.2s ease-in-out infinite; }
+.a2-pulse { animation: a2-pulse 3.6s ease-in-out infinite; }
+@keyframes a2-twinkle { 50% { opacity: .55; } }
+@keyframes a2-pulse { 50% { opacity: .65; } }
+.a2-stage:not(.steered) .a2-tilt { animation: a2-sway 9s ease-in-out infinite; }
+@keyframes a2-sway { 0%, 100% { rotate: y -4deg; } 50% { rotate: y 4deg; } }
+.a2-side .hobby-card { margin-top: 10px; }
+.a2-card h2 { margin: 0 0 4px; font: 600 22px var(--head); color: var(--ink); }
+.a2-card p { margin: 0; }
+.a2-card .a2-all { margin-top: 8px; font-weight: 700; color: var(--berry-dark); }
+.a2-card.pop { animation: a2-pop .3s ease-out; }
+@keyframes a2-pop { from { transform: translateY(6px); opacity: 0; } }
+/* the floor: a real plane lying down, with the rug on it (both are placed in attic2.js) */
+.a2-ground { transform-style: preserve-3d; }
+.a2-plane {
+  position: absolute; left: -30%; top: 92.08%; width: 160%; height: 400px; transform-origin: 50% 0;
+  background: repeating-linear-gradient(90deg, rgba(42, 24, 48, .3) 0 2px, transparent 2px 7%), linear-gradient(#4f3338, #6b4549);
+}
+.a2-rug {
+  position: absolute; left: 29.2%; top: 60px; width: 41.6%; height: 170px; border-radius: 50%;
+  background: radial-gradient(closest-side, #fbf1dc 55%, #f6ead2 56%, #f6ead2 80%, #eed9b6 81%);
+  outline: 3px dotted #e1cfae; outline-offset: 5px; box-shadow: 0 0 26px 10px rgba(20, 8, 30, .4);
+}
+/* the desk: real boxes (front, back, sides, top) inside the 3D room */
+.a2-desk { transform-style: preserve-3d; }
+.a2-box { position: absolute; transform-style: preserve-3d; --c: #8a5a32; --cs: #6d4425; --ct: #b07a46; }
+.a2-box .f { position: absolute; display: block; background: var(--c); box-shadow: inset 0 0 0 2px rgba(74, 48, 32, .85); }
+.a2-box .fr, .a2-box .bk { inset: 0; }
+.a2-box .lf, .a2-box .rt { top: 0; height: 100%; background: var(--cs); }
+.a2-box .lf { left: 0; transform-origin: left; transform: rotateY(90deg); }
+.a2-box .rt { right: 0; transform-origin: right; transform: rotateY(-90deg); }
+.a2-box .tp { left: 0; top: 0; width: 100%; transform-origin: top; transform: rotateX(-90deg); background: var(--ct); }
+.a2-box.slab { --c: #7a4e2b; --cs: #5e3a20; }
+.a2-box.slab .tp {
+  background:
+    radial-gradient(ellipse 20% 70% at 80% 50%, rgba(255, 236, 160, .8), transparent),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(74, 48, 32, .3) 46px 48px),
+    linear-gradient(#b98650, #a97a4c);
+}
+.a2-box.leg { --c: #6d4425; --cs: #55341c; }
+.a2-box.shelf { --c: #7a4e2b; --cs: #5e3a20; --ct: #a97a4c; }
+.a2-box.drawer { --c: #9b6a3c; --cs: #6d4425; --ct: #a87848; }
+.a2-box.gap { --c: #2d1c33; --cs: #2d1c33; --ct: #2d1c33; }
+.a2-box.gap .f { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .a2-hover, .a2-shade, .a2-lumi .wl, .a2-lumi .wr { animation: none; }
+  .a2-twinkle, .a2-pulse, .a2-card.pop, .a2-hit:not(.found)::before { animation: none; }
+  .a2-stage:not(.steered) .a2-tilt { animation: none; }
+}
+
+/* ---------- phones: the attic fills the screen ----------
+   The room is drawn wider than a phone, so it is scaled to fill the screen's height and you drag to look around.
+   The title, the found counter and the cards float over it instead of sitting around it. */
+.a2-x { display: none; }
+@media (max-width: 719px), (max-height: 520px) {
+  body[data-view="attic2"] { overflow: hidden; }
+  .view[data-view="attic2"] { position: fixed; inset: 0; z-index: 55; animation: none; background: #1d1640; }
+  .view[data-view="attic2"] .panel { height: 100%; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+  .view[data-view="attic2"] .view-head { position: absolute; z-index: 4; top: calc(8px + env(safe-area-inset-top)); left: 8px; margin: 0; }
+  .view[data-view="attic2"] .back { position: static; background: rgba(29, 22, 64, .72); box-shadow: 0 2px 10px rgba(0, 0, 0, .4); }
+  .view[data-view="attic2"] .view-head h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .view[data-view="attic2"] .room-intro { display: none; }
+  .a2-layout { position: absolute; inset: 0; display: block; }
+  .a2-stage { position: absolute; inset: 0; width: auto; min-width: 0; aspect-ratio: auto; border-radius: 0; touch-action: none; }
+  .a2-world { inset: auto; left: 0; top: 0; width: auto; height: max(100%, 86.67vw); aspect-ratio: 600 / 520; }
+  /* the room is drawn bigger here, so Lumi shrinks to the size she is on a desktop */
+  .a2-lumi { left: 37%; width: 26%; }
+  .a2-side .found-row {
+    position: absolute; z-index: 4; top: calc(8px + env(safe-area-inset-top)); right: 8px; margin: 0; padding: 6px 12px;
+    flex-wrap: nowrap; gap: 8px; border-radius: 999px; background: rgba(29, 22, 64, .72);
+  }
+  .a2-sheet { position: absolute; z-index: 4; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); pointer-events: none; }
+  .a2-card { margin: 0; max-height: 62dvh; overflow: auto; padding-right: 44px; pointer-events: auto; box-shadow: 0 10px 30px rgba(8, 4, 24, .55); }
+  .a2-card:not([hidden]) + .a2-x {
+    display: grid; place-items: center; position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; padding: 0; border: 0;
+    border-radius: 50%; background: rgba(58, 43, 92, .1); color: var(--ink); font: 600 24px/1 var(--head); pointer-events: auto; cursor: pointer;
+  }
+}
+/* a phone on its side: the card goes to the right so the room keeps the whole height */
+@media (max-height: 520px) {
+  .a2-sheet { left: auto; width: min(380px, 46vw); top: calc(60px + env(safe-area-inset-top)); bottom: 8px; right: 8px; }
+  .a2-card { max-height: 100%; }
+}
+.a2-fact { margin: 8px 0 6px; padding: 8px 12px; border-radius: 12px; background: #efe7fb; color: var(--ink); font-size: 17px; line-height: 1.3; }
