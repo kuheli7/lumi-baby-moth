@@ -24,13 +24,14 @@
   // and lantern stay in front of it, and turns with the head; only the sitting poses have a neck for it.
   const NECK_MOODS = ["curious", "happy", "excited", "shy", "proud", "love", "surprised", "confused", "sad", "hurt", "fed", "thinking", "starry"];
   app.necklaceSvg = (beads) => {
-    const n = beads.length, at = (deg, k = 1) => [120 + 68 * k * Math.cos(deg * Math.PI / 180), 123 + 59 * k * Math.sin(deg * Math.PI / 180)];
-    const [x0, y0] = at(142), [x1, y1] = at(38), [cx, cy] = at(90, 1.12);
+    // it hangs low enough to clear the cheeks and sit on the chest, where the head's fluff meets the body's
+    const n = beads.length, at = (deg, k = 1) => [120 + 65 * k * Math.cos(deg * Math.PI / 180), 137 + 59 * k * Math.sin(deg * Math.PI / 180)];
+    const [x0, y0] = at(140), [x1, y1] = at(40), [cx, cy] = at(90, 1.12);
     const out = [`<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} Q${cx.toFixed(1)} ${(cy + 8).toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="#cdb6ec" stroke-width="1.8"/>`];
     // the dew-drop pendant hangs from the middle
-    out.push(`<path d="M120 182 Q126.5 191 120 197 Q113.5 191 120 182Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.6"/><ellipse cx="118" cy="190" rx="1.4" ry="2.4" fill="#fff"/>`);
+    out.push(`<path d="M120 196 Q126.5 205 120 211 Q113.5 205 120 196Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.6"/><ellipse cx="118" cy="204" rx="1.4" ry="2.4" fill="#fff"/>`);
     beads.forEach((color, i) => {
-      const [x, y] = at(n === 1 ? 90 : 133 - 86 * i / (n - 1));
+      const [x, y] = at(n === 1 ? 90 : 131 - 82 * i / (n - 1));
       out.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="${color}" stroke="rgba(90, 60, 110, .35)" stroke-width="1.2"/><circle cx="${(x - 1.9).toFixed(1)}" cy="${(y - 1.9).toFixed(1)}" r="1.7" fill="#fff" opacity=".85"/>`);
     });
     return out.join("");
