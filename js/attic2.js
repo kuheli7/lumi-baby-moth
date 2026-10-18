@@ -25,6 +25,7 @@
       <linearGradient id="a2-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1850"/><stop offset="1" stop-color="#3f3086"/></linearGradient>
       <radialGradient id="a2-lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".85"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
       <radialGradient id="a2-warm" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffcf86" stop-opacity=".32"/><stop offset=".6" stop-color="#ffb07a" stop-opacity=".1"/><stop offset="1" stop-color="#ffb07a" stop-opacity="0"/></radialGradient>
+      <linearGradient id="a2-shadow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0c24" stop-opacity=".45"/><stop offset="1" stop-color="#1a0c24" stop-opacity="0"/></linearGradient>
       <radialGradient id="a2-vig" cx=".5" cy=".46" r=".62"><stop offset=".62" stop-color="#140a26" stop-opacity="0"/><stop offset="1" stop-color="#140a26" stop-opacity=".55"/></radialGradient>
     </defs>
     <rect x="-140" y="-140" width="880" height="800" fill="url(#a2-wall)"/>
@@ -34,7 +35,8 @@
     <path d="M0 0H255L0 200Z" fill="#7a5538" stroke="#4a3020" stroke-width="3"/>
     <path d="M600 0H345L600 185Z" fill="#7a5538" stroke="#4a3020" stroke-width="3"/>
     <rect width="600" height="26" fill="#6b4528" stroke="#4a3020" stroke-width="3"/>
-    <circle cx="380" cy="150" r="260" fill="url(#a2-warm)"/><!-- the warm spill of the star lamp and the fairy lights -->
+    <circle cx="380" cy="150" r="260" fill="url(#a2-warm)"/>
+    <circle class="a2-pulse" cx="449" cy="150" r="64" fill="url(#a2-lamp)" opacity=".45"/><!-- the warm spill of the star lamp and the fairy lights -->
     <rect x="44" y="118" width="212" height="216" rx="6" fill="#7a5538" stroke="#4a3020" stroke-width="3"/>
     <rect x="58" y="132" width="184" height="188" fill="url(#a2-sky)"/>
     <path d="M170 160a32 32 0 1 0 22 54a26 26 0 1 1 -22 -54Z" fill="#fde9a6" stroke="#e8c76a" stroke-width="2"/>
@@ -54,12 +56,15 @@
       <g id="a2-planet"><ellipse cx="300" cy="109" rx="20" ry="7.5" fill="none" stroke="#9a82d6" stroke-width="3" transform="rotate(-20 300 109)"/><circle cx="300" cy="109" r="12" fill="#c9a7ea" stroke="#9a82d6" stroke-width="2"/></g>
       <image id="a2-art" x="262" y="82" width="76" height="54" display="none" preserveAspectRatio="xMidYMid slice"/></g>
     <g transform="rotate(6 338 150)"><rect x="318" y="128" width="40" height="44" fill="#f6a9bd" stroke="#d27792" stroke-width="2"/>${star(338, 150, 11, "#fff6dc", "#e8c76a")}</g>
-    <path d="M420 204V234M560 204V234" stroke="#6d4425" stroke-width="6"/>
+    <rect x="392" y="208" width="196" height="16" fill="url(#a2-shadow)"/><rect x="298" y="259" width="122" height="10" fill="url(#a2-shadow)"/>
+    <!-- the light switch -->
+    <rect x="366" y="196" width="22" height="32" rx="4" fill="#f4e4cc" stroke="#c9a67a" stroke-width="2"/>
+    <rect x="372" y="202" width="10" height="20" rx="3" fill="#d8c3a2"/>
+    <rect class="a2-toggle" x="373" y="203" width="8" height="9" rx="2" fill="#fffaf0" stroke="#b6946a" stroke-width="1.2"/>
     <rect x="506" y="108" width="64" height="15" rx="3" fill="#f2d488" stroke="#8a6a2a" stroke-width="2"/><text x="538" y="119" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="9" letter-spacing="1.5" fill="#4a3510">MUSEUM</text>
     <rect x="522" y="176" width="32" height="18" rx="2" fill="#fffdf6" stroke="#c9b49b" stroke-width="1.5"/><text x="538" y="189" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="12" fill="#a34063">?!</text>
     <path d="M506 196V168Q506 140 538 140Q570 140 570 168V196Z" fill="#e8f4fb" fill-opacity=".45" stroke="#9db7cf" stroke-width="3"/><circle cx="538" cy="136" r="4" fill="#9db7cf"/><path d="M514 170Q515 154 526 148" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8"/>
     <g transform="translate(26 66)"><!-- the bead rack hangs lower and to the right, clear of the curtain, the jar and the museum shelf -->
-    <rect x="272" y="184" width="122" height="9" rx="3" fill="#8a5a32" stroke="#4a3020" stroke-width="2"/>
     <rect x="286" y="192" width="8" height="12" rx="2" fill="#6d4425"/><rect x="372" y="192" width="8" height="12" rx="2" fill="#6d4425"/>
     <path d="M290 204Q333 286 376 204" fill="none" stroke="#c9a7ea" stroke-width="2"/>
     ${[.1, .21, .32, .43, .57, .68, .79, .9].map((t, i) => {
@@ -67,7 +72,6 @@
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5" fill="${["#f4a3b8", "#c9a7ea", "#8fc3e8", "#f6cf6a"][i % 4]}" stroke="#4a3020" stroke-opacity=".35" stroke-width="1.2"/><circle cx="${(x - 1.6).toFixed(1)}" cy="${(y - 1.8).toFixed(1)}" r="1.5" fill="#fff" opacity=".7"/>`;
     }).join("")}
     <path transform="translate(333 256) scale(2.1)" d="M0 -6 Q5 0 0 5 Q-5 0 0 -6Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.2"/></g>
-    <circle class="a2-pulse" cx="449" cy="150" r="64" fill="url(#a2-lamp)" opacity=".45"/>
     <rect x="418" y="104" width="62" height="90" rx="14" fill="#d8c6f3" fill-opacity=".55" stroke="#bda3e9" stroke-width="3"/>
     <rect x="426" y="90" width="46" height="16" rx="4" fill="#f4a3b8" stroke="#c97a92" stroke-width="2"/>
     <path d="M449 94c-18-18-34 2-6 8c-10 8 8 18 6-8c0 26 16 16 6 8c28-6 12-26-6-8Z" fill="#f48fae" stroke="#c97a92" stroke-width="2"/>
@@ -104,6 +108,20 @@
       <path d="M411 438q29 12 58-6M408 452q32 12 64-4M418 422q22 10 46 5M418 468q22 8 44-6" fill="none" stroke="#fbc0d0" stroke-width="3" stroke-linecap="round"/>
     </g>`);
 
+  // Lumi's bed, on the rug: a matchbox, a cotton-ball pillow and a sock for a blanket (the same bed as in the lantern attic)
+  const bed = svg(`<g transform="translate(0 -24)"><!-- lifted so it stands on the floor, which is nearer than it looks -->
+    <ellipse cx="184" cy="500" rx="84" ry="6" fill="#2a1830" opacity=".35"/>
+    <g stroke-width="2" stroke-linejoin="round">
+      <path d="M112 474L120 466H262L254 474Z" fill="#c9a87c" stroke="#b98a5c"/><path d="M254 474L262 466V488L254 496Z" fill="#d9bf98" stroke="#b98a5c"/>
+      <rect x="112" y="474" width="142" height="22" rx="3" fill="#ecd5b4" stroke="#b98a5c" stroke-width="2.5"/>
+      <ellipse cx="172" cy="468" rx="17" ry="8" fill="#fffaf4" stroke="#e3cdb5"/>
+      <path d="M194 461h52a6 6 0 0 1 6 6v7h-64v-7a6 6 0 0 1 6-6z" fill="#c9b7f0" stroke="#9c86d6"/>
+      <path d="M204 462v11M218 462v11M232 462v11" stroke="#fff" stroke-width="3" opacity=".55"/>
+      <path d="M104 472L112 464H152L144 472Z" fill="#85304f" stroke="#6e2541"/><path d="M144 472L152 464V490L144 498Z" fill="#8e3556" stroke="#6e2541"/>
+      <rect x="104" y="472" width="40" height="26" rx="3" fill="#a34063" stroke="#85304f" stroke-width="2.5"/>
+    </g>
+    ${star(124, 485, 7, "#f6cf6a", "#d9a93a")}</g>`);
+
   // The floor is a real plane lying down (rotated 90 degrees, running from the back wall toward you), and the rug
   // lies on it, so tilting the room moves them together. Its top edge is the foot of the wall.
   const ground = `<div class="a2-plane" style="transform:translateZ(-130px) rotateX(90deg)"><div class="a2-rug"></div></div>`;
@@ -114,7 +132,7 @@
     <circle class="a2-pulse" cx="390" cy="126" r="70" fill="url(#a2-lamp)" opacity=".6"/>
     <g class="a2-twinkle">${[[60, 66], [150, 80], [240, 70], [330, 56], [420, 58], [500, 68], [570, 76]].map(([x, y], i) =>
       `<circle cx="${x}" cy="${y}" r="7" fill="${i % 2 ? "#ffd7e2" : "#fff1b8"}" stroke="#e8c76a" stroke-width="1.5"/>`).join("")}</g>
-    <path d="M390 58V108" stroke="#4a3020" stroke-width="2"/>${star(390, 126, 18, "#fff1b8", "#e8c76a")}
+    <path d="M390 31V108" stroke="#4a3020" stroke-width="2"/>${star(390, 126, 18, "#fff1b8", "#e8c76a")}
     <path d="M598 150C566 200 590 250 572 330" fill="none" stroke="#3f6a40" stroke-width="3"/>
     ${leaf(590, 168, 30, 1.1)}${leaf(574, 204, -30)}${leaf(588, 244, 30, .9)}${leaf(572, 290, -20)}${leaf(580, 320, 20, .8)}`);
 
@@ -125,7 +143,12 @@
     `<div class="a2-box ${cls}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;transform:translateZ(${z}px)"><i class="f fr"></i><i class="f bk" style="transform:translateZ(${-d}px)"></i><i class="f lf" style="width:${d}px"></i><i class="f rt" style="width:${d}px"></i>${bottom ? `<i class="f bt" style="height:${d}px"></i>` : `<i class="f tp" style="height:${d}px"></i>`}</div>`;
   // the window sill sticks out of the wall, the jar and museum shelf is a real plank, and a beam runs across the ceiling up front
   const sill = box({ x: 6.67, y: 62.7, w: 36.67, h: 2.7, z: 18, d: 18, cls: "sill" });
-  const wallShelf = box({ x: 65.3, y: 36.5, w: 32.3, h: 2.7, z: 14, d: 30, cls: "shelf", bottom: true });
+  const shelves = [
+    box({ x: 69.4, y: 39.6, w: 1.2, h: 5.6, z: 6, d: 26, cls: "bracket" }),
+    box({ x: 92.7, y: 39.6, w: 1.2, h: 5.6, z: 6, d: 26, cls: "bracket" }),
+    box({ x: 65.3, y: 36.5, w: 32.6, h: 3.5, z: 16, d: 36, cls: "plank", bottom: true }),
+    box({ x: 49.67, y: 48.08, w: 20.33, h: 1.9, z: 12, d: 20, cls: "plank" }),
+  ].join("");
   const beam = box({ x: -5, y: -1.5, w: 110, h: 5, z: 0, d: 46, cls: "beam", bottom: true });
 
   // ivy that hangs into the room right in front of you: the nearest layer, so it slides the most when the room leans
@@ -168,12 +191,13 @@
     { z: -130, html: wall, cls: "a2-wall", hits: [["window", "the window", 7, 23, 35, 40]] },
     { z: -130, html: sill, cls: "a2-boxes" },
     { z: -105, html: curtains, cls: "a2-curtains" },
-    { z: -70, html: wallShelf, cls: "a2-boxes" },
-    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 47.7, 21, 17]] },
+    { z: -70, html: shelves, cls: "a2-boxes" },
+    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 47.7, 21, 17], ["switch", "light switch", 60, 37, 5.5, 8]] },
     { z: -57, html: desk, cls: "a2-desk" },
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
     { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
     { z: 0, html: ground, cls: "a2-ground" },
+    { z: 15, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 17, 82.9, 27, 9.5]] },
     { z: 40, html: beam, cls: "a2-boxes" },
     { z: 60, html: lights, cls: "a2-front" },
     { z: 90, html: near, cls: "a2-near" },
@@ -208,7 +232,10 @@
     "Watercolor paint is held together by gum arabic, a sap from acacia trees.",
     "A group of owls is called a parliament. A group of night owls is called a hackathon. (Lumi made that one up.)",
   ];
-  const WINDOW = ["the window", "out there: the whole night sky, and (Lumi is sure of it) a few space critters who can't find their way home."];
+  const SPOTS = {
+    window: ["the window", "out there: the whole night sky, and (Lumi is sure of it) a few space critters who can't find their way home."],
+    bed: ["Lumi's bed", "a matchbox, a cotton-ball pillow and a sock for a blanket. Lumi only sleeps after a lullaby."],
+  };
   const ACTIONS = {
     moons: `<button class="btn btn-gold small" data-a2-paint data-sfx="none">🎨 paint with Lumi</button>`,
     beads: `<a class="btn btn-gold small" href="#dress">📿 dress up Lumi ›</a>`,
@@ -246,9 +273,10 @@
 
   // ---------- Lumi: she follows the pointer like the lantern does in the dark attic ----------
   // she is only a cursor: clicks go through her to whatever she is standing in front of
-  const MOODS = { moons: "happy", jar: "surprised", beads: "love", guitar: "excited", museum: "curious", window: "starry" };
+  const MOODS = { moons: "happy", jar: "surprised", beads: "love", guitar: "excited", museum: "curious", window: "starry", bed: "sleepy" };
   let mood = "", lastMove = 0, wander = 0, calm = 0;
-  const feel = (m) => { if (m !== mood) { mood = m; hover.innerHTML = app.art(m, true); } };
+  let bedtime = false;
+  const feel = (m, force = false) => { if (bedtime && !force) return; if (m !== mood) { mood = m; hover.innerHTML = app.art(m, true); } };
   const react = (id) => {
     feel(MOODS[id]);
     clearTimeout(calm);
@@ -269,6 +297,7 @@
   };
   // fx, fy: where to go, as fractions of the world
   const follow = (fx, fy) => {
+    if (bedtime) return;
     const W = world.clientWidth, H = world.clientHeight, w = lumi.offsetWidth, h = lumi.offsetHeight;
     if (!w) return;
     const cx = Math.max(w * .35, Math.min(W - w * .35, fx * W));
@@ -304,12 +333,13 @@
       store.set("attic2", [...found]);
       render();
     }
-    const [name, note] = h ? [h.name, h.note] : WINDOW;
+    const [name, note] = h ? [h.name, h.note] : SPOTS[id];
     const all = fresh && found.size === HOBBY_IDS.length;
     react(id);
     say(name, note, (all ? `<p class="a2-all">⭐ you found all five!! (finished: none of them. that's the tradition.)</p>` : "")
       + (id === "museum" ? `<p class="a2-fact"></p>` : "")
-      + (h ? bar(h.progress) : "") + (ACTIONS[id] ? `<div class="bead-actions">${ACTIONS[id]}</div>` : ""));
+      + (h ? bar(h.progress) : "") + (ACTIONS[id] ? `<div class="bead-actions">${ACTIONS[id]}</div>` : "")
+      + (id === "bed" ? `<div class="bead-actions"><button class="btn btn-lilac small" data-a2-lullaby data-sfx="none">${bedtime ? "☀️ wake Lumi up" : "♪ play the lullaby"}</button></div>` : ""));
     if (id === "museum") newFact();
     sfx.play.plip();
     if (all) { sfx.play.shiny(); app.lumi.react("happy", "you found everything!! the attic has never been so seen.", 3200); }
@@ -336,7 +366,8 @@
   tilt.addEventListener("click", (e) => {
     if (dragged) { dragged = false; return; } // the end of a drag is not a tap
     const spot = e.target.closest("[data-spot]");
-    if (spot) open(spot.dataset.spot);
+    if (spot?.dataset.spot === "switch") { setLights(!lit); sfx.play.pop(); }
+    else if (spot) open(spot.dataset.spot);
   });
   // the paint easel and the guitar lessons open right here, in this card
   card.addEventListener("click", (e) => {
@@ -355,6 +386,8 @@
       sfx.play.shiny();
       app.toast("✨ a star fell out. Lumi put it back. the thumbprint stays.");
       app.lumi.react("surprised", "did the jar just wink?", 2600);
+    } else if (e.target.closest("[data-a2-lullaby]")) {
+      lullaby();
     } else if (e.target.closest("[data-a2-space]")) {
       sfx.play.shiny();
       app.secret("space");
@@ -384,6 +417,7 @@
   };
   const aim = (x, y) => { tx = x; ty = y; if (!raf) raf = requestAnimationFrame(frame); };
   stage.addEventListener("pointerdown", (e) => {
+    if (asleep && !e.target.closest(".a2-hit")) { wakeUp(); return; }
     lastMove = Date.now();
     dragged = false;
     if (phone.matches) drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, px: pan.x, py: pan.y };
@@ -424,7 +458,83 @@
     follow(...RUG[Math.floor(Math.random() * RUG.length)]);
   };
 
+  // ---------- the lights: a switch on the wall (and a button). In the dark, Lumi's antennae are the only light ----------
+  const dark = document.createElement("div"), lightsBtn = $("#a2-lights");
+  dark.className = "a2-dark";
+  dark.setAttribute("aria-hidden", "true");
+  stage.appendChild(dark);
+  let lit = store.get("a2lit", true) !== false, glowRaf = 0;
+  // the dark has a hole of light that follows Lumi
+  const trackGlow = () => {
+    glowRaf = 0;
+    if (lit || app.view() !== "attic2") return;
+    const s = stage.getBoundingClientRect(), r = hover.getBoundingClientRect();
+    dark.style.setProperty("--lx", (r.left + r.width / 2 - s.left).toFixed(0) + "px");
+    dark.style.setProperty("--ly", (r.top + r.height * .3 - s.top).toFixed(0) + "px");
+    dark.style.setProperty("--r", Math.max(90, r.width * .95).toFixed(0) + "px");
+    glowRaf = requestAnimationFrame(trackGlow);
+  };
+  function setLights(on, keep = true) {
+    lit = on;
+    stage.classList.toggle("dark", !on);
+    if (keep) store.set("a2lit", on);
+    lightsBtn.textContent = on ? "🌙 lights off" : "💡 lights on";
+    lightsBtn.setAttribute("aria-pressed", String(!on));
+    if (!on && !glowRaf) trackGlow();
+  }
+  lightsBtn.addEventListener("click", () => { setLights(!lit); sfx.play.pop(); });
+
+  // ---------- bedtime: the lullaby sends Lumi to bed, the lights go down, and her glow is the night light ----------
+  // Brahms' Lullaby (traditional, public domain), up an octave like a music box: the same tune as the lantern attic
+  const N = { D: 587.3, E: 659.3, F: 698.5, G: 784, A: 880, B: 987.8, C: 1046.5 };
+  const LULLABY = [["E", .5], ["E", .5], ["G", 2], ["E", .5], ["E", .5], ["G", 2], ["E", .5], ["G", .5], ["C", 1], ["B", 1.5], ["A", .5],
+    ["A", 1], ["G", 1], ["D", .5], ["E", .5], ["F", 1], ["D", 1], ["D", .5], ["E", .5], ["F", 2], ["D", .5], ["F", .5],
+    ["B", .5], ["A", .5], ["G", 1], ["B", 1], ["C", 3]].map(([n, b]) => [N[n], b]);
+  const PILLOW = [212 / VB_W, 454 / VB_H];   // where she curls up, on the sock blanket
+  let asleep = false, tune = null, wasLit = true, nap = 0;
+  const lullabyBtn = () => $("[data-a2-lullaby]", card);
+  function lullaby() {
+    if (bedtime) { wakeUp(); return; }
+    bedtime = true;
+    wasLit = lit;
+    clearTimeout(calm);
+    feel("sleepy", true);
+    stage.classList.add("bedtime");
+    tune = sfx.music(LULLABY, .5);
+    app.toast(tune ? "♪ Brahms' Lullaby, music-box edition" : "♪ (the sound is off, so Lumi hums it quietly)");
+    if (lullabyBtn()) lullabyBtn().textContent = "■ stop the lullaby";
+    // she flies to the bed (shrinking to bed size as she goes) and curls up on the blanket
+    const W = world.clientWidth, H = world.clientHeight;
+    me.tx = PILLOW[0] * W - (lumi.offsetLeft + lumi.offsetWidth / 2);
+    me.ty = PILLOW[1] * H - (lumi.offsetTop + lumi.offsetHeight * .9);
+    if (!me.raf) me.raf = requestAnimationFrame(glide);
+    clearTimeout(nap);
+    nap = setTimeout(() => {
+      if (!bedtime) return;
+      asleep = true;
+      setLights(false, false);
+      const p = $("p", card);
+      if (lullabyBtn() && p) p.textContent = "zzz… Lumi fell asleep. her antennae stay on as a night light. (tap the attic to wake her.)";
+      if (lullabyBtn()) lullabyBtn().textContent = "☀️ wake Lumi up";
+    }, reduceMotion ? 0 : 1800);
+  }
+  function wakeUp(quiet = false) {
+    if (!bedtime) return;
+    bedtime = asleep = false;
+    clearTimeout(nap);
+    if (tune) { tune.stop(); tune = null; }
+    stage.classList.remove("bedtime");
+    setLights(wasLit, false);
+    feel("starry", true);
+    if (quiet) return;
+    follow(.5, .8);
+    sfx.play.pop();
+    if (lullabyBtn()) lullabyBtn().textContent = "♪ play the lullaby";
+    app.toast("Lumi: *yawn* …i wasn't asleep. (i was asleep.)");
+  }
+
   app.onView("attic2", () => {
+    setLights(lit);
     hang(store.get("painting", null));
     render();
     recenter();
@@ -437,5 +547,5 @@
     }
     app.look();
     if (!reduceMotion && !wander) wander = setInterval(stroll, 5200);
-  }, () => { aim(0, 0); stage.classList.remove("steered"); clearInterval(wander); wander = 0; app.a2quests.stop(); });
+  }, () => { wakeUp(true); aim(0, 0); stage.classList.remove("steered"); clearInterval(wander); wander = 0; app.a2quests.stop(); });
 })();

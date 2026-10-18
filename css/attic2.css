@@ -79,6 +79,30 @@
 .a2-box.beam { --c: #6b4528; --cs: #55341c; --cb: #45291a; }
 .a2-box.beam .fr { background: linear-gradient(#7a5032, #5e3c22); }
 .a2-box.slab { --c: #7a4e2b; --cs: #5e3a20; }
+.a2-box.plank { --c: #8a5a32; --cs: #6d4425; --ct: #b98650; --cb: #5a3820; }
+.a2-box.plank .fr { background: linear-gradient(#b07a46, #8a5a32 45%, #7a4e2b); }
+.a2-box.bracket { --c: #6d4425; --cs: #55341c; --ct: #8a5a32; }
+/* soft shadows under the drawn things, so they sit in the room instead of floating on it */
+.a2-curtains svg, .a2-shelf svg, .a2-props svg, .a2-stuff svg, .a2-bed svg { filter: drop-shadow(2px 4px 3px rgba(24, 10, 34, .38)); }
+.a2-near svg { filter: drop-shadow(3px 6px 4px rgba(24, 10, 34, .32)); }
+
+/* lights off: the room goes dark except for a pool of light around Lumi's antennae (JS moves --lx/--ly) */
+.a2-dark {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .9s ease;
+  background: radial-gradient(circle var(--r, 160px) at var(--lx, 50%) var(--ly, 60%), rgba(255, 226, 150, .1), rgba(14, 9, 32, .45) 55%, rgba(9, 6, 22, .9) 100%);
+}
+.a2-stage.dark .a2-dark { opacity: 1; }
+.a2-toggle { transition: translate .2s; }
+.a2-stage.dark .a2-toggle { translate: 0 10px; }
+.a2-hit[data-spot="switch"]::before { display: none; }
+.a2-lights { margin-left: auto; padding: 5px 12px; border: 1.5px solid rgba(253, 231, 168, .5); border-radius: 999px; background: rgba(29, 22, 64, .6); color: #fde7a8; font: 600 14px var(--head); white-space: nowrap; }
+.a2-lights:hover { background: rgba(58, 43, 92, .8); }
+/* bedtime: Lumi shrinks to bed size and breathes slowly */
+.a2-hover { transition: scale 1.4s ease; }
+.a2-stage.bedtime .a2-hover { scale: .4; animation-duration: 7s; }
+.a2-glow { transition: opacity .8s; }
+.a2-stage.bedtime .a2-glow { opacity: 0; }
+.a2-stage.bedtime .a2-shade { display: none; }
 .a2-box.slab .tp {
   background:
     radial-gradient(ellipse 20% 70% at 80% 50%, rgba(255, 236, 160, .8), transparent),
@@ -117,6 +141,7 @@
     position: absolute; z-index: 4; top: calc(8px + env(safe-area-inset-top)); right: 8px; margin: 0; padding: 6px 12px;
     flex-wrap: nowrap; gap: 8px; border-radius: 999px; background: rgba(29, 22, 64, .72);
   }
+  .a2-side .found-row .pips { display: none; }   /* "found 2/5" says it already, and the lights button needs the room */
   .a2-sheet { position: absolute; z-index: 4; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); pointer-events: none; }
   .a2-card { margin: 0; max-height: 62dvh; overflow: auto; padding-right: 44px; pointer-events: auto; box-shadow: 0 10px 30px rgba(8, 4, 24, .55); }
   .a2-card:not([hidden]) + .a2-x {
