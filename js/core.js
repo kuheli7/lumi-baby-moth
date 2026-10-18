@@ -314,6 +314,8 @@
     $$(".menu-list a").forEach(a => mark(a, a.hash === "#" + name));
     document.title = TITLES[name] ? `${TITLES[name]} · Lumi's Night Shift` : "Lumi's Night Shift";
     scrollTo({ top: 0, behavior: "instant" });
+    // a page that can be reached from several places (the museum) sends its back arrow to the page you came from
+    $$(".back[data-back]").forEach(a => a.setAttribute("href", "#" + (current && current !== name ? current : a.dataset.back)));
     current = name;
     // move focus to the new screen's heading so keyboard and screen-reader users land in the right place
     if (!first) $(`.view[data-view="${name}"] h1`)?.focus({ preventScroll: true });
