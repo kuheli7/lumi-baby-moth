@@ -14,7 +14,7 @@
       "Ooh, shiny. New hobby!",
       "i have started 47 hobbies. i have finished 1. it's the lantern.",
       "do you have a cookie? asking for me.",
-      "my hobby room is very dark. bring the lantern!",
+      "my attic is very dark. bring the lantern!",
       "is it 3 AM yet? that's when the best hobbies start.",
       "want to play? i'm very good at catching stars. (i'm okay at it.)",
       "tap the sky and i'll chase the light. i can't help it. moth.",

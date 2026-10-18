@@ -98,6 +98,41 @@
       s.connect(g).connect(master);
       s.start(c.currentTime + at);
     };
+    // a music box: soft bell notes (a sine plus two quiet overtones) on their own volume knob,
+    // so a tune can be stopped at once. notes: [frequency or 0 for a rest, beats]
+    const bell = (c, out, f, t, len) => {
+      [[1, .5, 1], [2, .1, .45], [3.01, .04, .3]].forEach(([m, vol, decay]) => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.frequency.value = f * m;
+        g.gain.setValueAtTime(.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol, t + .012);
+        g.gain.exponentialRampToValueAtTime(.0001, t + len * decay);
+        o.connect(g).connect(out);
+        o.start(t);
+        o.stop(t + len * decay + .05);
+      });
+    };
+    const music = (notes, beat) => {
+      const c = ready();
+      if (!c) return null;
+      const bus = c.createGain();
+      bus.connect(master);
+      const t0 = c.currentTime + .05;
+      let at = 0;
+      for (const [f, beats] of notes) {
+        if (f) bell(c, bus, f, t0 + at, Math.min(2.6, beats * beat + 1.1));
+        at += beats * beat;
+      }
+      return {
+        seconds: at,
+        stop() {
+          const t = c.currentTime;
+          bus.gain.setValueAtTime(bus.gain.value, t);
+          bus.gain.linearRampToValueAtTime(0, t + .15);
+          setTimeout(() => bus.disconnect(), 400);
+        },
+      };
+    };
     const play = {
       click: () => tone("sine", 880, 660, .07, 0, .45),
       pop: () => tone("sine", 600, 900, .08, 0, .4),
@@ -114,6 +149,7 @@
     };
     return {
       play,
+      music,
       // start (or wake) the audio inside a real tap or key press; iPhones only allow it there
       unlock() { const c = ready(); return !!c && c.state === "running"; },
       get muted() { return muted; },
@@ -210,7 +246,7 @@
   addEventListener("pointerdown", queueLook, { passive: true });
 
   // ---------- router: one screen at a time, picked by the URL hash ----------
-  const TITLES = { home: "", about: "About Lumi", hobbies: "Hobbies", room: "Hobby Room", play: "Star Catch", story: "Story", guestbook: "Guestbook", facts: "Useless Facts", credits: "Credits" };
+  const TITLES = { home: "", about: "About Lumi", hobbies: "Hobbies", room: "Lumi's Attic", play: "Star Catch", story: "Story", guestbook: "Guestbook", facts: "Useless Facts", credits: "Credits" };
   const TAB_OF = { room: "hobbies" };
   const hooks = {};
   let current = null;

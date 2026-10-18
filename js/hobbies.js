@@ -1,4 +1,5 @@
-// Hobbies: the list of half-finished projects, and the dark hobby room where Lumi's lantern is your cursor.
+// Hobbies: the list of half-finished projects, and Lumi's attic: a dark room where Lumi's lantern is your
+// cursor, with its hobbies to find and things to do (the bed plays a lullaby).
 (() => {
   "use strict";
   const { $, $$, sfx, store, restart, reduceMotion } = app;
@@ -36,7 +37,7 @@
   const iconSvg = (id) => `<svg viewBox="0 0 64 64" aria-hidden="true">${ICON[id]}</svg>`;
 
   // the five hobbies from the character sheet, plus this very website
-  // room: where it sits in the dark room's 640×400 scene, and where its tag goes [x, y, anchor]
+  // room: where it sits in the attic's 640×400 scene, and where its tag goes [x, y, anchor]
   const HOBBIES = [
     { id: "moons", name: "watercolor moons", tile: "#fde6ec", started: "3 nights ago", status: "half-finished", progress: 40,
       note: "painted three moons. two came out looking like lemons. the third is still a pencil circle.",
@@ -115,7 +116,7 @@
   document.addEventListener("click", (e) => { if (e.target.closest("[data-pluck]")) pluckString(); });
 
   // ======================================================================
-  //  The dark hobby room
+  //  Lumi's attic (dark until the lantern comes by)
   // ======================================================================
   const VB_W = 640, VB_H = 400;
   const SCENE = `<svg viewBox="0 0 ${VB_W} ${VB_H}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -199,6 +200,14 @@
     ${drop(408, 246, 1.1)}${drop(423, 240, 1.1)}${drop(438, 241, 1.1)}
     <path d="M456 250 L470 242" stroke="#9aa3ad" stroke-width="1.8" stroke-linecap="round"/>
 
+    <!-- Lumi's bed under the desk: a matchbox, a cotton-ball pillow and a sock for a blanket -->
+    <rect x="186" y="304" width="170" height="30" rx="4" fill="#ecd5b4" stroke="#b98a5c" stroke-width="2.5"/>
+    <rect x="186" y="304" width="46" height="30" rx="4" fill="#a34063" stroke="#85304f" stroke-width="2.5"/>
+    ${star4(209, 319, 7, "#f6cf6a")}
+    <ellipse cx="252" cy="303" rx="17" ry="8.5" fill="#fffaf4" stroke="#e3cdb5" stroke-width="2"/>
+    <path d="M272 297 h72 a6 6 0 0 1 6 6 v5 h-84 v-5 a6 6 0 0 1 6 -6z" fill="#c9b7f0" stroke="#9c86d6" stroke-width="2"/>
+    <path d="M288 298 v9 M304 298 v9 M320 298 v9 M336 298 v9" stroke="#fff" stroke-width="3" opacity=".55"/>
+
     <!-- 4. the guitar with one string, leaning on the desk -->
     <g transform="rotate(-10 548 340)">
       <rect x="541" y="112" width="14" height="150" fill="#8a5a32"/>
@@ -215,14 +224,19 @@
   </svg>`;
 
   const ROOM = HOBBIES.filter(h => h.room);
+  // things in the attic that aren't hobbies: the lantern finds them too, but they don't count toward the five
+  const SPOTS = [
+    { id: "bed", name: "Lumi's bed", room: [186, 290, 170, 46], tag: [271, 352, .5],
+      note: "a matchbox, a cotton-ball pillow and a sock for a blanket. Lumi only sleeps after a lullaby.", lullaby: true },
+  ];
+  const PLACES = ROOM.concat(SPOTS);
   const room = $("#room"), roomHits = $("#room-hits"), roomCard = $("#hobby-card"), foundCount = $("#found-count"), pips = $("#found-pips"), roomSwitch = $("#room-switch");
   $("#room-scene").innerHTML = SCENE;
-  $("#room-lumi").innerHTML = `<img src="${app.artURL("curious", true)}" alt="">`;
-  roomHits.innerHTML = ROOM.map(h => {
+  roomHits.innerHTML = PLACES.map(h => {
     const [x, y, w, hh] = h.room, [tx, ty, ax] = h.tag;
     return `<button class="hit" data-hobby="${h.id}" data-sfx="none" aria-label="${h.name}"
         style="left:${x / VB_W * 100}%;top:${y / VB_H * 100}%;width:${w / VB_W * 100}%;height:${hh / VB_H * 100}%"></button>
-      <span class="hit-tag" data-tag="${h.id}" style="left:${tx / VB_W * 100}%;top:${ty / VB_H * 100}%;translate:${-ax * 100}% -50%">${h.name.replace(/ \(.*\)/, "")}</span>`;
+      <span class="hit-tag${h.lullaby ? " spot" : ""}" data-tag="${h.id}" style="left:${tx / VB_W * 100}%;top:${ty / VB_H * 100}%;translate:${-ax * 100}% -50%">${h.name.replace(/ \(.*\)/, "")}</span>`;
   }).join("");
   const found = new Set();
   let lightsOn = false;
@@ -233,7 +247,7 @@
   showFound();
 
   // lantern position as fractions of the room; it glides toward the target
-  const lamp = { x: .47, y: .55, tx: .47, ty: .55, ease: .3, moving: false };
+  const lamp = { x: .47, y: .55, tx: .47, ty: .55, ease: .3, moving: false, arrive: null };
   const radius = () => Math.max(70, Math.min(150, room.clientWidth * .19));
   const sizeRoom = () => room.style.setProperty("--r", Math.round(radius()) + "px");
   const drawLamp = () => {
@@ -247,6 +261,7 @@
     drawLamp();
     checkReveal();
     if (lamp.moving) requestAnimationFrame(stepLamp);
+    else if (lamp.arrive) { const done = lamp.arrive; lamp.arrive = null; done(); }
   }
   function aimLamp(fx, fy, ease) {
     lamp.tx = Math.max(0, Math.min(1, fx));
@@ -256,14 +271,22 @@
   }
   // a hobby is found once the lantern's bright middle touches it
   function checkReveal() {
-    if (lightsOn || !room.clientWidth) return;
+    if (lightsOn || bedtime || !room.clientWidth) return;
     const lx = lamp.x * VB_W, ly = lamp.y * VB_H, reach = radius() / room.clientWidth * VB_W * .3;
-    ROOM.forEach(h => {
-      if (found.has(h.id)) return;
+    PLACES.forEach(h => {
+      if (found.has(h.id) || seen.has(h.id)) return;
       const [x, y, w, hh] = h.room;
       const dx = Math.max(x - lx, 0, lx - (x + w)), dy = Math.max(y - ly, 0, ly - (y + hh));
-      if (Math.hypot(dx, dy) < reach) discover(h);
+      if (Math.hypot(dx, dy) < reach) (SPOTS.includes(h) ? spot(h) : discover(h));
     });
+  }
+  // a spot just gets its tag; it isn't a hobby
+  const seen = new Set();
+  function spot(h, quiet = false) {
+    if (seen.has(h.id)) return;
+    seen.add(h.id);
+    $(`.hit-tag[data-tag="${h.id}"]`).classList.add("found");
+    if (!quiet) { restart($(`.hit-tag[data-tag="${h.id}"]`), "just"); sfx.play.pop(); }
   }
   function discover(h, quiet = false) {
     if (found.has(h.id)) return;
@@ -281,7 +304,8 @@
     roomCard.hidden = false;
     roomCard.innerHTML = `<h3>${h.name}</h3>
       <p>${line ? `<b>Lumi:</b> ${line} ` : ""}${h.note}</p>
-      <div class="progress"><span>progress</span><span class="progress-bar"><i style="--p:${h.progress}%"></i></span><span>${h.progress}%</span></div>
+      ${h.progress === undefined ? "" : `<div class="progress"><span>progress</span><span class="progress-bar"><i style="--p:${h.progress}%"></i></span><span>${h.progress}%</span></div>`}
+      ${h.lullaby ? `<button class="btn btn-lilac small" data-lullaby data-sfx="none">${asleep ? "☀️ wake Lumi up" : "♪ play the lullaby"}</button>` : ""}
       ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>` : ""}
       ${h.link ? `<a class="btn btn-lilac small" href="${h.link[0]}">${h.link[1]}</a>` : ""}`;
   }
@@ -291,13 +315,17 @@
     const r = room.getBoundingClientRect();
     return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
   };
-  room.addEventListener("pointermove", (e) => { if (e.pointerType !== "touch") aimLamp(...roomPoint(e), .3); });
-  room.addEventListener("pointerdown", (e) => aimLamp(...roomPoint(e), e.pointerType === "touch" ? .14 : .3));
+  room.addEventListener("pointermove", (e) => { if (e.pointerType !== "touch" && !bedtime) aimLamp(...roomPoint(e), .3); });
+  room.addEventListener("pointerdown", (e) => {
+    if (asleep) { wakeUp(); return; }
+    if (!bedtime) aimLamp(...roomPoint(e), e.pointerType === "touch" ? .14 : .3);
+  });
   roomHits.addEventListener("click", (e) => {
     const btn = e.target.closest(".hit");
     if (!btn) return;
-    const h = ROOM.find(x => x.id === btn.dataset.hobby);
-    if (!found.has(h.id)) discover(h);
+    const h = PLACES.find(x => x.id === btn.dataset.hobby);
+    if (SPOTS.includes(h)) { spot(h, true); showRoomCard(h); sfx.play.pop(); }
+    else if (!found.has(h.id)) discover(h);
     else { showRoomCard(h); sfx.play.pop(); }
     if (h.pluck) pluckString();
   });
@@ -305,7 +333,8 @@
   roomHits.addEventListener("focusin", (e) => {
     const btn = e.target.closest(".hit");
     if (!btn || !btn.matches(":focus-visible")) return;
-    const [x, y, w, hh] = ROOM.find(h => h.id === btn.dataset.hobby).room;
+    if (bedtime) return;
+    const [x, y, w, hh] = PLACES.find(h => h.id === btn.dataset.hobby).room;
     aimLamp((x + w / 2) / VB_W, (y + hh / 2) / VB_H, .2);
   });
 
@@ -313,12 +342,61 @@
     lightsOn = on;
     room.classList.toggle("lit", on || document.body.classList.contains("lit"));
     roomSwitch.textContent = on ? "🌙 lights off" : "💡 lights on";
-    if (on) ROOM.forEach(h => discover(h, true));
+    if (on) { ROOM.forEach(h => discover(h, true)); SPOTS.forEach(h => spot(h, true)); }
   };
   roomSwitch.addEventListener("click", () => {
     app.setRoomLights(!lightsOn);
     if (lightsOn) app.toast("hey! that's cheating. …okay, it is kind of nice in here.");
   });
-  app.onView("room", () => { sizeRoom(); drawLamp(); });
+  // ---------- bedtime: a music-box lullaby, and Lumi carries the lantern to bed as a night light ----------
+  // Brahms' Lullaby (traditional, public domain), up an octave so it sounds like a music box
+  const N = { D: 587.3, E: 659.3, F: 698.5, G: 784, A: 880, B: 987.8, C: 1046.5 };
+  const LULLABY = [["E", .5], ["E", .5], ["G", 2], ["E", .5], ["E", .5], ["G", 2], ["E", .5], ["G", .5], ["C", 1], ["B", 1.5], ["A", .5],
+    ["A", 1], ["G", 1], ["D", .5], ["E", .5], ["F", 1], ["D", 1], ["D", .5], ["E", .5], ["F", 2], ["D", .5], ["F", .5],
+    ["B", .5], ["A", .5], ["G", 1], ["B", 1], ["C", 3]].map(([n, b]) => [N[n], b]);
+  const BED = [203 / VB_W, 318 / VB_H];          // the lantern sits on the matchbox sleeve, Lumi on the pillow
+  const roomLumi = $("#room-lumi");
+  let bedtime = false, asleep = false, tune = null, tuneEnd = 0;
+  const lullabyBtn = () => $("[data-lullaby]", roomCard);
+  const lumiPicture = (mood) => { roomLumi.innerHTML = `<img src="${app.artURL(mood, true)}" alt="">`; };
+  lumiPicture("curious");
+
+  function lullaby() {
+    if (bedtime) { wakeUp(); return; }
+    bedtime = true;
+    room.classList.add("bedtime");
+    tune = sfx.music(LULLABY, .5);
+    clearTimeout(tuneEnd);
+    tuneEnd = setTimeout(() => { tune = null; }, ((tune && tune.seconds) || 0) * 1000 + 500);
+    if (lullabyBtn()) lullabyBtn().textContent = "■ stop the lullaby";
+    app.toast(tune ? "♪ Brahms' Lullaby, music-box edition" : "♪ (the sound is off, so Lumi hums it quietly)");
+    // Lumi flies the lantern over to the matchbox, then curls up next to it
+    lamp.arrive = () => { if (bedtime) fallAsleep(); };
+    aimLamp(BED[0], BED[1], reduceMotion ? 1 : .06);
+  }
+  function fallAsleep() {
+    asleep = true;
+    lumiPicture("sleepy");
+    room.classList.add("asleep");
+    if (!lullabyBtn()) return;
+    roomCard.querySelector("p").textContent = "zzz… Lumi fell asleep. the lantern stays on as a night light. (tap the attic to wake it.)";
+    lullabyBtn().textContent = "☀️ wake Lumi up";
+  }
+  function wakeUp(quiet = false) {
+    if (!bedtime) return;
+    bedtime = asleep = false;
+    lamp.arrive = null;
+    if (tune) { tune.stop(); tune = null; }
+    clearTimeout(tuneEnd);
+    room.classList.remove("bedtime", "asleep");
+    lumiPicture("curious");
+    if (quiet) return;
+    sfx.play.pop();
+    if (lullabyBtn()) lullabyBtn().textContent = "♪ play the lullaby";
+    app.toast("Lumi: *yawn* …i wasn't asleep. (i was asleep.)");
+  }
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-lullaby]")) lullaby(); });
+
+  app.onView("room", () => { sizeRoom(); drawLamp(); }, () => wakeUp(true));
   addEventListener("resize", sizeRoom);
 })();

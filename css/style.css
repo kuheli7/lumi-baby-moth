@@ -300,7 +300,7 @@ body.lit .sky-lit { opacity: 1; }
 }
 .suggest input:focus, .guest-form input:focus, .guest-form textarea:focus { outline: none; border-color: var(--lilac-line); box-shadow: 0 0 0 3px var(--lilac-bg); }
 
-/* ---------- hobby room ---------- */
+/* ---------- Lumi's attic ---------- */
 .panel-dark { background: #2a2149; color: #f3ecfb; box-shadow: 0 18px 50px rgba(8, 4, 24, .6), inset 0 0 0 1.5px rgba(255, 248, 241, .08); }
 .panel-dark .view-head h1 { color: #fff8f1; }
 .room-intro { margin: 0 0 12px; text-align: center; color: #d9cfee; }
@@ -331,6 +331,10 @@ body.lit .sky-lit { opacity: 1; }
   transform: translate(-54.6%, -68.8%); transition: opacity .6s;
 }
 .room-lumi img { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 14px rgba(255, 220, 130, .5)); }
+/* asleep in bed: the sleepy picture has its lantern lower left, so it's placed by that instead */
+.room.asleep .room-lumi { width: 18%; transform: translate(-22.3%, -70.9%); }
+.room.bedtime .room-dark { background: rgba(8, 6, 24, .97); }
+.hit-tag.spot { background: #ede4fb; border-color: #b9a6ee; color: var(--plum); }
 .room.lit .room-dark, .room.lit .room-glow { opacity: 0; }
 .room-hits { position: absolute; inset: 0; }
 .hit { position: absolute; padding: 0; background: none; border: 0; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
