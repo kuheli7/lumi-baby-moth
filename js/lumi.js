@@ -470,7 +470,8 @@ function sticker(mood) {
     // Leaning over to hug a big glossy heart, eyes closed happily, pink hearts floating
     love: () => sit({
       fig: "rotate(18 120 170)",
-      wl: "translate(1 -11)", wr: "translate(-9 3)",
+      wl: "translate(1 -11) translate(118 162) scale(1.2) translate(-118 -162)",
+      wr: "translate(-9 3) translate(122 160) scale(1.2) translate(-122 -160)",
       bodySize: [50, 34, 14, .06], head: "translate(-5 9)",
       tufts: [[113.5, 98.5, 124.5, 98.5]],
       ant: [
@@ -749,18 +750,25 @@ function sticker(mood) {
     // Mid-hop after a glowing butterfly: three-quarter view, antennae swept back, paws reaching
     chase: () => {
       const H = "translate(113 108) scale(.9) translate(-120 -123)";
+      // Glowing butterfly seen from the side, as in the sticker: wings rise from the body at (0, 0),
+      // the far pair smaller on the left, the near pair tall on the right. In a flap the two pairs
+      // fold toward each other over the body, then open out again
+      const wing = (d) => `<path d="${d}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4" stroke-linejoin="round"/>`;
+      const flap = (to) => matchMedia("(prefers-reduced-motion: reduce)").matches ? ""
+        : `<animateTransform attributeName="transform" type="scale" values="1 1;${to} 1;1 1" dur=".55s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .6 1;.4 0 .6 1"/>`;
+      const butterfly = `
+        <g opacity=".92">${flap(.5)}
+          ${wing(blob(-9, -14, 7.5, 12, 4, .02, -28))}
+          ${wing(blob(-4.5, 1.5, 3.8, 5.6, 6, .03, 20))}</g>
+        <g>${flap(.35)}
+          ${wing("M0 0 C-5 -6 -7 -14 -6 -20 C-5 -29 1 -34 7 -33 C13 -32 16 -24 13 -15 C12 -13 11 -12 10 -11 C15 -10 18 -6 16 -1 C14 3 6 3 0 0 Z")}</g>
+        <circle cx="0" cy="0" r="1.6" fill="#e9a93a"/>`;
       const fur = (part) => `<g transform="rotate(-25 108 170)">${fluff(scallop(108, 170, 35, 25, 10, 7, .55, .1, .8), `${id}cb`, `url(#${id}furB)`, "", 5.8, LINE, part)}</g>`;
       return `
       ${strokes(["M-10 110 q4 3 8 1"], "#e2c4a6", 2.2)}
       <path d="M232 80 Q246 116 214 134 Q190 148 172 190" fill="none" stroke="#f2c14e" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"/>
       ${star4(138, 26, 9, C.gold)}
-      <g class="fly">
-        <path d="${blob(198, 50, 11, 18, 4, .04, -18)}" class="flutter" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.6"/>
-        <path d="${blob(205, 70, 8, 8, 6, .05)}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4"/>
-        <path d="${blob(221, 40, 15, 22, 2, .04, 22)}" class="flutter" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.6"/>
-        <path d="${blob(219, 64, 9, 9, 8, .05)}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4"/>
-        <path d="M207 34 Q209 52 210 70" fill="none" stroke="#e9b53e" stroke-width="2.4" stroke-linecap="round"/>
-      </g>
+      <g class="fly"><g transform="translate(215.5 69) scale(1.55)">${butterfly}</g></g>
       <g class="hop">
         ${peachWing(40, 152, 30, 44, 3, 31, [33.3, 149.3, 11], "L")}
         ${foot(39, 204, 7.5, 11, 60, id, 2, [80, 160])}
