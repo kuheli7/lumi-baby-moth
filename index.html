@@ -124,20 +124,24 @@
         <a class="back" href="#hobbies" aria-label="Back to hobbies"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
         <h1 id="h-room" tabindex="-1">Lumi's Attic</h1>
       </header>
-      <p class="room-intro">Lumi's attic is dark. <span class="fine-only">Move</span><span class="touch-only">Tap around to move</span> the lantern to find its half-finished hobbies (and its bed).</p>
-      <div class="room" id="room">
-        <div class="room-scene" id="room-scene"></div>
-        <div class="room-dark" aria-hidden="true"></div>
-        <div class="room-glow" aria-hidden="true"></div>
-        <div class="room-hits" id="room-hits"></div>
-        <div class="room-lumi" id="room-lumi" aria-hidden="true"></div>
+      <p class="room-intro">It's dark up here. <span class="fine-only">Move</span><span class="touch-only">Tap around to move</span> the lantern to find Lumi's hobbies (and its bed).</p>
+      <div class="room-layout">
+        <div class="room" id="room">
+          <div class="room-scene" id="room-scene"></div>
+          <div class="room-dark" id="room-dark" aria-hidden="true"><i></i></div>
+          <div class="room-glow" id="room-glow" aria-hidden="true"><i></i></div>
+          <div class="room-hits" id="room-hits"></div>
+          <div class="room-lumi" id="room-lumi" aria-hidden="true"></div>
+        </div>
+        <div class="room-side">
+          <div class="found-row">
+            <p class="found">found <b id="found-count">0</b>/5</p>
+            <span class="pips" id="found-pips" aria-hidden="true"></span>
+            <button class="btn btn-ghost" id="room-switch">💡 lights on</button>
+          </div>
+          <div class="hobby-card" id="hobby-card" aria-live="polite" hidden></div>
+        </div>
       </div>
-      <div class="found-row">
-        <p class="found">found <b id="found-count">0</b>/5</p>
-        <span class="pips" id="found-pips" aria-hidden="true"></span>
-        <button class="btn btn-ghost" id="room-switch">💡 lights on</button>
-      </div>
-      <div class="hobby-card" id="hobby-card" aria-live="polite" hidden></div>
     </div>
   </section>
 

@@ -257,10 +257,19 @@
   // lantern position as fractions of the room; it glides toward the target
   const lamp = { x: .47, y: .55, tx: .47, ty: .55, ease: .3, moving: false, arrive: null };
   const radius = () => Math.max(70, Math.min(150, room.clientWidth * .19));
-  const sizeRoom = () => room.style.setProperty("--r", Math.round(radius()) + "px");
+  // the light is three things that only ever slide (transform / translate), so moving it costs next to nothing
+  const darkSpot = $("#room-dark i"), glowSpot = $("#room-glow i"), carried = $("#room-lumi");
+  let roomW = 0, roomH = 0;
+  const sizeRoom = () => {
+    roomW = room.clientWidth;
+    roomH = room.clientHeight;
+    room.style.setProperty("--r", Math.round(radius()) + "px");
+  };
   const drawLamp = () => {
-    room.style.setProperty("--x", (lamp.x * 100).toFixed(2) + "%");
-    room.style.setProperty("--y", (lamp.y * 100).toFixed(2) + "%");
+    if (!roomW) sizeRoom();
+    const x = (lamp.x * roomW).toFixed(1), y = (lamp.y * roomH).toFixed(1);
+    darkSpot.style.transform = glowSpot.style.transform = `translate(${x}px, ${y}px)`;
+    carried.style.translate = `${x}px ${y}px`;
   };
   function stepLamp() {
     lamp.x += (lamp.tx - lamp.x) * lamp.ease;
@@ -309,6 +318,7 @@
     app.lumi.react("starry", `ooh, shiny. new hobby: ${h.name}!`);
   }
   function showRoomCard(h, line) {
+    const wasHidden = roomCard.hidden;
     roomCard.hidden = false;
     roomCard.innerHTML = `<h3>${h.name}</h3>
       <p>${line ? `<b>Lumi:</b> ${line} ` : ""}${h.note}</p>
@@ -320,6 +330,8 @@
       ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>
         <button class="btn btn-lilac small" data-guitar data-sfx="none">🎶 guitar lesson</button>` : ""}
       ${h.link ? `<a class="btn btn-lilac small" href="${h.link[0]}">${h.link[1]}</a>` : ""}`;
+    // on a phone the card sits under the scene: bring it into view if it opened off the bottom of the screen
+    roomCard.scrollIntoView({ block: "nearest", behavior: reduceMotion || wasHidden ? "auto" : "smooth" });
   }
 
   // pointer: the lantern follows a mouse and glides to wherever a finger taps
@@ -793,5 +805,5 @@
   }, 3000);
 
   app.onView("room", () => { sizeRoom(); drawLamp(); }, () => wakeUp(true));
-  addEventListener("resize", sizeRoom);
+  addEventListener("resize", () => { sizeRoom(); drawLamp(); });
 })();

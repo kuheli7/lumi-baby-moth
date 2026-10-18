@@ -303,37 +303,40 @@ body.lit .sky-lit { opacity: 1; }
 /* ---------- Lumi's attic ---------- */
 .panel-dark { background: #2a2149; color: #f3ecfb; box-shadow: 0 18px 50px rgba(8, 4, 24, .6), inset 0 0 0 1.5px rgba(255, 248, 241, .08); }
 .panel-dark .view-head h1 { color: #fff8f1; }
-.room-intro { margin: 0 0 12px; text-align: center; color: #d9cfee; }
+.room-intro { margin: 0 0 10px; text-align: center; color: #d9cfee; font-size: 17px; line-height: 1.3; }
+.panel-dark .view-head { margin-bottom: 6px; }
+.panel-dark .view-head h1 { font-size: 26px; }
+.room-layout { display: block; }
 @media (hover: none) { .fine-only { display: none; } }
 @media (hover: hover) { .touch-only { display: none; } }
 .room {
   position: relative; aspect-ratio: 640 / 400; overflow: hidden; border-radius: 20px; background: #0f0b1a;
-  width: min(100%, calc((100vh - 330px) * 1.6)); min-width: min(100%, 300px); margin: 0 auto;
+  width: min(100%, calc((100vh - 250px) * 1.6)); min-width: min(100%, 300px); margin: 0 auto;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-  --x: 47%; --y: 55%; --r: 120px;
+  --r: 120px;
 }
 @media (hover: hover) and (pointer: fine) { .room, .room * { cursor: none; } .room.lit, .room.lit * { cursor: auto; } }
 .room-scene, .room-scene svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.room-dark {
-  position: absolute; inset: 0; pointer-events: none; background: rgba(10, 7, 22, .95);
-  -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), transparent 0, transparent 38%, rgba(0, 0, 0, .55) 68%, #000 100%);
-  mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), transparent 0, transparent 38%, rgba(0, 0, 0, .55) 68%, #000 100%);
-  transition: opacity 1.2s ease;
+/* The lantern's light is a round hole in the dark: one oversized picture (twice the room, so it covers the
+   whole room wherever the light is) that is moved with transform, so the browser slides it around instead
+   of repainting the scene. Its centre sits on the light. */
+.room-dark, .room-glow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; transition: opacity 1.2s ease; }
+.room-dark i, .room-glow i { position: absolute; left: -100%; top: -100%; width: 200%; height: 200%; will-change: transform; }
+.room-dark i {
+  --dark: rgba(10, 7, 22, .95);
+  background: radial-gradient(circle var(--r) at 50% 50%, transparent 0, transparent 38%, rgba(10, 7, 22, .52) 68%, var(--dark) 100%);
 }
-.room-glow {
-  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light;
-  background: radial-gradient(circle calc(var(--r) * .9) at var(--x) var(--y), rgba(255, 214, 120, .75), transparent 70%);
-  transition: opacity 1.2s ease;
-}
+.room-glow { mix-blend-mode: soft-light; }
+.room-glow i { background: radial-gradient(circle calc(var(--r) * .9) at 50% 50%, rgba(255, 214, 120, .75), transparent 70%); }
 /* Lumi carries the lantern: the picture is placed so its lantern sits at the light's centre */
 .room-lumi {
-  position: absolute; left: var(--x); top: var(--y); width: 24%; pointer-events: none;
+  position: absolute; left: 0; top: 0; width: 24%; pointer-events: none;
   transform: translate(-54.6%, -68.8%); transition: opacity .6s;
 }
 .room-lumi img { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 14px rgba(255, 220, 130, .5)); }
 /* asleep in bed: the sleepy picture has its lantern lower left, so it's placed by that instead */
 .room.asleep .room-lumi { width: 18%; transform: translate(-22.3%, -70.9%); }
-.room.bedtime .room-dark { background: rgba(8, 6, 24, .97); }
+.room.bedtime .room-dark i { --dark: rgba(8, 6, 24, .97); }
 .bead-maker { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; }
 .bead-lumi svg { display: block; width: 100%; height: auto; overflow: visible; }
 .bead-colors { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -403,7 +406,19 @@ body.lit .sky-lit { opacity: 1; }
 @keyframes found { 30% { scale: 1.25; } }
 .room-scene .twang { animation: twang .6s linear; }
 @keyframes twang { 10%, 30%, 50%, 70% { transform: translateX(1.6px); } 20%, 40%, 60%, 80% { transform: translateX(-1.6px); } }
-.found-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.found-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.room-side .hobby-card { margin-top: 10px; }
+@media (max-width: 479px) {
+  .found { padding: 4px 12px; font-size: 16px; }
+  .found-row { gap: 8px; }
+  .found-row .btn { padding: 8px 12px; font-size: 15px; }
+}
+/* on a wide screen the scene and the hobby card sit side by side, so the card never falls below the fold */
+@media (min-width: 900px) {
+  .room-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+  .room { width: 100%; }
+  .room-side .found-row { margin-top: 0; }
+}
 .found { margin: 0; padding: 6px 16px; border-radius: 14px; background: var(--gold-bg); color: #5c4033; font: 600 18px var(--head); }
 .pips { display: flex; gap: 6px; }
 .pips i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #8f80b8; }
