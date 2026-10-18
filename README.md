@@ -103,6 +103,13 @@ One page with everything needed to draw Lumi again: the facts, four views (front
 - It respects *reduce motion*, works with a keyboard, and uses real buttons, labels and live regions.
 - Your name, painting, necklace, cookies, game progress, hobbies and chat are saved in your browser's storage, and the site still works if that is blocked.
 
+## Made to run well
+
+- Plain HTML, CSS and JS: no libraries, no build step, and the scripts load with `defer` so the page paints before they run.
+- Tested on a real phone while building, plus tablet and desktop sizes, keyboard-only use and *reduce motion*; the browser console stays free of errors.
+- Every page keeps to about 150 words or fewer. The story is told with pictures and motion, not walls of text.
+- The mute button is always on screen, and sound never starts until you tap something.
+
 ## Run it
 
 No build step. Open `index.html`, or serve the folder:
