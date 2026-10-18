@@ -39,50 +39,67 @@
   // the five hobbies from the character sheet, plus this very website
   // room: where it sits in the attic's 640×400 scene, and where its tag goes [x, y, anchor]
   const HOBBIES = [
-    { id: "moons", name: "watercolor moons", tile: "#fde6ec", started: "3 nights ago", status: "half-finished", progress: 40,
+    { id: "moons", cat: "creative", name: "watercolor moons", tile: "#fde6ec", started: "3 nights ago", status: "half-finished", progress: 40,
       note: "painted three moons. two came out looking like lemons. the third is still a pencil circle.",
       room: [62, 196, 172, 80], tag: [66, 290, 0] },
-    { id: "jar", name: "resin jar of stars", tile: "#fff1d2", started: "a week ago", status: "sticky", progress: 30,
+    { id: "jar", cat: "crafty", name: "resin jar of stars", tile: "#fff1d2", started: "a week ago", status: "sticky", progress: 30,
       note: "poured the resin. forgot the stars. added the stars. the resin had already set. one star lives on the lid now.",
       room: [400, 76, 82, 80], tag: [440, 176, .5] },
-    { id: "beads", name: "dew-drop bead jewellery", tile: "#e3f1fb", started: "4 nights ago", status: "needle missing", progress: 15,
+    { id: "beads", cat: "crafty", name: "dew-drop bead jewellery", tile: "#e3f1fb", started: "4 nights ago", status: "needle missing", progress: 15,
       note: "strung three dew drops. they evaporated by morning. switched to glass beads, then lost the needle.",
       room: [352, 222, 120, 54], tag: [412, 290, .5] },
-    { id: "guitar", name: "the guitar (one string)", tile: "#fdebd9", started: "2 weeks ago", status: "one (1) string", progress: 5,
+    { id: "guitar", cat: "music", name: "the guitar (one string)", tile: "#fdebd9", started: "2 weeks ago", status: "one (1) string", progress: 5,
       note: "learned one string. it is a very good string. the other five are 'coming soon'.",
       room: [478, 82, 130, 314], tag: [606, 244, 1], pluck: true },
-    { id: "museum", name: "museum of useless facts", tile: "#efe7fb", started: "every night", status: "open late", progress: 99,
+    { id: "museum", cat: "collecting", name: "museum of useless facts", tile: "#efe7fb", started: "every night", status: "open late", progress: 99,
       note: "the only hobby that grows by itself. it can never be finished, because new facts keep happening.",
       room: [505, 52, 112, 104], tag: [612, 40, 1], link: ["#facts", "visit the museum ›"] },
-    { id: "website", name: "this website", tile: "#e9e4f7", started: "Oct 17, 5:17 PM", status: "still in progress", progress: 90,
+    { id: "website", cat: "exploring", name: "this website", tile: "#e9e4f7", started: "Oct 17, 5:17 PM", status: "still in progress", progress: 90,
       note: "the only hobby with a deadline. Lumi is trying very hard to finish this one.",
       link: ["#credits", "see who helped ›"] },
   ];
 
   // ---------- the list ----------
-  const list = $("#hobby-list");
-  const CHEV = `<svg class="i chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>`;
+  const list = $("#hobby-list"), filters = $("#hob-filters"), peek = $("#hob-lumi");
   const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const card = (h) => `<li class="hobby"><details>
-      <summary>
-        <span class="hobby-ico" style="background:${h.tile}">${iconSvg(h.icon || h.id)}</span>
-        <span><span class="hobby-name">${esc(h.name)}</span><span class="hobby-meta">started ${esc(h.started)}<br>status: ${esc(h.status)}</span></span>
-        ${CHEV}
-      </summary>
-      <div class="hobby-more">
-        <span class="construction">🚧 under construction</span>
-        <p>${esc(h.note)}</p>
-        <div class="progress"><span>progress</span><span class="progress-bar"><i style="--p:${h.progress}%"></i></span><span>${h.progress}%</span></div>
+  // one card: a picture, what it is, how it's going, and (for some) something to do
+  const card = (h, i) => `<li class="hobby" style="--i:${i}">
+      <span class="hobby-ico" style="background:${h.tile}" aria-hidden="true">${iconSvg(h.icon || h.id)}<em class="construction">🚧 wip</em></span>
+      <div class="hobby-body">
+        <h2 class="hobby-name">${esc(h.name)}</h2>
+        <p class="hobby-tags"><span class="pill">${esc(h.status)}</span><span class="hobby-started">started ${esc(h.started)}</span></p>
+        <p class="hobby-note">${esc(h.note)}</p>
+        <div class="progress" role="img" aria-label="${h.progress}% done"><span class="progress-bar"><i style="--p:${h.progress}%"></i></span><b>${h.progress}%</b></div>
         ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>` : ""}
         ${h.link ? `<a class="btn btn-lilac small" href="${h.link[0]}">${h.link[1]}</a>` : ""}
       </div>
-    </details></li>`;
+    </li>`;
 
   let mine = store.get("hobbies", []);
   if (!Array.isArray(mine)) mine = [];
-  const suggested = () => mine.map(m => ({ id: "new", icon: "new", tile: "#fff6e0", name: m.name, started: "just now", status: "started (as always)", progress: 0,
+  const suggested = () => mine.map(m => ({ id: "new", icon: "new", cat: "exploring", tile: "#fff6e0", name: m.name, started: "just now", status: "started (as always)", progress: 0,
     note: "a brand new hobby, suggested by a visitor. Lumi is very excited. Lumi has not started it yet." }));
-  const renderList = () => { list.innerHTML = suggested().concat(HOBBIES).map(card).join(""); };
+
+  const CATS = [["all", "⭐"], ["creative", "🎨"], ["crafty", "🧶"], ["collecting", "🫙"], ["music", "🎵"], ["exploring", "🔍"]];
+  let cat = "all";
+  const renderFilters = () => {
+    filters.innerHTML = CATS.map(([id, ico]) =>
+      `<button type="button" class="hob-chip" data-cat="${id}" aria-pressed="${id === cat}" data-sfx="none"><span aria-hidden="true">${ico}</span> ${id === "all" ? `all<span class="wide-only"> hobbies</span>` : id}</button>`).join("");
+  };
+  const renderList = () => {
+    list.innerHTML = suggested().concat(HOBBIES).filter(h => cat === "all" || h.cat === cat).map(card).join("");
+  };
+  filters.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-cat]");
+    if (!b || b.dataset.cat === cat) return;
+    cat = b.dataset.cat;
+    sfx.play.pop();
+    renderFilters();
+    renderList();
+  });
+  const drawPeek = () => { peek.innerHTML = app.art("sleepy", true); };
+  drawPeek();
+  renderFilters();
   renderList();
 
   $("#suggest").addEventListener("submit", (e) => {
@@ -92,6 +109,8 @@
     input.value = "";
     mine = [{ name }].concat(mine).slice(0, 6);
     store.set("hobbies", mine);
+    cat = "all";
+    renderFilters();
     renderList();
     sfx.play.shiny();
     app.lumi.react("starry", `ooh, shiny. new hobby: ${name}!`, 3000);
@@ -438,7 +457,7 @@
   }
   document.addEventListener("click", (e) => { if (e.target.closest("[data-space]")) flyOut(); });
 
-  addEventListener("lumi:wear", () => lumiPicture(asleep ? "sleepy" : "curious"));
+  addEventListener("lumi:wear", () => { lumiPicture(asleep ? "sleepy" : "curious"); drawPeek(); });
 
   // ---------- the easel: paint with Lumi, and the painting goes up on the attic wall ----------
   // Each stroke is drawn solid on a "wet" layer shown see-through, then laid onto the paper at the same
