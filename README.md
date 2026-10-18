@@ -15,14 +15,16 @@ Built for the haX.baby *Baby's First Website* hackathon (Track 2: original chara
 4. **Their story:** hatched in a paint box under a desk lamp and has chased lights (and hobbies) ever since. The only thing it ever finished is the lantern it carries.
 5. **Tagline:** “Ooh, shiny. New hobby.”
 
-## What's on the page
+## What's on the site
 
-The site is a retro desktop on a starry night. Every section is a window you can minimize, close and reopen, and drag around on big screens.
+One calm screen at a time on a starry night, with tabs at the bottom and a menu for the rest.
 
-- **lumi.exe:** Lumi reacts to you. Poke it to make it giggle, but poke it too much and it gets hurt, then flops. Drag a cookie from the jar to bring it back (tapping a cookie works too). Leave it alone and it falls asleep. Its eyes follow your cursor or finger.
-- **hobby_room.exe:** a dark room where your cursor is Lumi's lantern. Find five half-finished hobbies, each with an "under construction" progress card.
-- **story.txt:** a six-page storybook. The last page lights the lantern, and the light spreads over the whole site.
-- **museum_of_useless_facts.exe**, a **guestbook**, a cookie odometer, a visit counter, and Lumi remembers when you come back.
+- **Home:** Lumi itself. Tap Lumi to poke it, but not too much: it gets hurt, then flops. Feed it a cookie to bring it back, or pick a mood. It falls asleep if you leave, its eyes follow your cursor or finger, and it remembers your visits.
+- **Hobbies:** six half-finished projects with "under construction" progress cards. You can suggest a new hobby too.
+- **Hobby room:** a dark room where Lumi's lantern follows your cursor (or your taps) and finds the hobbies.
+- **Play: Star Catch:** a mini game in five short levels. Catch falling stars, dodge raindrops, and catch cookies to heal.
+- **Story:** six scenes. The last one lights the lantern, and the light spreads over the whole site.
+- **Guestbook**, a **museum of useless facts**, the **about** page (character sheet), and **credits** with a visitor odometer.
 - Moth-dust sparkle trail, click sounds with a mute button, and two hidden secrets.
 
 ## Run it
@@ -35,11 +37,12 @@ py -m http.server 8000
 
 ## Files
 
-- `index.html`: the page
-- `css/style.css`: the desktop, the windows and everything around them
-- `css/lumi.css` and `js/lumi.js`: Lumi's art and motion (`lumi(mood)` returns an SVG for one of eight moods)
-- `js/main.js`: the interactions
-- `design/`: Lumi's reference art and the SVG design pages it was built from
+- `index.html`: every screen (the URL hash picks which one shows)
+- `css/style.css`: the layout and look
+- `js/core.js`: storage, sound, toasts, counters, eye-follow and the router
+- `js/home.js`, `js/hobbies.js`, `js/game.js`, `js/pages.js`: one file per part of the site
+- `js/lumi.js` and `css/lumi.css`: Lumi's art and motion. `sticker(mood)` draws Lumi in 18 moods. These are copied from `design/lumi-stickers.html` by `node tools/sync-art.mjs`.
+- `design/`: Lumi's reference art and the pages the SVG was drawn and checked in
 
 ## Credits
 
