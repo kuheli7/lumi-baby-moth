@@ -22,7 +22,10 @@
 </head>
 <body data-view="home">
 <!-- psst. Lumi has a secret. try typing "cookie" anywhere on the page. -->
-<div class="sky" aria-hidden="true"><div class="sky-lit"></div><div class="stars"></div></div>
+<div class="sky" aria-hidden="true">
+  <div class="tint tint-warm"></div><div class="tint tint-pink"></div><div class="tint tint-sleepy"></div><div class="tint tint-blue"></div>
+  <div class="sky-lit"></div><div class="stars"></div>
+</div>
 <canvas id="dust" aria-hidden="true"></canvas>
 
 <header class="top">
@@ -45,8 +48,15 @@
     <div class="home-hero">
       <h1 class="home-title" id="h-home" tabindex="-1">Lumi's <span>Night Shift</span></h1>
       <p class="home-tag">the tiny moth who starts a new hobby every night</p>
-      <div class="stage-wrap">
+      <!-- Lumi's patch of sky: it flies around in here, chases lights you tap, and lands on the cloud to sleep -->
+      <div class="flight" id="flight">
         <p class="bubble" id="bubble" aria-live="polite">Ooh, shiny. New hobby!</p>
+        <svg class="cloud" id="cloud" viewBox="0 0 300 92" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="cloud-g" gradientUnits="userSpaceOnUse" x1="0" y1="4" x2="0" y2="88"><stop class="c1" offset="0"/><stop class="c2" offset=".7"/><stop class="c3" offset="1"/></linearGradient></defs>
+          <g class="cloud-shade" fill="#a993d6" opacity=".45" transform="translate(0 6)"><rect x="18" y="50" width="264" height="34" rx="17"/><circle cx="60" cy="52" r="26"/><circle cx="106" cy="38" r="32"/><circle cx="156" cy="32" r="36"/><circle cx="206" cy="40" r="30"/><circle cx="246" cy="54" r="22"/></g>
+          <g fill="url(#cloud-g)"><rect x="18" y="50" width="264" height="34" rx="17"/><circle cx="60" cy="52" r="26"/><circle cx="106" cy="38" r="32"/><circle cx="156" cy="32" r="36"/><circle cx="206" cy="40" r="30"/><circle cx="246" cy="54" r="22"/></g>
+        </svg>
+        <span class="lumi-shadow" id="lumi-shadow" aria-hidden="true"></span>
         <button class="stage" id="stage" data-sfx="none" aria-label="Poke Lumi"></button>
       </div>
     </div>
