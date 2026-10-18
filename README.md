@@ -17,26 +17,93 @@ Built for the haX.baby *Baby's First Website* hackathon (Track 2: original chara
 
 ## What's on the site
 
-One calm screen at a time on a starry night, with tabs at the bottom and a menu for the rest.
+One calm screen at a time on a starry night. Five tabs at the bottom (home, hobbies, play, story, guestbook) and a menu for every other page. The URL hash picks the screen, so every page can be linked to.
 
-- **Home:** Lumi itself, flying around its patch of night sky. Tap the sky and it chases the light (it's a moth). Tap Lumi to poke it, but not too much: it gets hurt, then flops. "Feed a cookie" drops one from the sky and Lumi swoops to catch it (phones buzz a little). Pick a mood and the sky changes with it: warm, pink, sleepy or rainy. It lands on its cloud to sleep if you leave, its eyes follow your cursor or finger, it remembers your visits, and it notices when you resize the window ("best viewed at" your exact size).
-- **Hobbies:** six half-finished projects as tiles with "under construction" progress cards, and a sleepy Lumi peeking over the top (it scales with the screen). You can suggest a new hobby too. From here you can step into either attic.
-- **Lumi's attic:** a dark room where Lumi's lantern follows your cursor (or your taps) and finds the hobbies. Then you can do them with Lumi:
-  - **paint** at the easel (with undo and redo), and the painting is framed on the attic wall;
-  - **learn the guitar** with three short lessons: Lumi plays a phrase and you play it back, and the guitar grows from one string to six. Click the strings, or press `A S D F G H` (or `1`–`6`) on a keyboard;
-  - **dress up Lumi** on a page of its own: a big Lumi with a tray of beads at the bottom (how many beads fit is worked out from the length of the neck), and Lumi then wears the necklace all over the site;
-  - play the **lullaby** on the matchbox bed (a music box made with Web Audio), and Lumi carries the lantern to bed as a night light;
-  - fly out of **the window** to the space level.
-  Leave the attic quiet for half a minute and Lumi falls asleep mid-hobby.
-- **Lumi's Attic 2:** the same attic rebuilt as a little 3D diorama. The room is cut into flat layers at different depths and the whole stage leans toward your pointer, so near things slide over far ones while Lumi follows the pointer. Find all five hobbies (the paint easel, the guitar, the bead rack, the jar of stars and the museum shelf); each opens in its own card, with its own copy of the paint and guitar games. There's a light switch, a window and a bed too. On a phone it goes full-screen and you drag to look around. Both attics share the painting and the guitar stars, but their code is separate (`js/attic2*.js` vs `js/hobbies.js`).
-- **Play: Star Catch:** a mini game in five short levels. Catch falling stars, dodge raindrops, and catch cookies to heal. A sixth level, out of the attic window, has Lumi guide lost (friendly) space critters home.
-- **Story:** the "about me" book, six scenes that turn with a swipe, the scroll wheel or the arrow keys. Only the page turns: the back and next buttons and the page dots sit below the book, not on it. The last scene lights the lantern, and the light spreads over the whole site.
-- **Museum of useless facts:** 14 facts, each with its own little illustration drawn in the site's style (`js/fact-art.js`). The Attic 2 museum shelf shows a random one right in its card.
-- **Character sheet:** one page with everything needed to draw Lumi again: the facts, the views, the palette, the drawing rules and a sticker sheet of every mood.
-- **Talk to Lumi:** a chat page where Lumi answers in its own voice, with a face to match. It is not an AI: the first topic whose words appear in what you typed picks the reply, and suggestion chips show what you could say.
-- **Guestbook**, the **about** page, and **credits** with a visitor odometer.
-- **Responsive chaos:** the scenery behind the site changes with the shape of the screen (an "edition" for each shape), with soft drifting clouds. It is decoration only and never takes clicks.
-- Moth-dust sparkle trail, click sounds with a mute button, and three hidden secrets.
+### Pages
+
+| Page | What it is |
+| --- | --- |
+| **Home** | Lumi itself, flying around its patch of night sky |
+| **Talk to Lumi** | a chat page where Lumi answers in its own voice |
+| **About Lumi** | the 5-point character sheet above, with a portrait |
+| **Character sheet** | everything needed to draw Lumi again |
+| **Hobbies** | six half-finished projects, with a filter and a suggestion box |
+| **Lumi's attic** | a dark attic where the lantern is your cursor |
+| **Dress up Lumi** | string a bead necklace for Lumi to wear |
+| **Lumi's Attic 2** | the same attic as a lit 3D diorama |
+| **Play (Star Catch)** | a five-level mini game, plus a space level hidden in the attic |
+| **Story** | six scenes with a lantern finale |
+| **Guestbook** | notes from visitors, shared between everyone |
+| **Museum of useless facts** | 14 facts, each with its own illustration |
+| **Credits** | who made what, plus counters and secrets |
+
+### Home
+
+- Lumi flies around its patch of sky. Tap the sky and it chases the light (it's a moth). Tap Lumi to poke it, but not too much: it gets hurt, then **flops**.
+- **Feed a cookie** drops one from the sky and Lumi swoops to catch it (phones buzz a little). A row of slots shows the cookies eaten today.
+- A **mood picker** with 18 moods. The sky changes with the mood: warm, pink, sleepy or rainy.
+- Lumi lands on its cloud to sleep when it is sleepy, sad, hurt or flopped, or if you leave the screen quiet for 40 seconds.
+- Its eyes follow your cursor or finger everywhere on the site.
+- It remembers your visits and greets you differently the first time, when you come back, and after days away.
+- It notices when you **resize the window or turn your phone**: the site has seven "editions" (pocket, phone, nap mode, storybook, widescreen, CinemaScope and tower), each with its own scenery, tagline and line from Lumi. The home page shows which edition you are in, and the "best viewed at" badge shows your window size.
+- A visitor counter (an odometer) and a "cookies eaten" total.
+
+### Talk to Lumi
+
+Not an AI. Lumi answers by rules: the first topic whose words show up in what you typed picks the reply, and Lumi's face changes to match. It covers hellos and goodbyes, how it feels, cookies, hobbies, its lantern, the attic, sleep and the time of day, jokes, facts, games, songs, kind words and rude ones (those hurt). It remembers your name if you tell it. Suggestion chips below the chat show what you could say, and a few take you to other pages. A flopped Lumi only wants cookies and apologies.
+
+### Hobbies
+
+- Six hobbies as picture cards with a status, a progress bar and an "under construction" badge: watercolor moons, a resin jar of stars, dew-drop bead jewellery, the guitar (one string), the museum of useless facts, and this very website.
+- **Filter chips** by category (all, creative, crafty, collecting, music, exploring).
+- **Suggest a new hobby** and it joins the list at 0%. Lumi has not started it.
+- A sleepy Lumi rests on top of the panel (it scales with the screen).
+- Pluck the one guitar string. Pluck it three times quickly for Lumi's Greatest Hit.
+- A banner leads into the attic.
+
+### Lumi's attic (the lantern attic)
+
+A dark room where the lantern follows your cursor (or your taps) and finds the hobbies. Switch the lights on if you'd rather not hunt. Find all five.
+
+- **Paint** at the easel (with undo and redo). The painting hangs framed on the attic wall and is remembered.
+- **Learn the guitar** with three short lessons: Lumi plays a phrase and you play it back, and the guitar grows from one string to six. Click the strings, or press `A S D F G H` (or `1`–`6`) on a keyboard. Finish a lesson for stars.
+- **Dress up Lumi** (its own page): a big Lumi with a tray of beads at the bottom, with undo, "fill the neck", start over and "wear it". How many beads fit is worked out from the length of the neckline. Lumi then wears the necklace all over the site.
+- Play the **lullaby** on the matchbox bed (Brahms, made with Web Audio). Lumi carries the lantern to bed as a night light.
+- Fly out of **the window** to the space level.
+- Leave it quiet for half a minute and Lumi falls asleep mid-hobby.
+
+### Lumi's Attic 2
+
+The attic rebuilt as a little 3D diorama. The room is cut into flat layers at different depths and the whole stage leans toward your pointer, so near things slide over far ones while Lumi follows the pointer. Find the five hobbies (the paint easel, the guitar, the bead rack, the jar of stars and the museum shelf); each opens in its own card, with its own copy of the paint and guitar games. There is a light switch (in the dark, Lumi's antennae are the only light), a window, hanging ivy, a potted pothos, a ceiling beam and a matchbox bed that the lullaby puts Lumi into. It shows the necklace you dressed Lumi in. On a phone it goes full-screen: drag to look around, tap to send Lumi flying. Attic 2 and the lantern attic share the painting and the guitar stars, but their code is separate.
+
+### Play: Star Catch
+
+A mini game in five short levels: First Light, Drizzle, Cookie Clouds, Windy Night and Starstorm. Catch falling stars, dodge raindrops, catch cookies to heal, hold on in the wind. Three drops and Lumi flops. Clearing the last level fills the lantern. Drag, or use the ← → keys; the game can be paused, and the levels you have unlocked are remembered. A sixth level, **Space Critters**, only opens from the attic window: the stars are lost (friendly) space critters and the raindrops are space rocks.
+
+### Story
+
+The "about me" book: six scenes that turn with a swipe, the scroll wheel or the arrow keys. Only the page turns: the back and next buttons and the page dots sit below the book, not on it. The last scene is a button that lights the lantern, and the light spreads over the whole site (the menu can switch it off again).
+
+### Guestbook
+
+Leave a name and a note (160 characters). Notes are shared between every visitor and kept in a Supabase table that visitors can only read and add to. If that can't be reached, notes go in a jar on your own device instead, so the page always works.
+
+### Museum of useless facts
+
+14 facts, each with its own little illustration drawn in the site's style (`js/fact-art.js`). "Next exhibit" moves along and the museum remembers where you were. The museum shelf in Attic 2 shows a random fact and its picture in its card.
+
+### Character sheet
+
+One page with everything needed to draw Lumi again: the facts, four views (front, three-quarter, peeking and resting), the colour palette, the rules for drawing Lumi, and a sticker of all eighteen moods.
+
+### Little things
+
+- A **moth-dust** sparkle trail that follows your pointer (a button in the menu turns it off).
+- Soft click sounds on every button, all made with the Web Audio API, and a mute button that is remembered.
+- **Three hidden secrets** (the credits page keeps count): one for typing `cookie` anywhere, one for Lumi's Greatest Hit on the one string, and one for flying out of the attic window.
+- Retro web badges on the credits page ("best viewed at 3 AM").
+- It respects *reduce motion*, works with a keyboard, and uses real buttons, labels and live regions.
+- Your name, painting, necklace, cookies, game progress, hobbies and chat are saved in your browser's storage, and the site still works if that is blocked.
 
 ## Run it
 
@@ -49,20 +116,28 @@ py -m http.server 8000
 ## Files
 
 - `index.html`: every screen (the URL hash picks which one shows)
-- `css/style.css`: the layout and look. `css/attic2.css`, `css/sheet.css` and `css/chaos.css` style Attic 2, the character sheet and the background scenery.
-- `js/core.js`: storage, sound, toasts, counters, eye-follow and the router
-- `js/home.js`, `js/hobbies.js`, `js/dress.js`, `js/game.js`, `js/pages.js`: one file per part of the site (`hobbies.js` is the lantern attic, `dress.js` the dress-up page, `pages.js` the story, guestbook, museum, about and credits)
+- `css/lumi.css`: Lumi's motion. `css/style.css`: the layout and look. `css/attic2.css`, `css/sheet.css` and `css/chaos.css` style Attic 2, the character sheet and the background scenery.
+- `js/lumi.js`: Lumi's art. `sticker(mood)` draws Lumi in 18 moods. It is copied from `design/lumi-stickers.html` by `node tools/sync-art.mjs`.
+- `js/core.js`: storage, sound, toasts, counters, the necklace, eye-follow, secrets and the router
+- `js/chaos.js`: the screen-shape editions and their scenery
+- `js/home.js`: Lumi flying, moods, cookies, dozing and remembering you
+- `js/chat.js`: Talk to Lumi (rule-based replies)
+- `js/hobbies.js`: the hobbies page and the lantern attic (easel, guitar lessons, lullaby, window)
+- `js/dress.js`: the dress-up page
 - `js/attic2.js` and `js/attic2-quests.js`: Attic 2 (the diorama, and its easel, guitar and lesson cards)
-- `js/chat.js`: the Talk to Lumi page (rule-based replies)
-- `js/sheet.js`: the character sheet page. `js/chaos.js`: the screen-shape scenery.
+- `js/sheet.js`: the character sheet page
+- `js/game.js`: Star Catch
+- `js/pages.js`: the story, guestbook, museum, about, credits, menu, moth dust and the cookie secret
 - `js/fact-art.js`: the 14 museum illustrations, as SVG strings
-- `js/lumi.js` and `css/lumi.css`: Lumi's art and motion. `sticker(mood)` draws Lumi in 18 moods. These are copied from `design/lumi-stickers.html` by `node tools/sync-art.mjs`.
-- `design/`: Lumi's reference art and the pages the SVG was drawn and checked in
+- `design/`: Lumi's reference art and the pages the SVG was drawn and checked in (`lumi-stickers.html` is the source the site's art is copied from; the others are style pickers and emote sets), plus expression references and inspiration boards
+- `tools/sync-art.mjs`: copies the art from `design/lumi-stickers.html` into the site
 - `og.png` and `favicon.svg`: the link preview and the tab icon
+- `writeup-draft.md` and `haX.baby-brief-and-audit.docx`: the hackathon write-up draft and the brief
 
 ## Credits
 
 - Lumi is an original character by Lumi's human.
-- Lumi's reference sketches were made with ChatGPT image generation, and Lumi was then drawn as SVG code with Claude. The museum illustrations and the necklace beads are SVG code too, drawn by hand in the same style (no generated images).
+- Lumi's reference sketches were made with ChatGPT image generation, and Lumi was then drawn as SVG code with Claude. The attic, the hobby icons, the necklace and the museum illustrations are hand-written SVG code too (no generated images).
 - Fonts: [Fredoka](https://fonts.google.com/specimen/Fredoka) and [Patrick Hand](https://fonts.google.com/specimen/Patrick+Hand), SIL Open Font License.
 - Sounds are synthesized in the browser with the Web Audio API. No audio files and no libraries. The lullaby is Brahms' Lullaby and the guitar lessons teach Twinkle, Twinkle (both traditional, public domain).
+- The shared guestbook runs on [Supabase](https://supabase.com).
