@@ -101,8 +101,7 @@
   // ---------- the guitar: one string, one note. pluck it three times quickly for Lumi's greatest hit ----------
   let plucks = [];
   function pluckString() {
-    const s = $("#room-scene .string");
-    if (s && !reduceMotion) restart(s, "twang");
+    if (!reduceMotion) $$("#room-scene .string:not([display])").forEach(s => restart(s, "twang"));
     sfx.play.pluck(196);
     const now = Date.now();
     plucks = plucks.filter(t => now - t < 1800).concat(now);
@@ -226,7 +225,7 @@
       <circle cx="548" cy="298" r="12" fill="#4b2e1f"/>
       <rect x="533" y="342" width="30" height="7" rx="2" fill="#6f4528"/>
       ${star4(574, 352, 6, "#f8b0bf")}
-      <line class="string" x1="548" y1="92" x2="548" y2="344" stroke="#fbf7ec" stroke-width="1.8"/>
+      ${[0, 1, 2, 3, 4, 5].map(i => `<line class="string" data-gs="${i}" x1="${542.5 + i * 2.2}" y1="92" x2="${542.5 + i * 2.2}" y2="344" stroke="#fbf7ec" stroke-width="1.5"${i ? ' display="none"' : ""}/>`).join("")}
     </g>
   </svg>`;
 
@@ -318,7 +317,8 @@
       ${h.id === "beads" ? `<button class="btn btn-gold small" data-beads data-sfx="none">📿 string a necklace</button>` : ""}
       ${h.space ? `<button class="btn btn-gold small" data-space data-sfx="none">🛸 fly out the window</button>` : ""}
       ${h.lullaby ? `<button class="btn btn-lilac small" data-lullaby data-sfx="none">${asleep ? "☀️ wake Lumi up" : "♪ play the lullaby"}</button>` : ""}
-      ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>` : ""}
+      ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>
+        <button class="btn btn-lilac small" data-guitar data-sfx="none">🎶 guitar lesson</button>` : ""}
       ${h.link ? `<a class="btn btn-lilac small" href="${h.link[0]}">${h.link[1]}</a>` : ""}`;
   }
 
@@ -627,6 +627,149 @@
       app.lumi.react("proud", "it's going on the wall. next to my unfinished things. it fits right in.", 4000);
     }
   });
+
+  // ---------- guitar lessons: Lumi plays a few notes, you play them back (strings come with each lesson) ----------
+  // Twinkle, twinkle (traditional, public domain) in three bites. Nobody can fail: wrong notes only cost stars.
+  const GT = { C: [261.6, "#ee8196"], D: [293.7, "#f4b68a"], E: [329.6, "#f6cf6a"], F: [349.2, "#8fcf9a"], G: [392, "#8fc3e8"], A: [440, "#a993d6"] };
+  const LESSONS = [
+    { name: "Twinkle, twinkle", notes: "CCGGAAG", strings: "CGA", words: "twin-kle twin-kle lit-tle star" },
+    { name: "How I wonder", notes: "FFEEDDC", strings: "CDEFGA", words: "how I won-der what you are" },
+    { name: "the whole song", notes: "CCGGAAGFFEEDDC", strings: "CDEFGA", words: "twinkle twinkle little star, how I wonder what you are" }
+  ];
+  const gtSave = store.get("guitar", null);
+  const gtStars = Array.isArray(gtSave) && gtSave.length === 3 ? gtSave.map(n => n | 0) : [0, 0, 0];
+  let gt = null;   // the lesson that is open: { i, notes, phase: "listen" | "play" | "done", pos, mistakes, miss, timers, shown }
+  // the guitar on the attic wall grows a string for every one learned: 1, then 3, then all 6
+  function showStrings() {
+    const n = 1 + (gtStars[0] ? 2 : 0) + (gtStars[1] ? 3 : 0);
+    $$("#room-scene .string").forEach((l, i) => { if (i < n) l.removeAttribute("display"); else l.setAttribute("display", "none"); });
+    const h = HOBBIES.find(x => x.id === "guitar");
+    h.name = n === 1 ? "the guitar (one string)" : `the guitar (${n} strings)`;
+    h.status = n === 1 ? "one (1) string" : n < 6 ? `${n} strings` : "six strings (!!)";
+    h.progress = gtStars[2] ? 60 : n === 1 ? 5 : n < 6 ? 25 : 40;
+    h.note = gtStars[2] ? "can play one whole song. it is the same song. it is a very good song."
+      : n === 1 ? "learned one string. it is a very good string. the other five are 'coming soon'."
+      : `learned ${n} strings. the rest are coming soon (for real this time).`;
+    renderList();
+  }
+  const gtStop = () => { if (gt) { gt.timers.forEach(clearTimeout); gt.timers = []; } };
+  const gtString = (note) => $(`#gt-strings [data-note="${note}"]`);
+  function gtLight(note, hold = 320) {
+    const b = gtString(note);
+    if (!b) return;
+    b.classList.add("lit");
+    setTimeout(() => b.classList.remove("lit"), hold);
+  }
+  const gtSay = (text) => { const el = $("#gt-say"); if (el) el.textContent = text; };
+  function gtDots() {
+    $$("#gt-dots i").forEach((d, k) => {
+      d.classList.toggle("done", k < gt.pos);
+      d.textContent = gt.shown || k < gt.pos ? gt.notes[k] : "";
+    });
+  }
+  function gtDemo() {
+    gtStop();
+    gt.phase = "listen";
+    gt.pos = 0;
+    gt.miss = 0;
+    gtDots();
+    $$("#gt-strings .hint").forEach(b => b.classList.remove("hint"));
+    gtSay("listen… 👂");
+    const gap = 560;
+    [...gt.notes].forEach((n, k) => {
+      sfx.play.pluck(GT[n][0], k * gap / 1000);
+      gt.timers.push(setTimeout(() => gtLight(n), k * gap));
+    });
+    gt.timers.push(setTimeout(() => {
+      if (app.view() !== "room" || !gtString(gt.notes[0])) return;
+      gt.phase = "play";
+      gtSay("your turn! tap the strings in the same order.");
+    }, gt.notes.length * gap + 250));
+  }
+  function gtFinish() {
+    const i = gt.i, stars = gt.mistakes === 0 ? 3 : gt.mistakes <= 3 ? 2 : 1;
+    gt.phase = "done";
+    const first = !gtStars[i];
+    gtStars[i] = Math.max(gtStars[i], stars);
+    store.set("guitar", gtStars);
+    sfx.play.chime();
+    gtSay(`${"⭐".repeat(stars)} you played it!${gt.mistakes ? ` (${gt.mistakes} wrong note${gt.mistakes > 1 ? "s" : ""}. Lumi did not notice.)` : " (not one wrong note!)"}`);
+    const next = $("[data-gt-next]");
+    if (next && i < 2) next.hidden = false;
+    $$("#gt-tabs [data-gt-lesson]").forEach((b, k) => { b.disabled = k > 0 && !gtStars[k - 1]; b.querySelector("small").textContent = "★".repeat(gtStars[k]) || "·"; });
+    showStrings();
+    if (i === 2) {
+      app.secret("song");
+      app.toast("🎸 Lumi can play a whole song. Twinkle Twinkle, six strings!");
+      app.lumi.react("starry", "i'm a musician now!! (new hobby. finished count: still 1.)", 4200);
+    } else if (first) {
+      app.lumi.react("proud", i === 0 ? "i have three strings now!!" : "six strings. the other five came!", 3600);
+    } else {
+      app.lumi.react("happy", "again! again!", 2600);
+    }
+  }
+  function gtLesson(i) {
+    gtStop();
+    const L = LESSONS[i];
+    gt = { i, notes: L.notes, phase: "listen", pos: 0, mistakes: 0, miss: 0, timers: [], shown: gt ? gt.shown : false };
+    roomCard.hidden = false;
+    roomCard.innerHTML = `<h3>🎶 guitar lesson</h3>
+      <div class="gt-tabs" id="gt-tabs" role="group" aria-label="Lessons">${LESSONS.map((l, k) =>
+        `<button class="btn ${k === i ? "btn-gold" : "btn-outline"} small" data-gt-lesson="${k}" aria-pressed="${k === i}" aria-label="lesson ${k + 1}: ${l.name}" data-sfx="none"${k > 0 && !gtStars[k - 1] ? " disabled" : ""}>lesson ${k + 1} <small>${"★".repeat(gtStars[k]) || "·"}</small></button>`).join("")}</div>
+      <p class="gt-words"><b>${L.name}</b><br>“${L.words}”</p>
+      <p class="gt-say" id="gt-say" role="status" aria-live="polite"></p>
+      <div class="gt-dots" id="gt-dots" aria-hidden="true">${[...L.notes].map(() => "<i></i>").join("")}</div>
+      <div class="gt-strings" id="gt-strings" role="group" aria-label="Guitar strings">${Object.keys(GT).map(n => {
+        const on = L.strings.includes(n);
+        return `<button class="gt-string${on ? "" : " locked"}" data-note="${n}" style="--c:${GT[n][1]}" aria-label="${n} string${on ? "" : " (coming soon)"}"${on ? "" : ' aria-disabled="true" tabindex="-1"'} data-sfx="none"><span>${n}</span>${on ? "" : "<small>soon</small>"}</button>`;
+      }).join("")}</div>
+      <div class="bead-actions">
+        <button class="btn btn-outline small" data-gt-again>▶ listen again</button>
+        <button class="btn btn-outline small" data-gt-show aria-pressed="${gt.shown}">show the notes</button>
+        <button class="btn btn-gold small" data-gt-next data-sfx="none"${i < 2 && gtStars[i] ? "" : " hidden"}>next lesson ›</button>
+      </div>`;
+    gtDots();
+    $(".gt-string:not(.locked)", roomCard).focus({ preventScroll: true });
+    roomCard.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+    gtDemo();
+  }
+  function gtPlay(btn) {
+    const n = btn.dataset.note;
+    if (btn.classList.contains("locked")) { app.toast("that string is coming soon. (for real this time.)"); return; }
+    sfx.play.pluck(GT[n][0]);
+    gtLight(n, 260);
+    if (!gt || gt.phase !== "play") return;
+    if (n === gt.notes[gt.pos]) {
+      gt.pos++;
+      gt.miss = 0;
+      $$("#gt-strings .hint").forEach(b => b.classList.remove("hint"));
+      gtDots();
+      if (gt.pos === gt.notes.length) gtFinish();
+      else gtSay("yes!");
+    } else {
+      gt.mistakes++;
+      gt.miss++;
+      restart(btn, "oops");
+      gtSay("hmm, not that one. try again.");
+      if (gt.miss >= 2) { const t = gtString(gt.notes[gt.pos]); if (t) t.classList.add("hint"); gtSay("here, this one glows. (Lumi believes in you.)"); }
+    }
+  }
+  roomCard.addEventListener("click", (e) => {
+    const t = e.target;
+    if (t.closest("[data-guitar]")) { gtLesson(gtStars[0] ? (gtStars[1] ? 2 : 1) : 0); sfx.play.pop(); return; }
+    if (!$("#gt-strings")) return;
+    const b = t.closest(".gt-string"), lesson = t.closest("[data-gt-lesson]");
+    if (b) gtPlay(b);
+    else if (lesson) { gtLesson(+lesson.dataset.gtLesson); sfx.play.pop(); }
+    else if (t.closest("[data-gt-again]")) gtDemo();
+    else if (t.closest("[data-gt-next]")) gtLesson(gt.i + 1);
+    else if (t.closest("[data-gt-show]")) {
+      gt.shown = !gt.shown;
+      t.closest("[data-gt-show]").setAttribute("aria-pressed", String(gt.shown));
+      gtDots();
+    }
+  });
+  showStrings();
 
   // Ctrl/Cmd+Z undoes a stroke, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y redoes it (only while the easel is open)
   document.addEventListener("keydown", (e) => {

@@ -23,6 +23,7 @@ One calm screen at a time on a starry night, with tabs at the bottom and a menu 
 - **Hobbies:** six half-finished projects with "under construction" progress cards. You can suggest a new hobby too.
 - **Lumi's attic:** a dark room where Lumi's lantern follows your cursor (or your taps) and finds the hobbies. Then you can do them with Lumi:
   - **paint** at the easel (with undo and redo), and the painting is framed on the attic wall;
+  - **learn the guitar** with three short lessons: Lumi plays a phrase and you play it back, and the guitar grows from one string to six;
   - **string a bead necklace** (up to 11 beads), which Lumi then wears all over the site;
   - play the **lullaby** on the matchbox bed (a music box made with Web Audio), and Lumi carries the lantern to bed as a night light;
   - fly out of **the window** to the space level.
@@ -54,4 +55,4 @@ py -m http.server 8000
 - Lumi is an original character by Lumi's human.
 - Lumi's reference sketches were made with ChatGPT image generation, and Lumi was then drawn as SVG code with Claude.
 - Fonts: [Fredoka](https://fonts.google.com/specimen/Fredoka) and [Patrick Hand](https://fonts.google.com/specimen/Patrick+Hand), SIL Open Font License.
-- Sounds are synthesized in the browser with the Web Audio API. No audio files and no libraries. The lullaby is Brahms' Lullaby (traditional, public domain).
+- Sounds are synthesized in the browser with the Web Audio API. No audio files and no libraries. The lullaby is Brahms' Lullaby and the guitar lessons teach Twinkle, Twinkle (both traditional, public domain).
