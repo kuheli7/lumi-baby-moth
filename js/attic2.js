@@ -126,7 +126,7 @@
       <path d="M411 438q29 12 58-6M408 452q32 12 64-4M418 422q22 10 46 5M418 468q22 8 44-6" fill="none" stroke="#fbc0d0" stroke-width="3" stroke-linecap="round"/>
     </g>`);
 
-  // Lumi's bed, on the rug: a matchbox, a cotton-ball pillow and a sock for a blanket (the same bed as in the lantern attic)
+  // Lumi's bed, on the rug: a matchbox, a cotton-stuffed pillow and a sock for a blanket (the same bed as in the lantern attic)
   // drawn around its own foot (0 0), then moved onto the middle of the rug; it stands where the floor is, which is nearer than it looks
   // the head and foot boards are solid slabs: the outline is stacked a few times along the bed's depth, then the face goes on top
   const slab = (d, side) => [6, 5, 4, 3, 2, 1].map(i => `<path d="${d}" transform="translate(${(i * 1.6).toFixed(1)} ${(-i * 1.4).toFixed(1)})" fill="${side}" stroke="${side}" stroke-width="2"/>`).join("");
@@ -137,7 +137,7 @@
       <linearGradient id="a2-bedside" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d4b083"/><stop offset="1" stop-color="#b8915f"/></linearGradient>
       <linearGradient id="a2-board" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2cffa"/><stop offset=".55" stop-color="#c3a3ec"/><stop offset="1" stop-color="#a888dc"/></linearGradient>
       <linearGradient id="a2-blanket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dccff8"/><stop offset="1" stop-color="#b3a0e6"/></linearGradient>
-      <radialGradient id="a2-cotton" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#fbf3ea"/><stop offset="1" stop-color="#e6d4c2"/></radialGradient>
+      <radialGradient id="a2-cotton" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#fbf3ea"/><stop offset="1" stop-color="#dcc5ad"/></radialGradient>
     </defs>
     <g transform="translate(392 474) scale(1.3)">
     <ellipse cx="6" cy="1" rx="100" ry="9" fill="#2a1830" opacity=".38"/>
@@ -152,10 +152,15 @@
       <rect x="-80" y="-28" width="160" height="26" rx="4" fill="url(#a2-bedfront)" stroke="#b98a5c" stroke-width="2.4"/>
       <path d="M-76 -24.5H76" stroke="#fff8ec" stroke-width="2" stroke-linecap="round" opacity=".8"/>
       <path d="M-76 -5H76" stroke="#c9a172" stroke-width="2" stroke-linecap="round" opacity=".55"/>
-      <rect x="-21" y="-19" width="50" height="14" rx="3" fill="#fff6e6" stroke="#e0b98a" stroke-width="1.4"/>
-      <text x="4" y="-8.6" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="8" letter-spacing="1.2" fill="#a34063">LUMI</text>
-      <ellipse cx="-40" cy="-31" rx="22" ry="4" fill="#8f6a44" opacity=".35" stroke="none"/>
-      <g fill="url(#a2-cotton)" stroke="#e3cdb5"><circle cx="-50" cy="-38" r="9"/><circle cx="-30" cy="-37" r="8"/><circle cx="-40" cy="-43" r="10.5"/></g>
+      <ellipse cx="-40" cy="-30" rx="24" ry="4" fill="#8f6a44" opacity=".4" stroke="none"/>
+      <!-- a puffy pillow: its top and side show behind the front, which bulges and dips at the middle button -->
+      <path d="M-62 -31Q-65 -41 -60 -50Q-43 -54 -25 -50Q-20 -41 -23 -31Q-42 -27 -62 -31Z" transform="translate(6 -5)" fill="#e9dccd" stroke="#d2bba3" stroke-width="1.6"/>
+      <path d="M-60 -50L-54 -55Q-37 -59 -19 -55L-25 -50Q-43 -54 -60 -50ZM-25 -50L-19 -55Q-14 -46 -17 -36L-23 -31Q-20 -41 -25 -50Z" fill="#f6eee4" stroke="none"/>
+      <path d="M-62 -31Q-65 -41 -60 -50Q-43 -54 -25 -50Q-20 -41 -23 -31Q-42 -27 -62 -31Z" fill="url(#a2-cotton)" stroke="#d2bba3" stroke-width="1.8"/>
+      <path d="M-58 -33.5Q-60 -41 -56.5 -47.5Q-43 -50.5 -28 -47.5Q-24.5 -41 -26.5 -34" fill="none" stroke="#e2cdb6" stroke-width="1.1" stroke-dasharray="2 2"/>
+      <path d="M-49 -46Q-43 -41 -42.5 -40M-36 -46Q-41 -41 -42.5 -40M-50 -34Q-45 -38 -42.5 -40M-34 -34Q-39 -38 -42.5 -40" fill="none" stroke="#dcc6ae" stroke-width="1.1" stroke-linecap="round"/>
+      <circle cx="-42.5" cy="-40" r="2.1" fill="#f4a3b8" stroke="#c97a92" stroke-width="1"/>
+      <path d="M-57 -45Q-55 -49 -49 -49.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>
       <path d="M-24 -38Q-23 -46 -15 -46H72Q80 -46 80 -38V-28H-24Z" fill="url(#a2-blanket)" stroke="#9c86d6"/>
       <path d="M-15 -46L-9 -50H76Q84 -50 84 -43L80 -38Q80 -46 72 -46Z" fill="#e8defb" stroke="#9c86d6" stroke-width="1.6"/>
       <path d="M-4 -45V-29M14 -45V-29M32 -45V-29M50 -45V-29M66 -45V-29" stroke="#fff" stroke-width="3" opacity=".5"/>
@@ -310,7 +315,7 @@
   ];
   const SPOTS = {
     window: ["the window", "out there: the whole night sky, and (Lumi is sure of it) a few space critters who can't find their way home."],
-    bed: ["Lumi's bed", "a matchbox, a cotton-ball pillow and a sock for a blanket. Lumi only sleeps after a lullaby."],
+    bed: ["Lumi's bed", "a matchbox, a cotton-stuffed pillow and a sock for a blanket. Lumi only sleeps after a lullaby."],
   };
   const ACTIONS = {
     moons: `<button class="btn btn-gold small" data-a2-paint data-sfx="none">🎨 paint with Lumi</button>`,
