@@ -57,6 +57,7 @@
     <rect x="506" y="108" width="64" height="15" rx="3" fill="#f2d488" stroke="#8a6a2a" stroke-width="2"/><text x="538" y="119" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="9" letter-spacing="1.5" fill="#4a3510">MUSEUM</text>
     <rect x="522" y="176" width="32" height="18" rx="2" fill="#fffdf6" stroke="#c9b49b" stroke-width="1.5"/><text x="538" y="189" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="12" fill="#a34063">?!</text>
     <path d="M506 196V168Q506 140 538 140Q570 140 570 168V196Z" fill="#e8f4fb" fill-opacity=".45" stroke="#9db7cf" stroke-width="3"/><circle cx="538" cy="136" r="4" fill="#9db7cf"/><path d="M514 170Q515 154 526 148" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8"/>
+    <g transform="translate(0 38)"><!-- the bead rack hangs a little lower, clear of the jar and museum shelf -->
     <rect x="272" y="184" width="122" height="9" rx="3" fill="#8a5a32" stroke="#4a3020" stroke-width="2"/>
     <rect x="286" y="192" width="8" height="12" rx="2" fill="#6d4425"/><rect x="372" y="192" width="8" height="12" rx="2" fill="#6d4425"/>
     <path d="M290 204Q333 286 376 204" fill="none" stroke="#c9a7ea" stroke-width="2"/>
@@ -64,7 +65,7 @@
       const u = 1 - t, x = u * u * 290 + 2 * t * u * 333 + t * t * 376, y = u * u * 204 + 2 * t * u * 286 + t * t * 204;
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5" fill="${["#f4a3b8", "#c9a7ea", "#8fc3e8", "#f6cf6a"][i % 4]}" stroke="#4a3020" stroke-opacity=".35" stroke-width="1.2"/><circle cx="${(x - 1.6).toFixed(1)}" cy="${(y - 1.8).toFixed(1)}" r="1.5" fill="#fff" opacity=".7"/>`;
     }).join("")}
-    <path transform="translate(333 256) scale(2.1)" d="M0 -6 Q5 0 0 5 Q-5 0 0 -6Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.2"/>
+    <path transform="translate(333 256) scale(2.1)" d="M0 -6 Q5 0 0 5 Q-5 0 0 -6Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.2"/></g>
     <rect x="418" y="104" width="62" height="90" rx="14" fill="#d8c6f3" fill-opacity=".55" stroke="#bda3e9" stroke-width="3"/>
     <rect x="426" y="90" width="46" height="16" rx="4" fill="#f4a3b8" stroke="#c97a92" stroke-width="2"/>
     <path d="M449 94c-18-18-34 2-6 8c-10 8 8 18 6-8c0 26 16 16 6 8c28-6 12-26-6-8Z" fill="#f48fae" stroke="#c97a92" stroke-width="2"/>
@@ -127,7 +128,7 @@
   const LAYERS = [
     { z: -130, html: wall, cls: "a2-wall", hits: [["window", "the window", 7, 23, 35, 40]] },
     { z: -105, html: curtains, cls: "a2-curtains" },
-    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 45, 35, 21, 17]] },
+    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 45, 42.3, 21, 17]] },
     { z: -57, html: desk, cls: "a2-desk" },
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
     { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
