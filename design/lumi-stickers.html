@@ -540,8 +540,8 @@ function sticker(mood) {
       body: "translate(-4 -4)", bodySize: [52, 34, 15, .06], head: "translate(-2 -6)",
       tufts: [[89.5, 96, 95.5, 93.5, .7]],
       ant: [
-        { b: [86, 71], c: [76, 54], o: [46, 54], r: 16, twig: [.5, [-6, 7], [-5, 2]] },
-        { b: [124, 60], c: [127, 35], o: [148, 20], r: 16, twig: [.45, [9, 1], [5, -4]] },
+        { b: [86, 81], c: [76, 64], o: [46, 54], r: 16, twig: [.5, [-6, 7], [-5, 2]] },
+        { b: [124, 70], c: [127, 45], o: [148, 20], r: 16, twig: [.45, [9, 1], [5, -4]] },
       ],
       feet: foot(93, 221, 7.5, 10.5, -70, id, 2),
       face: `${blush(86, 151, 12.5, 9.5, 21, -10)}${blush(173, 133, 12.5, 9.5, 23, 10)}
@@ -582,7 +582,7 @@ function sticker(mood) {
       face: `${blush(94, 164, 13, 10.5, 21, -10)}${blush(189, 146, 13, 10.5, 23, 10)}
         ${starEye({ x: 108, y: 139, side: -1, seed: 11, rot: 5 }, 1.18)}${starEye({ x: 168, y: 129, side: 1, seed: 11 }, 1.18)}
         ${oMouth(143, 154, 7.5, 9.5)}`,
-      hands: `${bpaw(121, 196, 8, 10, 20, 7)}${bpaw(168, 191, 8, 10, -20, 8)}`,
+      hands: `${paw(121, 196, 20, 7, 8.5, 10)}${paw(168, 191, -20, 8, 8.5, 10)}`,
       back: `${sparkle(23, 59, 12)}${sparkle(216, 63, 10)}`,
     }),
 
@@ -638,7 +638,7 @@ function sticker(mood) {
       face: `${blush(93, 168, 12.5, 10, 21, -15)}${blush(179, 129, 12.5, 10, 23, -15)}
         ${openEye({ x: 103, y: 146, side: -1, seed: 11 }, .95)}${openEye({ x: 158, y: 121, side: 1, seed: 11 }, .95)}
         ${frown(139, 148, 4.5, -24)}`,
-      hands: `${paw(124, 218, -10, 41, 8.5, 7.6)}${paw(162, 207, 15, 47, 8.5, 7.6)}`,
+      hands: `${paw(124, 209, -10, 41, 8.5, 7.6)}${paw(162, 198, 15, 47, 8.5, 7.6)}`,
       back: question(181, 56, 40, "#5e4030"),
     }),
 
@@ -666,8 +666,8 @@ function sticker(mood) {
       body: "translate(-8 -12)", bodySize: [52, 34, 15, .06], head: "translate(-3 -4)",
       ground: ground(112, 220, 84),
       ant: [
-        { b: [108, 61], c: [101, 43], o: [81, 28], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
-        { b: [146, 66], c: [158, 48], o: [181, 39], r: 16, twig: [.45, [9, 4], [5, -2]] },
+        { b: [108, 71], c: [101, 53], o: [81, 28], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
+        { b: [146, 76], c: [158, 58], o: [181, 39], r: 16, twig: [.45, [9, 4], [5, -2]] },
       ],
       feet: foot(76, 206, 8.5, 11, -50, id, 2) + foot(139, 209, 8.5, 11, 40, id, 5),
       face: `${blush(66, 131, 13, 10.5, 21, -8)}${blush(157, 143, 13, 10.5, 23, 8)}
@@ -769,7 +769,7 @@ function sticker(mood) {
         ${worriedEye({ x: 76, y: 145, side: -1, seed: 11 }, 1, 5, .88)}${worriedEye({ x: 136, y: 144, side: 1, seed: 11 }, 1, 5, .88)}
         ${frown(106, 155, 5.5, 0, 3.6)}`,
       hands: `${strokes(["M107 195.8 Q102.5 199.5 98 200.6", "M117.5 194.6 Q123 197.6 128.5 197.6"], "#e6c4a4", 2.4)}
-        ${bpaw(105.5, 180.5, 7.4, 10.5, -12, 7)}${bpaw(114.5, 181.3, 8.6, 12.3, -6, 8)}
+        ${paw(105.5, 180.5, -12, 7, 7.4, 10.5)}${paw(114.5, 181.3, -6, 8, 8.6, 12.3)}
         <path d="M109.5 171.5 Q104.6 177 106 183 Q106.8 186.6 108 188.5" fill="none" stroke="#3f281d" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>`,
       back: `${strokes(["M188 60 q3 -7 9 -3", "M201 70 q4 -6 9 -2"], "#a99be6", 3)}
         ${strokes(["M-10 190 q-4 6 0 12", "M-4 194 q-3 5 0 9", "M232 178 q4 6 0 12", "M226 182 q3 5 0 9"], "#d9bfa6", 2.4)}
@@ -783,8 +783,8 @@ function sticker(mood) {
       tufts: [[92.5, 97.2, 103, 90.6], [145, 84.2, 153.5, 87.3]],
       ground: ground(121, 224, 86),
       ant: [
-        { b: [93, 64], c: [76, 38], o: [59, 26], r: 16, twig: [.45, [-10, 2], [-5, -4]] },
-        { b: [138, 58], c: [147, 34], o: [169, 24], r: 16, twig: [.45, [10, 0], [5, -5]] },
+        { b: [93, 74], c: [76, 48], o: [59, 26], r: 16, twig: [.45, [-10, 2], [-5, -4]] },
+        { b: [138, 68], c: [147, 44], o: [169, 24], r: 16, twig: [.45, [10, 0], [5, -5]] },
       ],
       feet: foot(66, 208, 7, 10.5, -50, id, 2) + foot(165, 210, 7, 10.5, 45, id, 5),
       face: `${blush(84, 146, 13, 11, 21, -10)}${blush(179, 128, 13, 11, 23, 10)}
@@ -793,7 +793,7 @@ function sticker(mood) {
       hands: `${strokes(["M113 199.5 Q107.5 202.5 101.5 202", "M164.5 181 Q169.5 188 176 193.5"], "#e6c4a4", 2.4)}
         ${cookie(137, 168, 27, 23)}
         <path d="${blob(173, 148, 2.4, 2, 3, .2)}" fill="#c48a50"/><path d="${blob(178, 154, 2, 1.7, 4, .2)}" fill="#c48a50"/>
-        ${bpaw(119, 193, 9, 11.5, 35, 7)}${bpaw(158, 172, 9, 12, -15, 8)}`,
+        ${paw(119, 193, 35, 7, 9, 11.5)}${paw(158, 172, -15, 8, 9, 12)}`,
       back: `${heart(26, 62, 1.8, `fill="${C.heart}" opacity=".72"`, -32)}${heart(208, 57, 1.15, `fill="${C.heart}" opacity=".72"`, 32)}
         <path d="${blob(46, 226, 3, 2.6, 5, .2)}" fill="#c48a50"/>`,
     }),
@@ -857,7 +857,7 @@ function sticker(mood) {
           ${lilacWing(132, 182, 35, 29, -12, 9, [133, 188, 7], "L")}
           ${foot(153, 211, 8, 11, 62, id, 2)}
           ${head("translate(157 107) scale(.95 1) translate(-120 -123)")}${tufts([[126.6, 81.3, 134.7, 75.6]])}
-          ${ants([{ b: [127, 49], c: [118, 29], o: [94, 22], r: 16, twig: [.45, [-9, 3], [-5, -3]] }])}
+          ${ants([{ b: [127, 59], c: [118, 39], o: [94, 22], r: 16, twig: [.45, [-9, 3], [-5, -3]] }])}
           ${blush(129, 144, 12, 10, 21)}
           ${openEye({ x: 139, y: 118, side: 1, seed: 11 }, 1.12)}</g>`)}
       <path d="M163 44 L196 44 Q216 44 216 64 L216 229 L163 229 Z" fill="url(#${id}door)" opacity=".9"/>
@@ -905,7 +905,7 @@ function sticker(mood) {
         <g transform="rotate(-22 171 88)"><g class="blink"><path d="${blob(171, 88, 4.2, 10, 12, .05)}" fill="url(#${id}eyeG)"/>
           <ellipse cx="170.6" cy="84.2" rx="1.6" ry="2.9" fill="#fff"/></g></g>
         <path d="${blob(162, 103, 4.6, 5.8, 3, .08)}" fill="#8a3a4c"/><ellipse cx="162.5" cy="106" rx="3" ry="2" fill="#ff8fab"/>
-        ${bpaw(165.6, 147.6, 7.2, 11.8, 20, 8)}${bpaw(157.6, 145, 7.2, 11.6, 13, 3)}
+        ${paw(165.6, 156.6, 20, 8, 7.2, 11.8)}${paw(157.6, 154, 13, 3, 7.2, 11.6)}
       </g>
       ${strokes([dash(14, 60, 6, -40), dash(8, 72, 5, 0), dash(28, 46, 5, -70), dash(14, 104, 5, 20)], "#f7d67a", 2.4, "glint")}`;
     },
@@ -968,7 +968,7 @@ function sticker(mood) {
 const NOTES = {
   curious: "Close match. Gold eye sparkle left off, as in the sticker. The eyes follow your cursor.",
   happy: "Close match: ^ ^ eyes, open laugh, pink joy lines.",
-  excited: "Brown fists, as in the sticker (v4 uses fur paws). Bounces.",
+  excited: "Cream fur paws like the rest (the sticker has brown fists). Bounces.",
   love: "The whole figure leans in toward the heart, which gently beats.",
   surprised: "Close match. The eyes follow your cursor.",
   confused: "The whole figure tips to one side, and one antenna curls into a question mark like the one beside it, which wobbles.",
@@ -978,12 +978,12 @@ const NOTES = {
   shy: "Still different: the sticker's head is a touch bigger. The gold eye sparkle is left off to match the sticker.",
   proud: "Still different: the sticker holds the lantern a little lower, and its left wing is bigger.",
   sad: "Still different: the sticker's head is a little wider, and it shows three foot lumps where the SVG has two.",
-  hurt: "Brown clasped paws, as in the sticker (v4 uses fur paws). Shivers every couple of seconds.",
+  hurt: "Cream fur paws like the rest (the sticker has brown ones). Shivers every couple of seconds.",
   sleepy: "Still different: the sticker's cloud is a bit flatter on top. Breathes slowly; the z's drift.",
   flop: "Still different: the sticker's left half sits a little lower, so the feet fan out wider.",
-  fed: "Brown paws on the cookie, as in the sticker (v4 uses fur paws).",
+  fed: "Cream fur paws on the cookie (the sticker has brown ones).",
   peek: "Still different: the sticker shows faint fur through the door panel. The eye follows your cursor.",
-  chase: "Two brown paws pressed together, reaching, as in the sticker; its third paw under the head is left off. Still different: a little more fur shows under the lilac wing.",
+  chase: "Two cream fur paws pressed together, reaching (brown in the sticker); its third paw under the head is left off. Still different: a little more fur shows under the lilac wing.",
 };
 
 const ref = (m) => `stickers-ref/${m}.png`;
