@@ -50,13 +50,29 @@
     return out.join("");
   };
   let necklace = store.get("necklace", null);
+  // The head and the body are placed separately in each pose (a turned head sits a little off the body's middle),
+  // so the necklace is slid sideways until it is centred on the body, and stays just under the chin.
+  // These read the SVG transforms the art uses (translate, scale, rotate) as [a, b, c, d, e, f].
+  const mul = (m, n) => [m[0] * n[0] + m[2] * n[1], m[1] * n[0] + m[3] * n[1], m[0] * n[2] + m[2] * n[3], m[1] * n[2] + m[3] * n[3], m[0] * n[4] + m[2] * n[5] + m[4], m[1] * n[4] + m[3] * n[5] + m[5]];
+  const matrix = (list) => [...(list || "").matchAll(/(translate|scale|rotate)\(([^)]*)\)/g)].reduce((m, [, fn, args]) => {
+    const v = args.trim().split(/[\s,]+/).map(Number);
+    if (fn === "translate") return mul(m, [1, 0, 0, 1, v[0], v[1] || 0]);
+    if (fn === "scale") return mul(m, [v[0], 0, 0, v[1] ?? v[0], 0, 0]);
+    const t = v[0] * Math.PI / 180, c = Math.cos(t), s = Math.sin(t), [cx = 0, cy = 0] = v.slice(1);
+    return mul(mul(m, [1, 0, 0, 1, cx, cy]), mul([c, s, -s, c, 0, 0], [1, 0, 0, 1, -cx, -cy]));
+  }, [1, 0, 0, 1, 0, 0]);
+  const at = (m, x, y) => [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
   const wear = (svg, mood, beads) => {
     if (!Array.isArray(beads) || !beads.length || !NECK_MOODS.includes(mood)) return svg;
     const head = svg.match(/<g transform="([^"]*)"><g transform="rotate\((-?[\d.]+) 120 123\)">/);
+    const body = svg.match(/<g transform="([^"]*)"><clipPath id="[^"]*bc">/);
     const fig = svg.match(/<g transform="([^"]*)">\s*<g transform="[^"]*"><g class="wl">/);
     const halo = svg.search(/<circle cx="[\d.]+" cy="[\d.]+" r="[\d.]+" fill="#ffe7a0"/);
     if (!head || halo < 0) return svg;
-    const worn = `<g transform="${fig ? fig[1] : ""}"><g transform="${head[1]}"><g transform="rotate(${head[2]} 120 123)">${app.necklaceSvg(beads)}</g></g></g>`;
+    // where the neckline's middle lands (in the figure's space) when it rides on the head, and on the body
+    const onHead = at(matrix(`${head[1]} rotate(${head[2]} 120 123)`), 120, NECK.cy + NECK.ry), onBody = body ? at(matrix(body[1]), 119, NECK.cy + NECK.ry) : onHead;
+    const slide = +(onBody[0] - onHead[0]).toFixed(1);
+    const worn = `<g transform="${fig ? fig[1] : ""}"><g transform="translate(${slide} 0)"><g transform="${head[1]}"><g transform="rotate(${head[2]} 120 123)">${app.necklaceSvg(beads)}</g></g></g></g>`;
     return svg.slice(0, halo) + worn + svg.slice(halo);
   };
   // sticker() draws Lumi on a sticker card with a label underneath; the site only wants Lumi itself.
