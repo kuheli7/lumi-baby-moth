@@ -9,5 +9,5 @@ node_modules/
 .netlify/
 
 # Not part of Lumi (an earlier character idea)
-design/smudge-options.html
-design/pip track one.png
+**/smudge-options.html
+**/pip*.png

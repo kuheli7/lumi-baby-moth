@@ -1,21 +1,44 @@
-/* Lumi motion, copied unchanged from design/lumi-v2.html. The SVG uses these class names, so the site styles avoid them. */
-  /* motion: body and wings share one beat. The wings ride along with the body, swing from
-     their root on the back, and lag a moment behind so they dip (and lift) a little further. */
-  .bob { animation: bob 2.6s ease-in-out infinite; }
-  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-  .wl { transform-origin: 118px 162px; animation: flapL 2.6s ease-in-out -2.4s infinite; }
-  .wr { transform-origin: 122px 160px; animation: flapR 2.6s ease-in-out -2.4s infinite; }
-  @keyframes flapL { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(5deg); } }
-  @keyframes flapR { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(-5deg); } }
-  .ray { animation: twinkle 1.6s ease-in-out infinite; }
-  @keyframes twinkle { 50% { opacity: .25; } }
-  .blink { transform-origin: center; transform-box: fill-box; animation: blink 4.5s infinite; }
-  @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
-  /* asleep: one slow breath for the whole body (wings ride along), z's drifting up one after another */
-  .breathe { transform-origin: 125px 240px; animation: breathe 4s ease-in-out infinite; }
-  @keyframes breathe { 50% { transform: scale(1.01, 1.02); } }
-  .zz text { animation: zz 3s ease-in-out infinite; }
-  .zz text:nth-child(2) { animation-delay: -1s; }
-  .zz text:nth-child(3) { animation-delay: -2s; }
-  @keyframes zz { 0%, 100% { opacity: .95; translate: 0 0; } 50% { opacity: .55; translate: 0 -3px; } }
-  @media (prefers-reduced-motion: reduce) { .bob, .wl, .wr, .ray, .blink, .breathe, .zz text { animation: none; } }
+/* Lumi's motion, copied unchanged from design/lumi-stickers.html by tools/sync-art.mjs.
+   The SVG uses these class names, so the site's own styles avoid them. */
+/* motion: the same beats as Lumi v4 */
+.bob { animation: bob 2.6s ease-in-out infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.wl { transform-origin: 118px 162px; animation: flapL 2.6s ease-in-out -2.4s infinite; }
+.wr { transform-origin: 122px 160px; animation: flapR 2.6s ease-in-out -2.4s infinite; }
+@keyframes flapL { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(5deg); } }
+@keyframes flapR { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(-5deg); } }
+.ray, .glint { animation: twinkle 1.6s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .25; } }
+.blink { transform-origin: center; transform-box: fill-box; animation: blink 4.5s infinite; }
+@keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+.breathe { transform-origin: 125px 226px; animation: breathe 4s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.012, 1.025); } }
+.zz text { animation: zz 3s ease-in-out infinite; }
+.zz text:nth-child(2) { animation-delay: -1s; }
+.zz text:nth-child(3) { animation-delay: -2s; }
+@keyframes zz { 0%, 100% { opacity: .95; translate: 0 0; } 50% { opacity: .55; translate: 0 -3px; } }
+/* hurt: a small shiver; peek: lean out and back; chase: little hops toward the butterfly */
+.shiver { animation: shiver 2.2s ease-in-out infinite; }
+@keyframes shiver { 0%, 60%, 100% { transform: translateX(0); } 64% { transform: translateX(-1.2px); } 68% { transform: translateX(1.2px); } 72% { transform: translateX(-.8px); } 76% { transform: translateX(.6px); } }
+.lean { animation: lean 3.4s ease-in-out infinite; }
+@keyframes lean { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-5px); } }
+.hop { animation: hop 1.3s ease-in-out infinite; }
+@keyframes hop { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(2px, -6px); } }
+/* excited bounces, love's heart beats, the "?" wobbles, the thinking dots fill in one by one */
+.bounce { animation: bounce .9s ease-in-out infinite; }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.beat { transform-box: fill-box; transform-origin: center; animation: beat 1.4s ease-in-out infinite; }
+@keyframes beat { 0%, 30%, 100% { transform: scale(1); } 15% { transform: scale(1.08); } 45% { transform: scale(1.04); } }
+.wobble { transform-box: fill-box; transform-origin: 50% 90%; animation: wobble 2.2s ease-in-out infinite; }
+@keyframes wobble { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+.dots circle { animation: dot 1.5s ease-in-out infinite; }
+.dots circle:nth-child(2) { animation-delay: .25s; }
+.dots circle:nth-child(3) { animation-delay: .5s; }
+@keyframes dot { 0%, 100% { opacity: .25; } 40% { opacity: 1; } }
+.fly { transform-origin: 210px 50px; animation: fly 2.4s ease-in-out infinite; }
+@keyframes fly { 0%, 100% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(-3px, -4px) rotate(-6deg); } }
+.flutter { transform-box: fill-box; transform-origin: left center; animation: flutter .5s ease-in-out infinite alternate; }
+@keyframes flutter { to { transform: scaleX(.72); } }
+@media (prefers-reduced-motion: reduce) {
+  .bob, .wl, .wr, .ray, .glint, .blink, .breathe, .zz text, .shiver, .lean, .hop, .fly, .flutter, .bounce, .beat, .wobble, .dots circle { animation: none; }
+}

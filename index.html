@@ -2,230 +2,285 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lumi's Night Shift</title>
-<meta name="description" content="The official homepage of Lumi, a marshmallow-sized baby moth who starts a new hobby every night and never finishes any. Ooh, shiny. New hobby.">
-<meta name="theme-color" content="#1b1633">
+<meta name="description" content="The homepage of Lumi, a marshmallow-sized baby moth who starts a new hobby every night and never finishes any. Ooh, shiny. New hobby.">
+<meta name="theme-color" content="#251d45">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Lumi's Night Shift">
 <meta property="og:description" content="A baby moth, a lantern, and a lot of half-finished hobbies.">
 <meta property="og:url" content="https://kuheli7.github.io/lumi-baby-moth/">
 <meta property="og:image" content="https://kuheli7.github.io/lumi-baby-moth/og.png">
-<meta property="og:image:alt" content="Lumi, a fluffy baby moth holding a glowing lantern, next to a retro window that says Lumi's Night Shift">
+<meta property="og:image:alt" content="Lumi, a fluffy baby moth holding a glowing lantern under a night sky">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Patrick+Hand&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/lumi.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-view="home">
 <!-- psst. Lumi has a secret. try typing "cookie" anywhere on the page. -->
-<div class="sky-lit" aria-hidden="true"></div>
-<div class="moon" aria-hidden="true"></div>
+<div class="sky" aria-hidden="true"><div class="sky-lit"></div><div class="stars"></div></div>
 <canvas id="dust" aria-hidden="true"></canvas>
 
-<div class="desktop">
-  <nav class="icons" aria-label="Desktop shortcuts">
-    <button class="icon" data-open="w-lumi"><span class="icon-pic" aria-hidden="true">🏮</span><span>lumi.exe</span></button>
-    <button class="icon" data-open="w-about"><span class="icon-pic" aria-hidden="true">📝</span><span>about.txt</span></button>
-    <button class="icon" data-open="w-room"><span class="icon-pic" aria-hidden="true">🧺</span><span>hobbies</span></button>
-    <button class="icon" data-open="w-story"><span class="icon-pic" aria-hidden="true">📖</span><span>story.txt</span></button>
-    <button class="icon" data-open="w-facts"><span class="icon-pic" aria-hidden="true">🏛️</span><span>facts.exe</span></button>
-    <button class="icon" data-open="w-guest"><span class="icon-pic" aria-hidden="true">📒</span><span>guestbook</span></button>
-    <button class="icon" data-open="w-credits"><span class="icon-pic" aria-hidden="true">⭐</span><span>credits</span></button>
-  </nav>
+<header class="top">
+  <a class="moon-link" href="#home" aria-label="Lumi's Night Shift, home"><span class="moon" aria-hidden="true"></span></a>
+  <div class="top-actions">
+    <button class="round-btn" id="mute" data-sfx="none" aria-pressed="false">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path class="i-speaker" d="M4 9.5h3l4.5-4v13L7 14.5H4z"/><path class="i-on" d="M15 9a4 4 0 0 1 0 6M17.5 6.5a7.5 7.5 0 0 1 0 11"/><path class="i-off" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg>
+      <span class="round-label" id="mute-label">sound on</span>
+    </button>
+    <button class="round-btn" id="menu-open" aria-haspopup="dialog" aria-controls="menu" aria-label="Open menu">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg>
+    </button>
+  </div>
+</header>
 
-  <main class="windows">
-    <!-- ============ welcome banner ============ -->
-    <section class="win" id="w-welcome" aria-labelledby="t-welcome">
-      <header class="bar"><span class="bar-title" id="t-welcome">welcome.htm</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize welcome.htm">_</button><button class="b-x" aria-label="Close welcome.htm">×</button></span></header>
-      <div class="win-body welcome">
-        <h1><span class="spark" aria-hidden="true">✦</span> Lumi's Night Shift <span class="spark" aria-hidden="true">✦</span></h1>
-        <p class="tag">the official homepage of a baby moth who starts a new hobby every night</p>
-        <div class="marquee" aria-hidden="true"><div class="marquee-track">
-          <span>★ welcome, night owl! ★ please do not poke the moth (too much) ★ cookies accepted 24/7 ★ this site is under construction forever ★ ooh, shiny. new hobby. ★&nbsp;</span>
-          <span>★ welcome, night owl! ★ please do not poke the moth (too much) ★ cookies accepted 24/7 ★ this site is under construction forever ★ ooh, shiny. new hobby. ★&nbsp;</span>
-        </div></div>
-        <div class="welcome-row">
-          <span class="construction">🚧 under construction 🚧</span>
-          <span class="new-badge"><b class="blinky">NEW!</b> now with cookies</span>
-          <span class="counter" aria-label="Cookies eaten so far"><span class="counter-label">cookies eaten</span><span class="odometer" id="odo-cookies"></span></span>
-          <span class="counter" aria-label="Your visits"><span class="counter-label">your visits</span><span class="odometer" id="odo-visits"></span></span>
+<main class="app" id="app">
+
+  <!-- ================= home ================= -->
+  <section class="view view-home" data-view="home" aria-labelledby="h-home">
+    <div class="home-hero">
+      <h1 class="home-title" id="h-home" tabindex="-1">Lumi's <span>Night Shift</span></h1>
+      <p class="home-tag">the tiny moth who starts a new hobby every night</p>
+      <div class="stage-wrap">
+        <p class="bubble" id="bubble" aria-live="polite">Ooh, shiny. New hobby!</p>
+        <button class="stage" id="stage" data-sfx="none" aria-label="Poke Lumi"></button>
+      </div>
+    </div>
+    <div class="panel home-panel">
+      <p class="mood-chip">mood: <b id="mood-label">curious</b></p>
+      <div class="mood-picker" id="mood-picker" role="group" aria-label="Pick a mood for Lumi"></div>
+      <div class="actions">
+        <button class="btn btn-gold" id="feed" data-sfx="none"><span class="btn-ico cookie-ico" aria-hidden="true"></span><span id="feed-label">feed a cookie</span></button>
+        <a class="btn btn-berry" href="#play"><span class="btn-ico" aria-hidden="true">★</span>play with Lumi</a>
+        <a class="btn btn-lilac" href="#hobbies"><span class="btn-ico" aria-hidden="true">✦</span>explore a hobby</a>
+      </div>
+      <div class="cookies-today">
+        <span>cookies today</span>
+        <span class="slots" id="slots" aria-live="polite"></span>
+      </div>
+      <p class="home-foot">
+        <a href="#about">meet Lumi</a><span aria-hidden="true">·</span><a href="#credits">credits</a><span aria-hidden="true">·</span>
+        <span class="counter">visitors <span class="odometer" id="odo-visits"></span></span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= about (5-point character sheet) ================= -->
+  <section class="view" data-view="about" aria-labelledby="h-about" hidden>
+    <div class="panel">
+      <header class="view-head">
+        <h1 id="h-about" tabindex="-1">About Lumi</h1>
+        <p>the 5-point character sheet</p>
+      </header>
+      <div class="about-art" id="about-art"></div>
+      <dl class="sheet">
+        <div><dt><span class="num">1</span>Name</dt><dd>Lumi</dd></div>
+        <div><dt><span class="num">2</span>What they are</dt><dd>A marshmallow-sized, fuzzy baby moth. A chaotic, curious night owl. A cookie makes it happy in seconds. Hurt feelings make it droop and cry, and if it gets worse it <i>flops</i> (plays dead, x_x) until someone feeds it.</dd></div>
+        <div><dt><span class="num">3</span>What they do</dt><dd>Night-shift Hobby Hopper and Curator of Useless Facts. Starts a new hobby every night. Finishes none.</dd></div>
+        <div><dt><span class="num">4</span>Their story</dt><dd>Hatched in a paint box under a desk lamp and has chased lights (and hobbies) ever since. The only thing it ever finished is the lantern it carries.</dd></div>
+        <div><dt><span class="num">5</span>Tagline</dt><dd class="tagline">“Ooh, shiny. New hobby.”</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ================= hobbies ================= -->
+  <section class="view" data-view="hobbies" aria-labelledby="h-hobbies" hidden>
+    <div class="panel wide">
+      <header class="view-head">
+        <h1 id="h-hobbies" tabindex="-1">Lumi's Hobbies</h1>
+        <p>tiny interests, big excitement (unfinished, as always)</p>
+      </header>
+      <ul class="hobby-list" id="hobby-list"></ul>
+      <div class="hobby-actions">
+        <a class="btn btn-dark" href="#room"><span class="btn-ico" aria-hidden="true">🏮</span>explore the dark hobby room</a>
+        <form class="suggest" id="suggest" autocomplete="off">
+          <label class="sr-only" for="suggest-input">Suggest a new hobby</label>
+          <input id="suggest-input" maxlength="32" placeholder="suggest a new hobby…">
+          <button class="btn btn-outline" type="submit">+ add</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= hobby room (the lantern is your cursor) ================= -->
+  <section class="view" data-view="room" aria-labelledby="h-room" hidden>
+    <div class="panel panel-dark wide">
+      <header class="view-head">
+        <a class="back" href="#hobbies" aria-label="Back to hobbies"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+        <h1 id="h-room" tabindex="-1">Hobby Room</h1>
+      </header>
+      <p class="room-intro">Lumi's room is dark. <span class="fine-only">Move</span><span class="touch-only">Tap around to move</span> the lantern to find its half-finished hobbies.</p>
+      <div class="room" id="room">
+        <div class="room-scene" id="room-scene"></div>
+        <div class="room-dark" aria-hidden="true"></div>
+        <div class="room-glow" aria-hidden="true"></div>
+        <div class="room-hits" id="room-hits"></div>
+        <div class="room-lumi" id="room-lumi" aria-hidden="true"></div>
+      </div>
+      <div class="found-row">
+        <p class="found">found <b id="found-count">0</b>/5</p>
+        <span class="pips" id="found-pips" aria-hidden="true"></span>
+        <button class="btn btn-ghost" id="room-switch">💡 lights on</button>
+      </div>
+      <div class="hobby-card" id="hobby-card" aria-live="polite" hidden></div>
+    </div>
+  </section>
+
+  <!-- ================= play: Star Catch ================= -->
+  <section class="view" data-view="play" aria-labelledby="h-play" hidden>
+    <div class="panel wide">
+      <header class="view-head">
+        <h1 id="h-play" tabindex="-1">Star Catch</h1>
+        <p>help Lumi catch falling stars for its lantern</p>
+      </header>
+      <div class="levels" id="levels" role="group" aria-label="Choose a level"></div>
+      <div class="game" id="game">
+        <canvas id="game-canvas" aria-hidden="true"></canvas>
+        <img class="game-lumi" id="game-lumi" alt="">
+        <div class="hud" id="hud" hidden>
+          <span class="hud-chip" id="hud-level"></span>
+          <span class="hud-chip" id="hud-stars"></span>
+          <span class="hud-chip hearts" id="hud-hearts"></span>
+          <button class="hud-chip hud-pause" id="game-pause" aria-label="Pause">❚❚</button>
+        </div>
+        <div class="game-card" id="game-card" role="dialog" aria-live="polite" aria-labelledby="game-card-title">
+          <img class="game-card-art" id="game-card-art" alt="">
+          <h2 id="game-card-title"></h2>
+          <p id="game-card-text"></p>
+          <button class="btn btn-berry" id="game-go"></button>
         </div>
       </div>
-    </section>
+      <p class="game-help"><span class="fine-only">drag, or use the ← → keys.</span><span class="touch-only">drag your finger to move Lumi.</span> catch <b class="c-star">★</b>, dodge <b class="c-rain">raindrops</b>, cookies heal.</p>
+    </div>
+  </section>
 
-    <!-- ============ Lumi (the toy) ============ -->
-    <section class="win" id="w-lumi" aria-labelledby="t-lumi">
-      <header class="bar"><span class="bar-title" id="t-lumi">lumi.exe</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize lumi.exe">_</button><button class="b-x" aria-label="Close lumi.exe">×</button></span></header>
-      <div class="win-body lumi-home">
-        <div class="lumi-side">
-          <p class="bubble" id="bubble" aria-live="polite">hi! i'm Lumi.</p>
-          <button class="stage" id="stage" aria-label="Poke Lumi" data-sfx="none"></button>
-          <p class="mood-chip">mood: <b id="mood-label">curious</b></p>
-        </div>
-        <div class="lumi-info">
-          <h2 class="lumi-name">Lumi <small>the baby moth</small></h2>
-          <p class="motto">“Ooh, shiny. New hobby.”</p>
-          <div class="jar-box">
-            <p class="jar-title">cookie jar</p>
-            <div class="jar" id="jar"></div>
-            <p class="hint">drag a cookie to Lumi (or just tap one)</p>
+  <!-- ================= story ================= -->
+  <section class="view" data-view="story" aria-labelledby="h-story" hidden>
+    <div class="panel">
+      <header class="view-head">
+        <h1 id="h-story" tabindex="-1">Lumi's Story</h1>
+      </header>
+      <div class="story">
+        <div class="story-art" id="story-art"></div>
+        <div class="story-side">
+          <p class="story-text" id="story-text" aria-live="polite"></p>
+          <div class="story-nav">
+            <button class="btn btn-outline small" id="story-prev">‹ back</button>
+            <span class="pager" id="story-pager" aria-hidden="true"></span>
+            <button class="btn btn-outline small" id="story-next">next ›</button>
           </div>
-          <ul class="howto">
-            <li><b>poke</b> Lumi for giggles. not too much. it's sensitive.</li>
-            <li>if it <b>flops</b>, only a cookie can bring it back.</li>
-            <li>leave it alone and it falls asleep.</li>
-          </ul>
-          <form class="chat" id="chat" autocomplete="off">
-            <label for="chat-input">talk to Lumi</label>
-            <div class="chat-row">
-              <input id="chat-input" maxlength="80" placeholder="say hi, ask for a fact…">
-              <button type="submit">say ✦</button>
-            </div>
-          </form>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ============ 5-point character sheet ============ -->
-    <section class="win" id="w-about" aria-labelledby="t-about">
-      <header class="bar"><span class="bar-title" id="t-about">about.txt (character sheet)</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize about.txt">_</button><button class="b-x" aria-label="Close about.txt">×</button></span></header>
-      <div class="win-body sheet">
-        <dl>
-          <div><dt><span class="num">1</span> Name</dt><dd>Lumi</dd></div>
-          <div><dt><span class="num">2</span> What they are</dt><dd>A marshmallow-sized, fuzzy baby moth. A chaotic, curious night owl. A cookie makes it happy in seconds. Hurt feelings make it droop and cry, and if it gets worse it <i>flops</i> (plays dead, x_x) until someone feeds it.</dd></div>
-          <div><dt><span class="num">3</span> What they do</dt><dd>Night-shift Hobby Hopper and Curator of Useless Facts. Starts a new hobby every night. Finishes none.</dd></div>
-          <div><dt><span class="num">4</span> Their story</dt><dd>Hatched in a paint box under a desk lamp and has chased lights (and hobbies) ever since. The only thing it ever finished is the lantern it carries.</dd></div>
-          <div><dt><span class="num">5</span> Tagline</dt><dd class="motto">“Ooh, shiny. New hobby.”</dd></div>
-        </dl>
-      </div>
-    </section>
+  <!-- ================= guestbook ================= -->
+  <section class="view" data-view="guestbook" aria-labelledby="h-guest" hidden>
+    <div class="panel">
+      <header class="view-head">
+        <h1 id="h-guest" tabindex="-1"><span class="head-star" aria-hidden="true">★</span> Guestbook</h1>
+        <p>Leave a note or a wish for Lumi and its next hobby!</p>
+      </header>
+      <form class="guest-form" id="guest-form" autocomplete="off">
+        <label class="sr-only" for="guest-name">Your name</label>
+        <input id="guest-name" name="name" maxlength="24" required placeholder="your name">
+        <label class="sr-only" for="guest-msg">Your note</label>
+        <textarea id="guest-msg" name="msg" maxlength="160" rows="3" required placeholder="write a note…"></textarea>
+        <button class="btn btn-dark small" type="submit">post</button>
+      </form>
+      <ol class="guest-list" id="guest-list"></ol>
+      <p class="fine-print">Lumi keeps your notes in a jar on this device (your browser's storage).</p>
+    </div>
+  </section>
 
-    <!-- ============ the dark hobby room (lantern cursor) ============ -->
-    <section class="win" id="w-room" aria-labelledby="t-room">
-      <header class="bar"><span class="bar-title" id="t-room">hobby_room.exe (lights off)</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize hobby room">_</button><button class="b-x" aria-label="Close hobby room">×</button></span></header>
-      <div class="win-body room-body">
-        <p class="room-intro"><span>Lumi's room is dark. <span class="fine-only">Move</span><span class="touch-only">Tap</span> the lantern around to find its half-finished hobbies.</span>
-          <span class="found">found <b id="found-count">0</b>/5</span></p>
-        <div class="room" id="room">
-          <div class="room-scene" id="room-scene"></div>
-          <div class="room-dark" aria-hidden="true"></div>
-          <div class="room-glow" aria-hidden="true"></div>
-          <div class="room-hits" id="room-hits"></div>
-          <div class="room-lantern" id="room-lantern" aria-hidden="true"></div>
-        </div>
-        <div class="hobby-card" id="hobby-card" aria-live="polite">
-          <p class="card-empty">Nothing found yet. Something shiny is in here somewhere…</p>
-        </div>
-        <button class="switch" id="room-switch">💡 flip the light switch</button>
-      </div>
-    </section>
-
-    <!-- ============ story (scenes) ============ -->
-    <section class="win" id="w-story" aria-labelledby="t-story">
-      <header class="bar"><span class="bar-title" id="t-story">story.txt</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize story.txt">_</button><button class="b-x" aria-label="Close story.txt">×</button></span></header>
-      <div class="win-body story">
-        <div class="story-art" id="story-art" aria-hidden="true"></div>
-        <p class="story-text" id="story-text" aria-live="polite"></p>
-        <div class="story-nav">
-          <button id="story-prev" aria-label="Previous page">◂ back</button>
-          <span class="dots" id="story-dots" aria-hidden="true"></span>
-          <button id="story-next" aria-label="Next page">next ▸</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ museum of useless facts ============ -->
-    <section class="win" id="w-facts" aria-labelledby="t-facts">
-      <header class="bar"><span class="bar-title" id="t-facts">museum_of_useless_facts.exe</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize museum of useless facts">_</button><button class="b-x" aria-label="Close museum of useless facts">×</button></span></header>
-      <div class="win-body facts">
+  <!-- ================= museum of useless facts ================= -->
+  <section class="view" data-view="facts" aria-labelledby="h-facts" hidden>
+    <div class="panel">
+      <header class="view-head">
+        <h1 id="h-facts" tabindex="-1">Museum of Useless Facts</h1>
+        <p>curated by Lumi, Curator of Useless Facts</p>
+      </header>
+      <div class="fact-card">
+        <div class="fact-art" id="fact-art"></div>
         <p class="plaque">EXHIBIT <b id="fact-num">01</b></p>
         <p class="fact" id="fact" aria-live="polite"></p>
-        <p class="curator">curated by Lumi, Curator of Useless Facts</p>
-        <button id="fact-next">next exhibit ▸</button>
+        <button class="btn btn-lilac small" id="fact-next">next exhibit ›</button>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ============ guestbook ============ -->
-    <section class="win" id="w-guest" aria-labelledby="t-guest">
-      <header class="bar"><span class="bar-title" id="t-guest">guestbook.exe</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize guestbook">_</button><button class="b-x" aria-label="Close guestbook">×</button></span></header>
-      <div class="win-body guest">
-        <p class="guest-intro">Sign Lumi's wall! Leave a note or a wish for a new hobby.</p>
-        <form id="guest-form" autocomplete="off">
-          <label>your name <input name="name" maxlength="24" required placeholder="a fellow night owl"></label>
-          <label>your note <textarea name="msg" maxlength="160" rows="2" required placeholder="lumi you should try knitting"></textarea></label>
-          <button type="submit">sign the guestbook ✍️</button>
-        </form>
-        <ol class="guest-list" id="guest-list"></ol>
-        <p class="fine-print">Lumi keeps your note in a jar on this computer (your browser's storage), so only you can see it.</p>
+  <!-- ================= credits ================= -->
+  <section class="view" data-view="credits" aria-labelledby="h-credits" hidden>
+    <div class="panel">
+      <header class="view-head">
+        <h1 id="h-credits" tabindex="-1">Credits</h1>
+      </header>
+      <div class="credit-cards">
+        <div class="credit"><h2>About Lumi</h2><p>Lumi is an original character by Lumi's human (a fellow night owl).</p></div>
+        <div class="credit"><h2>Art</h2><p>Lumi's reference sketches were made with ChatGPT image generation, and Lumi was then drawn as SVG code with Claude. The hobby room and icons are hand-made SVG.</p></div>
+        <div class="credit"><h2>Fonts</h2><p>Fredoka and Patrick Hand, from Google Fonts (SIL Open Font License).</p></div>
+        <div class="credit"><h2>Sounds</h2><p>Made live in your browser with the Web Audio API. No audio files.</p></div>
+        <div class="credit"><h2>Code</h2><p>Plain HTML, CSS and JavaScript. No libraries.</p></div>
       </div>
-    </section>
-
-    <!-- ============ credits ============ -->
-    <section class="win" id="w-credits" aria-labelledby="t-credits">
-      <header class="bar"><span class="bar-title" id="t-credits">credits.txt</span>
-        <span class="bar-btns"><button class="b-min" aria-label="Minimize credits.txt">_</button><button class="b-x" aria-label="Close credits.txt">×</button></span></header>
-      <div class="win-body credits">
-        <ul>
-          <li><b>Lumi</b> is an original character by Lumi's human (a fellow night owl).</li>
-          <li><b>Art:</b> Lumi's reference sketches were made with ChatGPT image generation, and Lumi was then drawn as SVG code with Claude. The hobby room is SVG and CSS; the desktop icons are your device's emoji.</li>
-          <li><b>Fonts:</b> Fredoka and Patrick Hand, from Google Fonts (SIL Open Font License).</li>
-          <li><b>Sounds:</b> made live in your browser with the Web Audio API. No audio files.</li>
-          <li><b>Code:</b> plain HTML, CSS and JavaScript. No libraries.</li>
-          <li>Made for the haX.baby <i>Baby's First Website</i> hackathon, October 2026.</li>
-        </ul>
-        <div class="badges" aria-label="Retro web badges">
-          <span class="badge b1">best viewed at 3 AM</span>
-          <span class="badge b2">made with notepad</span>
-          <span class="badge b3">lumi approved ✓</span>
-          <span class="badge b4">no hobbies finished</span>
-        </div>
-        <div class="webring">
-          <button data-ring="prev">◂ prev</button>
-          <span>🌙 the night-moth webring 🌙</span>
-          <button data-ring="next">next ▸</button>
-        </div>
-        <p class="secrets">psst… 2 secrets are hidden on this page. found: <b id="secret-count">0</b>/2</p>
+      <div class="stats">
+        <span class="counter">visitors <span class="odometer" id="odo-visits-2"></span></span>
+        <span class="counter">cookies eaten <span class="odometer" id="odo-cookies"></span></span>
       </div>
-    </section>
-  </main>
-</div>
+      <div class="badges" aria-label="Retro web badges">
+        <span class="badge b1">best viewed at 3 AM</span>
+        <span class="badge b2">made with notepad</span>
+        <span class="badge b3">lumi approved ✓</span>
+        <span class="badge b4">under construction</span>
+      </div>
+      <p class="secrets">psst… 2 secrets are hidden on this site. found: <b id="secret-count">0</b>/2</p>
+      <p class="made">Made for the haX.baby <i>Baby's First Website</i> hackathon, October 2026. <span aria-hidden="true">🌙</span></p>
+    </div>
+  </section>
+</main>
 
-<!-- ============ taskbar ============ -->
-<div class="taskbar">
-  <button class="start" id="start" aria-haspopup="true" aria-expanded="false" aria-controls="start-menu">✦ start</button>
-  <div class="start-menu" id="start-menu" hidden>
-    <p class="start-head">Lumi OS 98</p>
-    <button data-open="w-lumi">🏮 lumi.exe</button>
-    <button data-open="w-about">📝 about.txt</button>
-    <button data-open="w-room">🧺 hobby room</button>
-    <button data-open="w-story">📖 story.txt</button>
-    <button data-open="w-facts">🏛️ useless facts</button>
-    <button data-open="w-guest">📒 guestbook</button>
-    <button data-open="w-credits">⭐ credits</button>
-    <hr>
-    <button id="menu-lights">🏮 light the lantern</button>
-    <button id="menu-trail">✨ moth dust: on</button>
-    <button id="menu-chaos">🌀 chaos mode: off</button>
+<!-- ================= bottom tabs ================= -->
+<nav class="tabs" aria-label="Main">
+  <a href="#home" data-tab="home"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5L12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg><span>home</span></a>
+  <a href="#hobbies" data-tab="hobbies"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5h16V18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM3.5 8.5L5.5 5h13l2 3.5M9.5 12h5"/></svg><span>hobbies</span></a>
+  <a href="#play" data-tab="play"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.5 5.2 5.6.8-4 4 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-4 5.6-.8z"/></svg><span>play</span></a>
+  <a href="#story" data-tab="story"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7c-2-1.6-4.6-2-7.5-1.6V18c2.9-.4 5.5 0 7.5 1.6 2-1.6 4.6-2 7.5-1.6V5.4C16.6 5 14 5.4 12 7zM12 7v12.6"/></svg><span>story</span></a>
+  <a href="#guestbook" data-tab="guestbook"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6zM6 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2M9.5 9h5M9.5 12.5h5"/></svg><span>guestbook</span></a>
+</nav>
+
+<!-- ================= menu ================= -->
+<dialog class="menu" id="menu" aria-labelledby="menu-title">
+  <button class="round-btn menu-close" id="menu-close" aria-label="Close menu"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="menu-art" id="menu-art"></div>
+  <h2 id="menu-title">Lumi's Night Shift</h2>
+  <nav class="menu-list" aria-label="All pages">
+    <a href="#home">home</a>
+    <a href="#about">about Lumi</a>
+    <a href="#hobbies">hobbies</a>
+    <a href="#room">hobby room</a>
+    <a href="#play">play with Lumi</a>
+    <a href="#story">story</a>
+    <a href="#guestbook">guestbook</a>
+    <a href="#facts">useless facts</a>
+    <a href="#credits">credits</a>
+  </nav>
+  <div class="menu-toggles">
+    <button class="chip" id="menu-lights">🏮 light the lantern</button>
+    <button class="chip" id="menu-trail">✨ moth dust: on</button>
   </div>
-  <div class="tray-windows" id="tray-windows" aria-label="Minimized windows"></div>
-  <button class="mute" id="mute" aria-pressed="false">🔊 sound on</button>
-  <span class="clock" id="clock" aria-label="Lumi's clock"></span>
-</div>
+  <svg class="menu-trees" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60V44l14-10 8 6 12-18 12 18 10-8 14 12 16-22 14 20 10-6 12 10 18-16 14 14 12-8 16 12 14-20 14 18 12-6 16 12 12-14 14 16 10-6 14 8 16-18 14 18 12-4 14 10 12-12 14 14V60z"/></svg>
+</dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="js/lumi.js"></script>
-<script src="js/main.js"></script>
+<script src="js/core.js"></script>
+<script src="js/home.js"></script>
+<script src="js/hobbies.js"></script>
+<script src="js/game.js"></script>
+<script src="js/pages.js"></script>
 </body>
 </html>
