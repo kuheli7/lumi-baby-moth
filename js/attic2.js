@@ -201,7 +201,7 @@
 
   // ---------- Lumi: she follows the pointer like the lantern does in the dark attic ----------
   // she is only a cursor: clicks go through her to whatever she is standing in front of
-  const MOODS = { moons: "thinking", jar: "surprised", beads: "love", guitar: "excited", museum: "curious", window: "starry" };
+  const MOODS = { moons: "happy", jar: "surprised", beads: "love", guitar: "excited", museum: "curious", window: "starry" };
   let mood = "", lastMove = 0, wander = 0, calm = 0;
   const feel = (m) => { if (m !== mood) { mood = m; hover.innerHTML = app.art(m, true); } };
   const react = (id) => {
