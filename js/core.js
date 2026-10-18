@@ -25,13 +25,13 @@
   const NECK_MOODS = ["curious", "happy", "excited", "shy", "proud", "love", "surprised", "confused", "sad", "hurt", "fed", "thinking", "starry"];
   app.necklaceSvg = (beads) => {
     // a short curve right at the neck, where the head's fluff meets the body's, with the pendant just below
-    const n = beads.length, at = (deg, k = 1) => [120 + 52 * k * Math.cos(deg * Math.PI / 180), 160 + 26 * k * Math.sin(deg * Math.PI / 180)];
-    const [x0, y0] = at(146), [x1, y1] = at(34), [cx, cy] = at(90, 1.1);
+    const n = beads.length, r = n > 9 ? 5 : 5.6, half = n > 9 ? 52 : 48, at = (deg, k = 1) => [120 + 52 * k * Math.cos(deg * Math.PI / 180), 160 + 26 * k * Math.sin(deg * Math.PI / 180)];
+    const [x0, y0] = at(90 + half + 8), [x1, y1] = at(90 - half - 8), [cx, cy] = at(90, 1.1);
     const out = [`<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} Q${cx.toFixed(1)} ${(cy + 6).toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="#cdb6ec" stroke-width="1.8"/>`];
     out.push(`<path d="M120 184 Q126.5 193 120 199 Q113.5 193 120 184Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.6"/><ellipse cx="118" cy="192" rx="1.4" ry="2.4" fill="#fff"/>`);
     beads.forEach((color, i) => {
-      const [x, y] = at(n === 1 ? 90 : 138 - 96 * i / (n - 1));
-      out.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.6" fill="${color}" stroke="rgba(90, 60, 110, .35)" stroke-width="1.2"/><circle cx="${(x - 1.8).toFixed(1)}" cy="${(y - 1.8).toFixed(1)}" r="1.6" fill="#fff" opacity=".85"/>`);
+      const [x, y] = at(n === 1 ? 90 : 90 + half - 2 * half * i / (n - 1));
+      out.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${color}" stroke="rgba(90, 60, 110, .35)" stroke-width="1.2"/><circle cx="${(x - 1.8).toFixed(1)}" cy="${(y - 1.8).toFixed(1)}" r="${(r * .29).toFixed(1)}" fill="#fff" opacity=".85"/>`);
     });
     return out.join("");
   };
@@ -61,7 +61,7 @@
   // putting on (or taking off) the necklace redraws every picture; screens listening for "lumi:wear" redraw theirs
   app.necklace = () => necklace;
   app.wear = (beads) => {
-    necklace = beads && beads.length ? beads.slice(0, 9) : null;
+    necklace = beads && beads.length ? beads.slice(0, 11) : null;
     store.set("necklace", necklace);
     Object.values(pictures).forEach(u => URL.revokeObjectURL(u));
     pictures = {};

@@ -22,8 +22,8 @@ One calm screen at a time on a starry night, with tabs at the bottom and a menu 
 - **Home:** Lumi itself, flying around its patch of night sky. Tap the sky and it chases the light (it's a moth). Tap Lumi to poke it, but not too much: it gets hurt, then flops. "Feed a cookie" drops one from the sky and Lumi swoops to catch it (phones buzz a little). Pick a mood and the sky changes with it: warm, pink, sleepy or rainy. It lands on its cloud to sleep if you leave, its eyes follow your cursor or finger, it remembers your visits, and it notices when you resize the window ("best viewed at" your exact size).
 - **Hobbies:** six half-finished projects with "under construction" progress cards. You can suggest a new hobby too.
 - **Lumi's attic:** a dark room where Lumi's lantern follows your cursor (or your taps) and finds the hobbies. Then you can do them with Lumi:
-  - **paint** at the easel, and the painting is framed on the attic wall;
-  - **string a bead necklace**, which Lumi then wears all over the site;
+  - **paint** at the easel (with undo and redo), and the painting is framed on the attic wall;
+  - **string a bead necklace** (up to 11 beads), which Lumi then wears all over the site;
   - play the **lullaby** on the matchbox bed (a music box made with Web Audio), and Lumi carries the lantern to bed as a night light;
   - fly out of **the window** to the space level.
   Leave the attic quiet for half a minute and Lumi falls asleep mid-hobby.

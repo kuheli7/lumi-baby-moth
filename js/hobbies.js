@@ -434,7 +434,7 @@
     strung = (app.necklace() || []).slice();
     roomCard.hidden = false;
     roomCard.innerHTML = `<h3>string a necklace</h3>
-      <p>tap the beads to string up to nine. Lumi wears it all over the site.</p>
+      <p>tap the beads to string up to eleven. Lumi wears it all over the site.</p>
       <div class="bead-maker">
         <div class="bead-lumi" id="bead-lumi"></div>
         <div>
@@ -455,7 +455,7 @@
     if (!lumi) return;
     lumi.innerHTML = app.art("excited", false, strung);
     const worn = app.necklace(), same = worn && worn.join() === strung.join();
-    $("#bead-count").textContent = same ? `Lumi is wearing this one (${strung.length} beads)` : strung.length ? `${strung.length} of 9 beads` : "no beads yet";
+    $("#bead-count").textContent = same ? `Lumi is wearing this one (${strung.length} beads)` : strung.length ? `${strung.length} of 11 beads` : "no beads yet";
     $("[data-bead-undo]", roomCard).disabled = !strung.length;
     $("[data-bead-wear]", roomCard).disabled = !strung.length || same;
     $("[data-bead-off]", roomCard).hidden = !worn;
@@ -467,7 +467,7 @@
     if (t.closest("[data-beads]")) { beadTray(); $(".bead", roomCard).focus(); return; }
     const bead = t.closest("[data-bead]");
     if (bead) {
-      if (strung.length >= 9) { app.toast("nine beads is the limit. (Lumi's neck is very small.)"); return; }
+      if (strung.length >= 11) { app.toast("eleven beads is the limit. (Lumi's neck is very small.)"); return; }
       strung.push(bead.dataset.bead);
       sfx.play.plip();
       showStrung();
@@ -496,6 +496,7 @@
   const PAINTS = [["#f6cf6a", "moon gold"], ["#ee8196", "pink"], ["#8fc3e8", "sky blue"], ["#a993d6", "lilac"],
     ["#8fcf9a", "mint"], ["#4b3b7c", "midnight"], [PAPER, "eraser"]];
   const brush = { color: PAINTS[0][0], size: 7, at: null };
+  let paintTools = null;   // undo, redo and clear for the easel that is open
   const showArt = (url) => {
     if (!url) return;
     $("#rm-art-img").setAttribute("href", url);
@@ -513,6 +514,8 @@
       <div class="paint-pots" role="group" aria-label="Paints">${PAINTS.map(([c, n]) =>
         `<button class="paint-pot${c === PAPER ? " eraser" : ""}" data-paint-color="${c}" style="--c:${c}" aria-label="${n}" aria-pressed="${c === brush.color}" data-sfx="none"></button>`).join("")}</div>
       <div class="bead-actions">
+        <button class="btn btn-outline small" data-paint-undo aria-label="undo the last stroke" disabled>↶ undo</button>
+        <button class="btn btn-outline small" data-paint-redo aria-label="redo the stroke you undid" disabled>↷ redo</button>
         <button class="btn btn-outline small" data-paint-size aria-pressed="${brush.size > 10}">big brush</button>
         <button class="btn btn-outline small" data-paint-clear>clear</button>
         <button class="btn btn-gold small" data-paint-hang data-sfx="none">🖼 hang it up</button>
@@ -525,37 +528,67 @@
       cv.getContext("2d").scale(dpr, dpr);
     }
     const pg = paper.getContext("2d"), wg = wet.getContext("2d");
-    pg.fillStyle = PAPER;
-    pg.fillRect(0, 0, w, h);
-    const saved = store.get("painting", null);
-    if (saved) { const im = new Image(); im.onload = () => pg.drawImage(im, 0, 0, w, h); im.src = saved; }
-    const point = (e) => { const r = paper.getBoundingClientRect(); return [(e.clientX - r.left) * w / r.width, (e.clientY - r.top) * h / r.height]; };
-    const stroke = (a, b) => {
-      wg.strokeStyle = brush.color;
-      wg.lineWidth = brush.size;
+    // Every stroke is remembered (as its points) so undo and redo can repaint the paper without it:
+    // the painting already hanging is the base, strokes go on top, and "clear" is a step like any other.
+    const strokes = [], undone = [];
+    let base = null, now = null;
+    const blank = () => { pg.fillStyle = PAPER; pg.fillRect(0, 0, w, h); };
+    const seg = (color, size, a, b) => {
+      wg.strokeStyle = color;
+      wg.lineWidth = size;
       wg.lineCap = wg.lineJoin = "round";
       wg.beginPath();
       wg.moveTo(...a);
       wg.lineTo(...b);
       wg.stroke();
     };
-    const dry = () => {
-      if (!brush.at) return;
-      brush.at = null;
-      pg.globalAlpha = brush.color === PAPER ? 1 : .6;
+    const lay = (color) => {
+      pg.globalAlpha = color === PAPER ? 1 : .6;
       pg.drawImage(wet, 0, 0, w, h);
       pg.globalAlpha = 1;
       wg.clearRect(0, 0, w, h);
     };
+    const redraw = () => {
+      blank();
+      if (base) pg.drawImage(base, 0, 0, w, h);
+      for (const st of strokes) {
+        if (st.clear) { blank(); continue; }
+        st.pts.forEach((p, i) => seg(st.color, st.size, st.pts[Math.max(0, i - 1)], p));
+        lay(st.color);
+      }
+    };
+    const sync = () => {
+      $("[data-paint-undo]", roomCard).disabled = !strokes.length;
+      $("[data-paint-redo]", roomCard).disabled = !undone.length;
+    };
+    const record = (step) => { strokes.push(step); undone.length = 0; sync(); };
+    blank();
+    const saved = store.get("painting", null);
+    if (saved) { const im = new Image(); im.onload = () => { base = im; redraw(); }; im.src = saved; }
+    paintTools = {
+      undo: () => { if (!brush.at && strokes.length) { undone.push(strokes.pop()); redraw(); sync(); return true; } },
+      redo: () => { if (!brush.at && undone.length) { strokes.push(undone.pop()); redraw(); sync(); return true; } },
+      clear: () => { if (!brush.at && (strokes.length || base) && !strokes.at(-1)?.clear) { blank(); record({ clear: true }); } }
+    };
+    const point = (e) => { const r = paper.getBoundingClientRect(); return [(e.clientX - r.left) * w / r.width, (e.clientY - r.top) * h / r.height]; };
+    const dry = () => {
+      if (!brush.at) return;
+      brush.at = null;
+      lay(now.color);
+      record(now);
+      now = null;
+    };
     paper.addEventListener("pointerdown", (e) => {
       try { paper.setPointerCapture(e.pointerId); } catch { /* a pointer that is already gone */ }
       brush.at = point(e);
-      stroke(brush.at, brush.at);
+      now = { color: brush.color, size: brush.size, pts: [brush.at] };
+      seg(now.color, now.size, brush.at, brush.at);
     });
     paper.addEventListener("pointermove", (e) => {
       if (!brush.at) return;
       const p = point(e);
-      stroke(brush.at, p);
+      seg(now.color, now.size, brush.at, p);
+      now.pts.push(p);
       brush.at = p;
     });
     paper.addEventListener("pointerup", dry);
@@ -574,10 +607,12 @@
     } else if (t.closest("[data-paint-size]")) {
       brush.size = brush.size > 10 ? 7 : 16;
       t.closest("[data-paint-size]").setAttribute("aria-pressed", String(brush.size > 10));
+    } else if (t.closest("[data-paint-undo]")) {
+      paintTools?.undo();
+    } else if (t.closest("[data-paint-redo]")) {
+      paintTools?.redo();
     } else if (t.closest("[data-paint-clear]")) {
-      const paper = $("#paint-paper"), g = paper.getContext("2d");
-      g.fillStyle = PAPER;
-      g.fillRect(0, 0, paper.width, paper.height);
+      paintTools?.clear();
     } else if (t.closest("[data-paint-hang]")) {
       // a small copy is kept (and framed on the wall), so it fits in the browser's storage
       const small = document.createElement("canvas");
@@ -590,6 +625,16 @@
       sfx.play.chime();
       app.toast("🖼 your painting is on the attic wall now. Lumi is very proud of you.");
       app.lumi.react("proud", "it's going on the wall. next to my unfinished things. it fits right in.", 4000);
+    }
+  });
+
+  // Ctrl/Cmd+Z undoes a stroke, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y redoes it (only while the easel is open)
+  document.addEventListener("keydown", (e) => {
+    if (!(e.ctrlKey || e.metaKey) || e.altKey || !paintTools || app.view() !== "room" || !$("#paint-paper")) return;
+    const k = e.key.toLowerCase();
+    if (k === "z" || k === "y") {
+      e.preventDefault();
+      (k === "y" || e.shiftKey ? paintTools.redo : paintTools.undo)();
     }
   });
 
