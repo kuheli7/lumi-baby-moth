@@ -833,7 +833,7 @@ function sticker(mood) {
         <stop offset="0" stop-color="#f6dbc2"/><stop offset=".45" stop-color="#f0c6a4"/><stop offset=".75" stop-color="#f0c6a4"/><stop offset="1" stop-color="#f7e2cf"/></linearGradient>
       <ellipse cx="112" cy="205" rx="118" ry="10" fill="#f6e3cc" opacity=".85" ${blur(2)}/>
       <g transform="translate(-28 0) rotate(24 100 125)">${peachWing(93, 87, 48, 38, 10, 4, [93, 84, 15.5], "L")}</g>
-      <g transform="translate(0 9) rotate(55 44 126)">${lilacWing(44, 126, 46, 39, -25, 6, [31, 119, 10], "L")}</g>
+      <g transform="translate(12 9) rotate(55 44 126) translate(44 126) scale(.8) translate(-44 -126)">${lilacWing(44, 126, 46, 39, -25, 6, [31, 119, 10], "L")}</g>
       ${foot(13, 189, 8.5, 13.5, 64, id, 2, [40, 150])}
       ${ants([{ b: [201, 153], c: [217, 140], o: [238, 165], r: 14, twig: [.66, [2, 9], [3, 4]] }], 5.8, 4.4)}
       ${joined(p => `<g transform="rotate(-9 74 181)">${cloud(74, 181, 47, 26, 11, 11, .4, "b", "furB", p, 0, `url(#${id}flopLine)`)}</g>`,
