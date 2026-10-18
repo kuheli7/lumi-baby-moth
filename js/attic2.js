@@ -44,12 +44,29 @@
     <path d="M150 132V320M58 226H242" stroke="#7a5538" stroke-width="9"/>
     `);
 
+  // one curtain, gathered on the rod, tied with a ribbon and frilled at the hem; the right one is its mirror image
+  const lace = Array.from({ length: 9 }, (_, i) => {
+    const t = i / 8, u = 1 - t;
+    return `<circle cx="${(u * u * 4 + 2 * t * u * 37 + t * t * 70).toFixed(1)}" cy="${(u * u * 344 + 2 * t * u * 356 + t * t * 344 + 1).toFixed(1)}" r="4.6"/>`;
+  }).join("");
+  const drape = `
+    <g fill="#f1eaff" stroke="#b9a6e6" stroke-width="1.4">${lace}</g>
+    <path d="M8 104H74C72 150 56 196 42 230C60 268 72 308 70 344Q37 356 4 344C0 300 6 262 24 230C14 190 6 150 8 104Z" fill="url(#a2-drape)" stroke="#6f58ae" stroke-width="2.5" stroke-linejoin="round"/>
+    <g fill="none" stroke="#6f58ae" stroke-width="2.2" stroke-linecap="round" opacity=".45">
+      <path d="M28 108C28 150 31 196 32 226M50 108C48 150 41 196 35 226M66 108C62 142 54 182 40 224M32 238C26 280 18 316 15 344M35 238C43 280 52 316 55 348M33 238C34 280 34 316 35 350"/></g>
+    <g fill="none" stroke="#e2d8fb" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M17 110C17 150 22 196 28 226M27 242C19 280 11 316 10 342M58 110C56 140 50 180 39 218"/></g>
+    <g opacity=".75">${star(20, 160, 3, "#fff6dc", "#fff6dc")}${star(48, 136, 2.6, "#fff6dc", "#fff6dc")}${star(36, 190, 2.4, "#fff6dc", "#fff6dc")}${star(22, 300, 3, "#fff6dc", "#fff6dc")}${star(50, 290, 2.6, "#fff6dc", "#fff6dc")}${star(38, 326, 2.4, "#fff6dc", "#fff6dc")}</g>
+    <g stroke="#c97a92" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M31 233L25 250L30 247L33 252ZM35 233L41 250L36 247L33 252Z" fill="#f48fae"/>
+      <path d="M21 226Q33 222 45 226L44 237Q33 233 22 237Z" fill="#f4a3b8"/>
+      <path d="M33 231C24 219 13 223 17 233C21 241 29 237 33 231ZM33 231C42 219 53 223 49 233C45 241 37 237 33 231Z" fill="#f9c4d2"/>
+      <circle cx="33" cy="231" r="3.6" fill="#f48fae"/></g>
+    <g fill="#e8c76a" stroke="#a8823a" stroke-width="1.3">${[12, 25, 38, 51, 64].map(x => `<circle cx="${x}" cy="103" r="4" fill="none" stroke-width="2"/>`).join("")}</g>`;
   const curtains = svg(`
-    <path d="M26 100C60 112 70 200 52 300C46 330 30 350 14 360C-6 300 -2 160 26 100Z" fill="#9a82d6" stroke="#6f58ae" stroke-width="3"/>
-    <path d="M26 112C40 180 38 270 24 340" fill="none" stroke="#c1aef0" stroke-width="3" opacity=".6"/>
-    <path d="M276 104C250 130 244 210 256 290C260 322 270 340 282 352C298 280 300 170 276 104Z" fill="#9a82d6" stroke="#6f58ae" stroke-width="3"/>
-    <path d="M24 60C14 100 26 130 12 210" fill="none" stroke="#3f6a40" stroke-width="3"/>
-    ${leaf(20, 89, -30, 1.1)}${leaf(22.4, 68, 25)}${leaf(19.5, 128, -40)}${leaf(18.4, 158, 25, .9)}${leaf(14, 198, -30, .8)}`);
+    <defs><linearGradient id="a2-drape" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f76cf"/><stop offset=".22" stop-color="#b29ced"/><stop offset=".45" stop-color="#9a82d6"/><stop offset=".7" stop-color="#b8a4ef"/><stop offset="1" stop-color="#8a70c8"/></linearGradient></defs>
+    <rect x="6" y="98" width="288" height="7" rx="3.5" fill="#c9965a" stroke="#7a5034" stroke-width="2"/>
+    ${drape}<g transform="translate(300 0) scale(-1 1)">${drape}</g>
+    <circle cx="6" cy="101.5" r="7" fill="#e8c76a" stroke="#a8823a" stroke-width="2"/><circle cx="294" cy="101.5" r="7" fill="#e8c76a" stroke="#a8823a" stroke-width="2"/>`);
 
   const shelf = svg(`
     <g transform="rotate(-7 300 109)"><rect x="258" y="78" width="84" height="62" fill="#f4e4cc" stroke="#c9a67a" stroke-width="2"/>
@@ -58,9 +75,9 @@
     <g transform="rotate(6 338 150)"><rect x="318" y="128" width="40" height="44" fill="#f6a9bd" stroke="#d27792" stroke-width="2"/>${star(338, 150, 11, "#fff6dc", "#e8c76a")}</g>
     <rect x="392" y="208" width="196" height="16" fill="url(#a2-shadow)"/><rect x="298" y="259" width="122" height="10" fill="url(#a2-shadow)"/>
     <!-- the light switch -->
-    <rect x="366" y="196" width="22" height="32" rx="4" fill="#f4e4cc" stroke="#c9a67a" stroke-width="2"/>
-    <rect x="372" y="202" width="10" height="20" rx="3" fill="#d8c3a2"/>
-    <rect class="a2-toggle" x="373" y="203" width="8" height="9" rx="2" fill="#fffaf0" stroke="#b6946a" stroke-width="1.2"/>
+    <rect x="466" y="232" width="22" height="32" rx="4" fill="#f4e4cc" stroke="#c9a67a" stroke-width="2"/>
+    <rect x="472" y="238" width="10" height="20" rx="3" fill="#d8c3a2"/>
+    <rect class="a2-toggle" x="473" y="239" width="8" height="9" rx="2" fill="#fffaf0" stroke="#b6946a" stroke-width="1.2"/>
     <rect x="506" y="108" width="64" height="15" rx="3" fill="#f2d488" stroke="#8a6a2a" stroke-width="2"/><text x="538" y="119" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="9" letter-spacing="1.5" fill="#4a3510">MUSEUM</text>
     <rect x="522" y="176" width="32" height="18" rx="2" fill="#fffdf6" stroke="#c9b49b" stroke-width="1.5"/><text x="538" y="189" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="12" fill="#a34063">?!</text>
     <path d="M506 196V168Q506 140 538 140Q570 140 570 168V196Z" fill="#e8f4fb" fill-opacity=".45" stroke="#9db7cf" stroke-width="3"/><circle cx="538" cy="136" r="4" fill="#9db7cf"/><path d="M514 170Q515 154 526 148" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8"/>
@@ -109,18 +126,27 @@
     </g>`);
 
   // Lumi's bed, on the rug: a matchbox, a cotton-ball pillow and a sock for a blanket (the same bed as in the lantern attic)
-  const bed = svg(`<g transform="translate(0 -24)"><!-- lifted so it stands on the floor, which is nearer than it looks -->
-    <ellipse cx="184" cy="500" rx="84" ry="6" fill="#2a1830" opacity=".35"/>
+  // drawn around its own foot (0 0), then moved onto the middle of the rug; it stands where the floor is, which is nearer than it looks
+  const bed = svg(`<g transform="translate(392 474) scale(1.3)">
+    <ellipse cx="0" cy="2" rx="94" ry="7" fill="#2a1830" opacity=".35"/>
     <g stroke-width="2" stroke-linejoin="round">
-      <path d="M112 474L120 466H262L254 474Z" fill="#c9a87c" stroke="#b98a5c"/><path d="M254 474L262 466V488L254 496Z" fill="#d9bf98" stroke="#b98a5c"/>
-      <rect x="112" y="474" width="142" height="22" rx="3" fill="#ecd5b4" stroke="#b98a5c" stroke-width="2.5"/>
-      <ellipse cx="172" cy="468" rx="17" ry="8" fill="#fffaf4" stroke="#e3cdb5"/>
-      <path d="M194 461h52a6 6 0 0 1 6 6v7h-64v-7a6 6 0 0 1 6-6z" fill="#c9b7f0" stroke="#9c86d6"/>
-      <path d="M204 462v11M218 462v11M232 462v11" stroke="#fff" stroke-width="3" opacity=".55"/>
-      <path d="M104 472L112 464H152L144 472Z" fill="#85304f" stroke="#6e2541"/><path d="M144 472L152 464V490L144 498Z" fill="#8e3556" stroke="#6e2541"/>
-      <rect x="104" y="472" width="40" height="26" rx="3" fill="#a34063" stroke="#85304f" stroke-width="2.5"/>
+      <circle cx="-68" cy="0" r="5" fill="#c9a87c" stroke="#9a6e44"/><circle cx="72" cy="0" r="5" fill="#c9a87c" stroke="#9a6e44"/>
+      <path d="M-80 -28L-72 -36H88L80 -28Z" fill="#d8b88c" stroke="#b98a5c"/><path d="M80 -28L88 -36V-10L80 -2Z" fill="#e3c79f" stroke="#b98a5c"/>
+      <rect x="-80" y="-28" width="160" height="26" rx="4" fill="#f3dcbc" stroke="#b98a5c" stroke-width="2.4"/>
+      <rect x="-21" y="-19" width="50" height="14" rx="3" fill="#fff6e6" stroke="#e0b98a" stroke-width="1.4"/>
+      <text x="4" y="-8.6" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="8" letter-spacing="1.2" fill="#a34063">LUMI</text>
+      <g fill="#fffaf4" stroke="#e3cdb5"><circle cx="-50" cy="-38" r="9"/><circle cx="-30" cy="-37" r="8"/><circle cx="-40" cy="-43" r="10.5"/></g>
+      <path d="M-24 -38Q-23 -46 -15 -46H72Q80 -46 80 -38V-28H-24Z" fill="#c9b7f0" stroke="#9c86d6"/>
+      <path d="M-4 -45V-29M14 -45V-29M32 -45V-29M50 -45V-29M66 -45V-29" stroke="#fff" stroke-width="3" opacity=".5"/>
+      <path d="M-24 -38Q-23 -46 -15 -46H-6V-28H-24Z" fill="#f4a3b8" stroke="#c97a92"/><path d="M-19 -44V-30M-13 -45V-30" stroke="#fff" stroke-width="1.5" opacity=".6"/>
+      <path d="M-24 -28H80V-23Q67 -17 54 -23Q41 -17 28 -23Q15 -17 2 -23Q-11 -17 -24 -23Z" fill="#c9b7f0" stroke="#9c86d6"/>
+      <g fill="#fff" stroke="none" opacity=".75"><circle cx="40" cy="-25" r="1.6"/><circle cx="66" cy="-25" r="1.6"/><circle cx="21" cy="-38" r="1.6"/><circle cx="57" cy="-38" r="1.6"/></g>
+      <path d="M-92 -2V-52Q-92 -72 -73 -72Q-55 -72 -55 -52V-2Z" fill="#c9a7ea" stroke="#8f74c8"/>
+      <path d="M-86 -6V-50Q-86 -65 -73 -65Q-61 -65 -61 -50V-6Z" fill="none" stroke="#e6d8fb" stroke-width="2"/>
+      <path d="M-73 -40c-5 -6 -12 -1 -7 4l7 6l7 -6c5 -5 -2 -10 -7 -4z" fill="#f48fae" stroke="#c97a92" stroke-width="1.4"/>
+      <path d="M66 -2V-34Q66 -46 78 -46Q90 -46 90 -34V-2Z" fill="#c9a7ea" stroke="#8f74c8"/>
     </g>
-    ${star(124, 485, 7, "#f6cf6a", "#d9a93a")}</g>`);
+    ${star(-73, -58, 4.5, "#f6cf6a", "#d9a93a")}${star(78, -32, 4.5, "#f6cf6a", "#d9a93a")}</g>`);
 
   // The floor is a real plane lying down (rotated 90 degrees, running from the back wall toward you), and the rug
   // lies on it, so tilting the room moves them together. Its top edge is the foot of the wall.
@@ -166,14 +192,29 @@
     }
     return out;
   };
+  // pothos leaves: a heart with a pointed tip, base at (0 0), pointing up; k picks the shade
+  const POT_GREEN = [["#5f9a58", "#3c6a3a", "#86bd72"], ["#7fb06a", "#4d7f45", "#a6d08c"]];
+  const heart = (x, y, rot, s, k) => {
+    const [f, l, h] = POT_GREEN[k];
+    return `<g transform="translate(${x} ${y}) rotate(${rot.toFixed(0)}) scale(${s})"><path d="M0 0C-4 2 -14 0 -15 -11C-16 -21 -7 -28 0 -36C7 -28 16 -21 15 -11C14 0 4 2 0 0Z" fill="${f}" stroke="${l}" stroke-width="1.6"/><path d="M0 -2C-9 -3 -12 -12 -10 -20C-7 -26 -3 -30 0 -33Z" fill="${h}" opacity=".45"/><path d="M0 -1V-30" stroke="${l}" stroke-width="1.2" opacity=".7"/></g>`;
+  };
+  const stem = (x0, y0, cx, cy, x1, y1) => `<path d="M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}" fill="none" stroke="#4d7f45" stroke-width="2.4" stroke-linecap="round"/>`;
+  // [tip x, tip y, bend x, bend y, size, shade]
+  const POTHOS = [[-4, 418, 18, 446, 1, 0], [10, 398, 22, 436, 1.1, 1], [30, 386, 28, 428, 1.2, 0], [50, 396, 36, 432, 1.1, 1],
+    [70, 418, 48, 444, 1, 0], [2, 446, 18, 462, .85, 1], [58, 446, 44, 460, .85, 1], [40, 410, 30, 440, .8, 0]];
   const near = svg(`
     ${strand(-10, -6, 40, 10, 124, 4, 9, 1.15)}${strand(10, -8, 0, 60, 34, 118, 9, 1.3)}${strand(95, -6, 100, 30, 90, 60, 5, 1)}${strand(40, -8, 50, 40, 22, 74, 5, 1.1)}
     ${strand(610, -6, 560, 12, 470, 2, 9, 1.15)}${strand(592, -8, 606, 50, 584, 100, 8, 1.25)}${strand(540, -6, 530, 36, 546, 70, 5, 1.05)}${strand(570, -8, 556, 30, 580, 56, 4, 1.1)}
-    <g><!-- a little potted plant in the front corner -->
-      ${[[-70, 1.7], [-45, 2], [-20, 2.3], [5, 2.2], [30, 2], [55, 1.6], [-8, 1.6]].map(([r, s], i) => ivyLeaf(28, 472, r, s, i % 2)).join("")}
-      <path d="M6 476H50L44 532H12Z" fill="#d9876a" stroke="#a85a45" stroke-width="2.5" stroke-linejoin="round"/>
-      <rect x="1" y="466" width="54" height="13" rx="4" fill="#e89a7c" stroke="#a85a45" stroke-width="2.5"/>
-      <path d="M14 494Q28 500 42 494" fill="none" stroke="#f3b79d" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+    <g><!-- a little potted pothos in the front corner: heart leaves on curly stems, one trailing over the rim -->
+      <ellipse cx="30" cy="468" rx="25" ry="4.5" fill="#4a2f22"/>
+      ${POTHOS.map(([ex, ey, cx, cy, s, k]) => stem(30, 468, cx, cy, ex, ey) + heart(ex, ey, Math.atan2(ey - cy, ex - cx) * 180 / Math.PI + 90, s, k)).join("")}
+      <path d="M4 476H56L50 528H10Z" fill="#d9876a" stroke="#a85a45" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M42 477H55L49.5 527H38Z" fill="#b8634c" opacity=".45"/>
+      <path d="M11 480L14 524" stroke="#f3b79d" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+      <path d="M30 494c-3.5 -4 -9 -1 -5.5 3l5.5 5l5.5 -5c3.5 -4 -2 -7 -5.5 -3z" fill="#f4a3b8" stroke="#c97a92" stroke-width="1.2"/>
+      <rect x="0" y="464" width="60" height="14" rx="4" fill="#e89a7c" stroke="#a85a45" stroke-width="2.5"/>
+      <path d="M5 468H44" stroke="#f7c4ad" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+      ${stem(50, 468, 70, 470, 64, 500)}${heart(58, 476, 150, .55, 1)}${heart(66, 488, 80, .5, 0)}${heart(64, 501, 175, .45, 1)}
     </g>`);
   const desk = [
     box({ x: 2.2, y: 71.7, w: 2.2, h: 20.4, z: -32, d: 10, cls: "leg" }),
@@ -192,12 +233,12 @@
     { z: -130, html: sill, cls: "a2-boxes" },
     { z: -105, html: curtains, cls: "a2-curtains" },
     { z: -70, html: shelves, cls: "a2-boxes" },
-    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 47.7, 21, 17], ["switch", "light switch", 60, 37, 5.5, 8]] },
+    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 47.7, 21, 17], ["switch", "light switch", 76.7, 43.6, 5.5, 8]] },
     { z: -57, html: desk, cls: "a2-desk" },
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
     { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
     { z: 0, html: ground, cls: "a2-ground" },
-    { z: 15, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 17, 82.9, 27, 9.5]] },
+    { z: 15, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 45.5, 73.6, 28, 18]] },
     { z: 40, html: beam, cls: "a2-boxes" },
     { z: 60, html: lights, cls: "a2-front" },
     { z: 90, html: near, cls: "a2-near" },
@@ -490,7 +531,7 @@
   const LULLABY = [["E", .5], ["E", .5], ["G", 2], ["E", .5], ["E", .5], ["G", 2], ["E", .5], ["G", .5], ["C", 1], ["B", 1.5], ["A", .5],
     ["A", 1], ["G", 1], ["D", .5], ["E", .5], ["F", 1], ["D", 1], ["D", .5], ["E", .5], ["F", 2], ["D", .5], ["F", .5],
     ["B", .5], ["A", .5], ["G", 1], ["B", 1], ["C", 3]].map(([n, b]) => [N[n], b]);
-  const PILLOW = [212 / VB_W, 454 / VB_H];   // where she curls up, on the sock blanket
+  const PILLOW = [380 / VB_W, 428 / VB_H];   // where she curls up, on the sock blanket
   let asleep = false, tune = null, wasLit = true, nap = 0;
   const lullabyBtn = () => $("[data-a2-lullaby]", card);
   function lullaby() {
