@@ -1,0 +1,71 @@
+/* Responsive chaos: scenery for each screen-shape "edition" (see js/chaos.js).
+   The layer sits just above the sky and below everything else, and never takes clicks. */
+.chaos { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.chaos > div { position: absolute; inset: 0; display: none; }
+[data-shape="pocket"] .cz-pocket, [data-shape="phone"] .cz-phone, [data-shape="sideways"] .cz-sideways, [data-shape="tablet"] .cz-tablet,
+[data-shape="wide"] .cz-wide, [data-shape="cinema"] .cz-cinema, [data-shape="tower"] .cz-tower { display: block; }
+
+/* 📟 pocket edition: a little handheld console, with scanlines */
+.cz-pocket { background: linear-gradient(rgba(150, 200, 130, .10), rgba(150, 200, 130, .06)); }   /* a hint of old LCD green */
+.cz-frame { position: absolute; inset: 4px; border: 4px solid rgba(200, 230, 180, .4); border-radius: 20px 20px 48px 20px; box-shadow: inset 0 0 0 3px rgba(20, 12, 40, .7), inset 0 0 50px rgba(150, 200, 130, .2); }
+.cz-scan { position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, rgba(220, 255, 210, .06) 0 1px, transparent 1px 3px); }
+
+/* 🌙 phone edition: fireflies */
+.cz-phone i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fde7a8; box-shadow: 0 0 10px 3px rgba(253, 231, 168, .55); animation: cz-fly 9s ease-in-out infinite alternate; }
+.cz-phone i:nth-child(1) { left: 8%; top: 30%; }
+.cz-phone i:nth-child(2) { left: 88%; top: 22%; animation-delay: -2s; animation-duration: 11s; }
+.cz-phone i:nth-child(3) { left: 14%; top: 62%; animation-delay: -4s; }
+.cz-phone i:nth-child(4) { left: 92%; top: 58%; animation-delay: -6s; animation-duration: 12s; }
+.cz-phone i:nth-child(5) { left: 50%; top: 12%; animation-delay: -1s; animation-duration: 10s; }
+.cz-phone i:nth-child(6) { left: 70%; top: 80%; animation-delay: -3s; }
+@keyframes cz-fly { 0% { translate: 0 0; opacity: .2; } 30% { opacity: 1; } 60% { translate: 26px -40px; opacity: .5; } 100% { translate: -18px -70px; opacity: .9; } }
+
+/* 💤 nap mode (a phone on its side): a big sleepy moon and floating zzz */
+.cz-sideways { background: linear-gradient(to bottom, rgba(10, 6, 30, .35), transparent 70%); }
+.cz-bigmoon { position: absolute; right: -40px; top: 40px; width: 150px; height: 150px; border-radius: 50%; box-shadow: inset -36px 10px 0 0 #fde7a8; transform: rotate(-20deg); filter: drop-shadow(0 0 30px rgba(253, 231, 168, .45)); opacity: .85; }
+.cz-sideways b { position: absolute; right: 120px; bottom: 30%; font: 600 26px var(--head); color: rgba(233, 226, 248, .55); animation: cz-zzz 4.5s ease-in infinite; }
+.cz-sideways b:nth-of-type(2) { animation-delay: 1.5s; font-size: 32px; }
+.cz-sideways b:nth-of-type(3) { animation-delay: 3s; font-size: 40px; }
+@keyframes cz-zzz { 0% { translate: 0 0; opacity: 0; } 20% { opacity: 1; } 100% { translate: 40px -160px; opacity: 0; } }
+
+/* 📖 storybook edition: hills and a treeline along the bottom */
+.cz-tablet svg { position: absolute; left: 0; bottom: 0; width: 100%; height: 24vh; fill: #0e0920; }
+.cz-tablet svg path:first-child { fill: #4a3a7c; opacity: .7; }
+
+/* 🌌 widescreen sky: drifting clouds, a ringed planet and a shooting star */
+.cz-cloud { position: absolute; left: -260px; width: 240px; height: 60px; border-radius: 60px; background: rgba(233, 218, 255, .07); animation: cz-drift 70s linear infinite; }
+.cz-cloud::before, .cz-cloud::after { content: ""; position: absolute; border-radius: 50%; background: inherit; }
+.cz-cloud::before { left: 40px; top: -30px; width: 90px; height: 80px; }
+.cz-cloud::after { left: 110px; top: -44px; width: 100px; height: 96px; }
+.cz-cloud.c1 { top: 18%; }
+.cz-cloud.c2 { top: 52%; animation-duration: 95s; animation-delay: -40s; scale: .7; }
+.cz-cloud.c3 { top: 78%; animation-duration: 120s; animation-delay: -80s; scale: 1.2; }
+@keyframes cz-drift { to { translate: calc(100vw + 520px) 0; } }
+.cz-planet { position: absolute; right: 6%; top: 16%; width: 64px; height: 64px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f6c9d8, #a993d6 70%); box-shadow: 0 0 30px rgba(246, 201, 216, .3); }
+.cz-planet::after { content: ""; position: absolute; left: -26px; top: 24px; width: 116px; height: 16px; border-radius: 50%; border: 3px solid rgba(253, 231, 168, .6); transform: rotate(-16deg); }
+.cz-shoot { position: absolute; left: 10%; top: 8%; width: 120px; height: 2px; background: linear-gradient(to right, transparent, #fff8f1); border-radius: 2px; rotate: 20deg; opacity: 0; animation: cz-shoot 7s ease-in infinite 2s; }
+@keyframes cz-shoot { 0% { translate: 0 0; opacity: 0; } 4% { opacity: 1; } 12% { translate: 40vw 15vw; opacity: 0; } 100% { opacity: 0; } }
+
+/* 🎬 CinemaScope (a very wide window): letterbox bars with film holes and a marquee */
+.cz-bar { position: absolute; left: 0; right: 0; height: 34px; background: #07040f; }
+.cz-bar::before { content: ""; position: absolute; inset: 7px 0 auto; height: 8px; background: repeating-linear-gradient(to right, rgba(255, 248, 241, .22) 0 12px, transparent 12px 28px); }
+.cz-bar.top { top: 0; }
+.cz-bar.bottom { bottom: 0; }
+.cz-bar.bottom::before { inset: auto 0 7px; }
+.cz-bar em { position: absolute; left: 0; top: 4px; white-space: nowrap; font: 600 11px var(--head); font-style: normal; letter-spacing: .3em; color: #fde7a8; animation: cz-marquee 26s linear infinite; }
+@keyframes cz-marquee { from { translate: 100vw 0; } to { translate: -100% 0; } }
+[data-shape="cinema"] .top { padding-top: 40px; }
+
+/* 🗼 tower edition (a very tall, narrow window): strings of lanterns down both sides */
+.cz-string { position: absolute; top: 0; bottom: 0; width: 2px; background: linear-gradient(rgba(233, 226, 248, .35), rgba(233, 226, 248, .05)); display: flex; flex-direction: column; justify-content: space-around; align-items: center; }
+.cz-left { left: 10px; }
+.cz-right { right: 10px; }
+.cz-string i { width: 10px; height: 14px; border-radius: 4px; background: #fde7a8; box-shadow: 0 0 14px 4px rgba(253, 231, 168, .45); animation: cz-glow 3s ease-in-out infinite alternate; }
+.cz-string i:nth-child(2n) { animation-delay: -1.5s; background: #f6c9d8; box-shadow: 0 0 14px 4px rgba(246, 201, 216, .4); }
+@keyframes cz-glow { to { opacity: .55; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .chaos *, .chaos *::before, .chaos *::after { animation: none !important; }
+  .cz-shoot, .cz-sideways b { display: none; }
+  .cz-bar em { translate: 24px 0; }
+}

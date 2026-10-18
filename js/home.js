@@ -413,7 +413,7 @@
   function settled() {
     settle = 0;
     const w = innerWidth;
-    const line = w < 400 ? "pocket-sized! i fit. barely." : w < 720 ? "phone-sized. cozy." : w < 1100 ? "tablet-sized. so roomy!" : "SO much sky. i could fly for days.";
+    const line = app.shapeLine ? app.shapeLine() : w < 400 ? "pocket-sized! i fit. barely." : w < 720 ? "phone-sized. cozy." : w < 1100 ? "tablet-sized. so roomy!" : "SO much sky. i could fly for days.";
     if (app.view() === "home") {
       if (calm() && pal.mood !== "sleepy") { moodFor("happy", 2000); say(line); }
     } else if (Date.now() - lastToast > 8000) {

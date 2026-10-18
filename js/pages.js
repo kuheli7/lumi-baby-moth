@@ -109,19 +109,44 @@
   }
 
   // ======================================================================
-  //  Guestbook (kept in this browser)
+  //  Guestbook: shared by every visitor, kept in a Supabase table. If that can't be
+  //  reached, notes go in a jar on this device instead, so the page always works.
   // ======================================================================
+  // The anon key is meant to be public: the table's rules only let visitors read and add notes
+  // (never edit or delete), and the database itself rejects notes that are too long.
+  const DB = {
+    url: "https://oqzgvojbqhdvwduwuhkm.supabase.co/rest/v1/guestbook",
+    key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xemd2b2picWhkdndkdXd1aGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzM5NDUsImV4cCI6MjEwNzkwOTk0NX0.pA38_A7demCO-4vwTlgVfjxp2jfygP-_Jq5DAdcNZNQ",
+  };
+  const db = (query = "", opts = {}) => {
+    const stop = new AbortController(), timer = setTimeout(() => stop.abort(), 6000);
+    return fetch(DB.url + query, {
+      ...opts, signal: stop.signal,
+      headers: { apikey: DB.key, Authorization: "Bearer " + DB.key, "Content-Type": "application/json", ...opts.headers },
+    }).then(r => { if (!r.ok) throw new Error("guestbook " + r.status); return r.text(); })
+      .then(t => (t ? JSON.parse(t) : null))   // a saved note comes back with an empty body
+      .finally(() => clearTimeout(timer));
+  };
+  const ago = (iso) => {
+    const s = (Date.now() - new Date(iso)) / 1000;
+    if (s < 60) return "just now";
+    if (s < 3600) return Math.floor(s / 60) + "m ago";
+    if (s < 86400) return Math.floor(s / 3600) + "h ago";
+    return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  };
   const SEED = [
     { name: "a passing firefly", msg: "nice lantern!! we should glow together sometime", when: "2h ago", face: "love", mark: "★" },
     { name: "the desk lamp", msg: "please stop staring at me.", when: "1d ago", face: "surprised", mark: "♥" },
     { name: "the moon", msg: "your hobbies are valid, even if they're unfinished. 🌙", when: "every night", face: "sleepy", mark: "★" },
   ];
   const guestList = $("#guest-list"), guestForm = $("#guest-form");
-  let notes = store.get("guestbook", []);
+  const finePrint = $(".view[data-view=guestbook] .fine-print");
+  let notes = store.get("guestbook", []);   // this device's jar (used when the shared guestbook is out of reach)
   if (!Array.isArray(notes)) notes = [];
+  let shared = null;                         // the shared notes, once they've loaded
   const FACES = ["happy", "excited", "shy", "love", "curious"];
   function renderGuests() {
-    guestList.replaceChildren(...notes.concat(SEED).map(n => {
+    guestList.replaceChildren(...(shared || notes).concat(SEED).map(n => {
       const li = document.createElement("li");
       const av = document.createElement("span"), body = document.createElement("div"), mark = document.createElement("span");
       av.className = "avatar";
@@ -139,23 +164,57 @@
     }));
   }
   addEventListener("lumi:wear", renderGuests);
+
+  function loadGuests() {
+    db("?select=name,msg,face,mark,created_at&order=created_at.desc&limit=30")
+      .then(rows => {
+        shared = rows.map(r => ({ ...r, when: ago(r.created_at) }));
+        finePrint.textContent = "Everyone who visits can read these notes, so be kind! 🌙";
+        renderGuests();
+      })
+      .catch(() => { if (!shared) finePrint.textContent = "Lumi keeps your notes in a jar on this device (the shared guestbook is napping)."; });
+  }
+  app.onView("guestbook", loadGuests);
+
   guestForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const name = guestForm.elements.name.value.trim(), msg = guestForm.elements.msg.value.trim();
+    const name = guestForm.elements.name.value.trim().slice(0, 24), msg = guestForm.elements.msg.value.trim().slice(0, 160);
     if (!name || !msg) return;
-    notes.unshift({
-      name, msg, face: pick(FACES), mark: pick(["★", "♥"]),
-      when: new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" }),
-    });
-    notes = notes.slice(0, 20);
-    store.set("guestbook", notes);
-    renderGuests();
-    guestForm.reset();
-    sfx.play.shiny();
-    app.lumi.react("happy", `${name.slice(0, 24)} signed my guestbook!! i'm framing it.`, 2600);
-    toast("✍️ signed! Lumi is framing it.");
+    // one note every 20 seconds, so nobody floods the wall
+    const last = store.get("signedAt", 0);
+    if (Date.now() - last < 20000) { toast("✋ Lumi is still framing your last note. try again in a moment!"); return; }
+    store.set("signedAt", Date.now());
+    const note = { name, msg, face: pick(FACES), mark: pick(["★", "♥"]) };
+    const thanks = () => {
+      guestForm.reset();
+      sfx.play.shiny();
+      app.lumi.react("happy", `${name} signed my guestbook!! i'm framing it.`, 2600);
+    };
+    if (shared) {
+      shared.unshift({ ...note, when: "just now" });   // show it straight away
+      renderGuests();
+      thanks();
+      db("", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(note) })
+        .then(() => toast("✍️ signed! everyone can see it now."))
+        .catch(() => {
+          shared.shift();
+          notes = [{ ...note, when: "just now" }, ...notes].slice(0, 20);
+          store.set("guestbook", notes);
+          shared = null;
+          finePrint.textContent = "Lumi keeps your notes in a jar on this device (the shared guestbook is napping).";
+          renderGuests();
+          toast("📮 the shared guestbook is napping, so Lumi kept your note on this device.");
+        });
+    } else {
+      notes = [{ ...note, when: new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" }) }, ...notes].slice(0, 20);
+      store.set("guestbook", notes);
+      renderGuests();
+      thanks();
+      toast("✍️ signed! Lumi is framing it.");
+    }
   });
   renderGuests();
+  loadGuests();
 
   // ======================================================================
   //  Museum of useless facts

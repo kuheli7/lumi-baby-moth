@@ -8,6 +8,10 @@ node_modules/
 .vercel/
 .netlify/
 
+# Secrets: never commit these (the repo is public)
+.env
+.env.*
+
 # Not part of Lumi (an earlier character idea)
 **/smudge-options.html
 **/pip*.png
