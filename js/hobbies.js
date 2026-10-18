@@ -235,6 +235,8 @@
   const SPOTS = [
     { id: "bed", name: "Lumi's bed", room: [186, 290, 170, 46], tag: [271, 352, .5],
       note: "a matchbox, a cotton-ball pillow and a sock for a blanket. Lumi only sleeps after a lullaby.", lullaby: true },
+    { id: "window", name: "the window", room: [38, 36, 156, 122], tag: [116, 172, .5],
+      note: "out there: the whole night sky, and (Lumi is sure of it) a few space critters who can't find their way home.", space: true },
   ];
   const PLACES = ROOM.concat(SPOTS);
   const room = $("#room"), roomHits = $("#room-hits"), roomCard = $("#hobby-card"), foundCount = $("#found-count"), pips = $("#found-pips"), roomSwitch = $("#room-switch");
@@ -243,7 +245,7 @@
     const [x, y, w, hh] = h.room, [tx, ty, ax] = h.tag;
     return `<button class="hit" data-hobby="${h.id}" data-sfx="none" aria-label="${h.name}"
         style="left:${x / VB_W * 100}%;top:${y / VB_H * 100}%;width:${w / VB_W * 100}%;height:${hh / VB_H * 100}%"></button>
-      <span class="hit-tag${h.lullaby ? " spot" : ""}" data-tag="${h.id}" style="left:${tx / VB_W * 100}%;top:${ty / VB_H * 100}%;translate:${-ax * 100}% -50%">${h.name.replace(/ \(.*\)/, "")}</span>`;
+      <span class="hit-tag${h.lullaby || h.space ? " spot" : ""}" data-tag="${h.id}" style="left:${tx / VB_W * 100}%;top:${ty / VB_H * 100}%;translate:${-ax * 100}% -50%">${h.name.replace(/ \(.*\)/, "")}</span>`;
   }).join("");
   const found = new Set();
   let lightsOn = false;
@@ -314,6 +316,7 @@
       ${h.progress === undefined ? "" : `<div class="progress"><span>progress</span><span class="progress-bar"><i style="--p:${h.progress}%"></i></span><span>${h.progress}%</span></div>`}
       ${h.id === "moons" ? `<button class="btn btn-gold small" data-paint data-sfx="none">🎨 paint with Lumi</button>` : ""}
       ${h.id === "beads" ? `<button class="btn btn-gold small" data-beads data-sfx="none">📿 string a necklace</button>` : ""}
+      ${h.space ? `<button class="btn btn-gold small" data-space data-sfx="none">🛸 fly out the window</button>` : ""}
       ${h.lullaby ? `<button class="btn btn-lilac small" data-lullaby data-sfx="none">${asleep ? "☀️ wake Lumi up" : "♪ play the lullaby"}</button>` : ""}
       ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>` : ""}
       ${h.link ? `<a class="btn btn-lilac small" href="${h.link[0]}">${h.link[1]}</a>` : ""}`;
@@ -405,6 +408,22 @@
     app.toast("Lumi: *yawn* …i wasn't asleep. (i was asleep.)");
   }
   document.addEventListener("click", (e) => { if (e.target.closest("[data-lullaby]")) lullaby(); });
+
+  // ---------- the window: Lumi flies out with the lantern, to the space level ----------
+  const WINDOW = [116 / VB_W, 96 / VB_H];
+  function flyOut() {
+    wakeUp(true);
+    bedtime = true;                                   // the lantern stops following the pointer on the way out
+    sfx.play.shiny();
+    lamp.arrive = () => {
+      bedtime = false;
+      app.game.toSpace();
+      app.toast("🛸 Lumi flew out of the window!");
+      location.hash = "#play";
+    };
+    aimLamp(WINDOW[0], WINDOW[1], reduceMotion ? 1 : .12);
+  }
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-space]")) flyOut(); });
 
   // ---------- the bead tray: string a necklace and Lumi wears it all over the site ----------
   const BEADS = [["#f6a9bd", "pink"], ["#e1707f", "berry"], ["#f4b68a", "peach"], ["#f6cf6a", "gold"],
