@@ -19,13 +19,18 @@ Built for the haX.baby *Baby's First Website* hackathon (Track 2: original chara
 
 One calm screen at a time on a starry night, with tabs at the bottom and a menu for the rest.
 
-- **Home:** Lumi itself. Tap Lumi to poke it, but not too much: it gets hurt, then flops. Feed it a cookie to bring it back, or pick a mood. It falls asleep if you leave, its eyes follow your cursor or finger, and it remembers your visits.
+- **Home:** Lumi itself, flying around its patch of night sky. Tap the sky and it chases the light (it's a moth). Tap Lumi to poke it, but not too much: it gets hurt, then flops. "Feed a cookie" drops one from the sky and Lumi swoops to catch it (phones buzz a little). Pick a mood and the sky changes with it: warm, pink, sleepy or rainy. It lands on its cloud to sleep if you leave, its eyes follow your cursor or finger, it remembers your visits, and it notices when you resize the window ("best viewed at" your exact size).
 - **Hobbies:** six half-finished projects with "under construction" progress cards. You can suggest a new hobby too.
-- **Hobby room:** a dark room where Lumi's lantern follows your cursor (or your taps) and finds the hobbies.
-- **Play: Star Catch:** a mini game in five short levels. Catch falling stars, dodge raindrops, and catch cookies to heal.
-- **Story:** six scenes. The last one lights the lantern, and the light spreads over the whole site.
+- **Lumi's attic:** a dark room where Lumi's lantern follows your cursor (or your taps) and finds the hobbies. Then you can do them with Lumi:
+  - **paint** at the easel, and the painting is framed on the attic wall;
+  - **string a bead necklace**, which Lumi then wears all over the site;
+  - play the **lullaby** on the matchbox bed (a music box made with Web Audio), and Lumi carries the lantern to bed as a night light;
+  - fly out of **the window** to the space level.
+  Leave the attic quiet for half a minute and Lumi falls asleep mid-hobby.
+- **Play: Star Catch:** a mini game in five short levels. Catch falling stars, dodge raindrops, and catch cookies to heal. A sixth level, out of the attic window, has Lumi guide lost (friendly) space critters home.
+- **Story:** six scenes that turn with a swipe, the scroll wheel or the arrow keys. The last one lights the lantern, and the light spreads over the whole site.
 - **Guestbook**, a **museum of useless facts**, the **about** page (character sheet), and **credits** with a visitor odometer.
-- Moth-dust sparkle trail, click sounds with a mute button, and two hidden secrets.
+- Moth-dust sparkle trail, click sounds with a mute button, and three hidden secrets.
 
 ## Run it
 
@@ -49,4 +54,4 @@ py -m http.server 8000
 - Lumi is an original character by Lumi's human.
 - Lumi's reference sketches were made with ChatGPT image generation, and Lumi was then drawn as SVG code with Claude.
 - Fonts: [Fredoka](https://fonts.google.com/specimen/Fredoka) and [Patrick Hand](https://fonts.google.com/specimen/Patrick+Hand), SIL Open Font License.
-- Sounds are synthesized in the browser with the Web Audio API. No audio files and no libraries.
+- Sounds are synthesized in the browser with the Web Audio API. No audio files and no libraries. The lullaby is Brahms' Lullaby (traditional, public domain).

@@ -417,6 +417,7 @@
     sfx.play.shiny();
     lamp.arrive = () => {
       bedtime = false;
+      app.secret("space");
       app.game.toSpace();
       app.toast("🛸 Lumi flew out of the window!");
       location.hash = "#play";
