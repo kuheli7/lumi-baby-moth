@@ -872,18 +872,16 @@ function sticker(mood) {
       // Glowing butterfly seen from the side, as in the sticker: wings rise from the body at (0, 0),
       // the far pair smaller on the left, the near pair tall on the right. In a flap the two pairs
       // fold toward each other over the body, then open out again
-      const wing = (d) => `<path d="${d}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2" stroke-linejoin="round"/>`;
+      const wing = (d) => `<path d="${d}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4" stroke-linejoin="round"/>`;
       const flap = (to) => matchMedia("(prefers-reduced-motion: reduce)").matches ? ""
         : `<animateTransform attributeName="transform" type="scale" values="1 1;${to} 1;1 1" dur=".55s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .6 1;.4 0 .6 1"/>`;
       const butterfly = `
-        <g opacity=".9">${flap(.5)}
-          ${wing("M-1 0 C-6 -4 -10 0 -9 4 C-8 7 -3 6 -1 1 Z")}
-          ${wing("M-2 -2 C-8 -6 -18 -14 -19 -21 C-20 -27 -13 -28 -9 -23 C-5 -18 -3 -9 -2 -2 Z")}</g>
-        <ellipse cx="-.5" cy="1.5" rx="1.6" ry="3.6" transform="rotate(25 -.5 1.5)" fill="#d99a35"/>
+        <g opacity=".92">${flap(.5)}
+          ${wing("M-2 0 C-7 -3 -9 3 -7 6 C-5 9 -1 6 -1 1 Z")}
+          ${wing(`M-3 -3 C-12 -6 -21 -17 -19 -24 C-17 -31 -9 -27 -6 -20 C-4 -14 -3 -8 -3 -3 Z`)}</g>
         <g>${flap(.35)}
-          ${wing("M2 -3 C8 -9 16 -9 16 -3 C16 2 8 3 2 0 Z")}
-          ${wing("M0 0 C-6 -10 -8 -26 2 -31 C11 -36 19 -27 17 -16 C15 -8 8 -2 0 0 Z")}
-          <ellipse cx="5" cy="-24" rx="3" ry="4.5" transform="rotate(20 5 -24)" fill="#fff" opacity=".6"/></g>`;
+          ${wing("M0 0 C-5 -6 -7 -14 -6 -20 C-5 -29 1 -34 7 -33 C13 -32 16 -24 13 -15 C12 -13 11 -12 10 -11 C15 -10 18 -6 16 -1 C14 3 6 3 0 0 Z")}</g>
+        <circle cx="0" cy="0" r="1.6" fill="#e9a93a"/>`;
       const fur = (part) => `<g transform="rotate(-25 108 170)">${fluff(scallop(108, 170, 35, 25, 10, 7, .55, .1, .8), `${id}cb`, `url(#${id}furB)`, "", 5.8, LINE, part)}</g>`;
       return `
       ${strokes(["M-10 110 q4 3 8 1"], "#e2c4a6", 2.2)}
