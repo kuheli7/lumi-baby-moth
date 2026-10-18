@@ -1,5 +1,5 @@
-// Star Catch: Lumi catches falling stars for its lantern. Five short levels, and a sixth out of the attic window,
-// where the stars are lost space critters to guide home and the raindrops are space rocks.
+// Star Catch: Lumi catches falling stars for its lantern. Five short levels. The space level is not one of them:
+// it is a quest that only opens from the window in Lumi's attic (stars are lost space critters, raindrops are space rocks).
 // The game logic (update) and the drawing (draw) are kept apart; the loop only runs while a level is being played.
 (() => {
   "use strict";
@@ -20,17 +20,18 @@
     { name: "Space Critters", space: true, goal: 10, speed: 125, every: 860, rain: .3, cookie: .08, wind: 0,
       intro: "Out of the window and up, up, up! Little space critters are lost in the dark. Catch them in the lantern light to guide them home, and dodge the space rocks." },
   ];
-  const LANTERN = 4;   // clearing Starstorm fills the lantern; the space level is the bonus after it
+  const LANTERN = 4;   // clearing Starstorm fills the lantern: the end of the game
+  const SKY = LEVELS.findIndex(L => L.space);   // the levels before this one are the game; the space level is the attic's quest
 
   const game = $("#game"), canvas = $("#game-canvas"), g = canvas.getContext("2d"), sprite = $("#game-lumi");
   const hud = $("#hud"), hudLevel = $("#hud-level"), hudStars = $("#hud-stars"), hudHearts = $("#hud-hearts"), pauseBtn = $("#game-pause");
   const card = $("#game-card"), cardArt = $("#game-card-art"), cardTitle = $("#game-card-title"), cardText = $("#game-card-text"), goBtn = $("#game-go");
   const levelsEl = $("#levels"), helpCatch = $("#help-catch"), helpDodge = $("#help-dodge"), playSub = $("#play-sub");
 
-  let unlocked = Math.max(1, Math.min(LEVELS.length, store.get("game.unlocked", 1)));
-  // the space level also opens from the attic window, even before the other levels are done
-  let spaceOpen = !!store.get("game.space", false);
-  const isOpen = (i) => i < unlocked || (LEVELS[i].space && spaceOpen);
+  let unlocked = Math.max(1, Math.min(SKY, store.get("game.unlocked", 1)));
+  const isOpen = (i) => i < unlocked;
+  let spaceFrom = "#room";   // where the space level goes back to: the attic it was entered from
+  let arriving = false;      // true only when the attic window has just sent Lumi here
   const cleared = new Set(store.get("game.cleared", []));
   const S = {
     level: unlocked - 1, state: "menu", items: [], sparks: [],
@@ -55,16 +56,16 @@
 
   // ---------- HUD, level buttons and the message card ----------
   function renderLevels() {
-    levelsEl.innerHTML = LEVELS.map((L, i) => {
-      const locked = !isOpen(i), secret = locked && L.space;
+    levelsEl.innerHTML = LEVELS.slice(0, SKY).map((L, i) => {
+      const locked = !isOpen(i);
       return `<button class="level-btn" data-level="${i}" aria-pressed="${i === S.level}" ${locked ? "disabled" : ""}
-        aria-label="Level ${i + 1}: ${secret ? "a secret (locked). Look out of the attic window" : L.name + (locked ? " (locked)" : cleared.has(i) ? " (cleared)" : "")}">
-        ${locked ? "🔒" : L.space ? "🛸" : i + 1}${cleared.has(i) ? `<span class="done" aria-hidden="true">★</span>` : ""}<small>${secret ? "???" : L.name}</small></button>`;
+        aria-label="Level ${i + 1}: ${L.name}${locked ? " (locked)" : cleared.has(i) ? " (cleared)" : ""}">
+        ${locked ? "🔒" : i + 1}${cleared.has(i) ? `<span class="done" aria-hidden="true">★</span>` : ""}<small>${L.name}</small></button>`;
     }).join("");
   }
   function renderHud() {
     const L = LEVELS[S.level];
-    hudLevel.textContent = `level ${S.level + 1}`;
+    hudLevel.textContent = L.space ? "space" : `level ${S.level + 1}`;
     hudStars.textContent = `${L.space ? "🛸" : "★"} ${S.caught}/${L.goal}`;
     hudHearts.textContent = "♥".repeat(S.hearts) + "♡".repeat(3 - S.hearts);
     hudHearts.setAttribute("aria-label", `${S.hearts} hearts left`);
@@ -90,11 +91,12 @@
     placeSprite();
     const L = LEVELS[i];
     game.classList.toggle("space", !!L.space);
+    levelsEl.style.display = L.space ? "none" : "";   // the space level is a quest from the attic, not a level in the list
     helpCatch.textContent = L.space ? "space critters" : "★";
     helpDodge.textContent = L.space ? "space rocks" : "raindrops";
     playSub.textContent = L.space ? "guide the lost space critters home" : "help Lumi catch falling stars for its lantern";
     draw();
-    showCard("curious", `Level ${i + 1}: ${L.name}`, L.intro, "start ▸");
+    showCard("curious", L.space ? L.name : `Level ${i + 1}: ${L.name}`, L.intro, "start ▸");
   }
   function startLevel() {
     S.state = "playing";
@@ -125,16 +127,16 @@
     cleared.add(S.level);
     store.set("game.cleared", [...cleared]);
     const L = LEVELS[S.level];
-    if (S.level < LEVELS.length - 1 && unlocked < S.level + 2) { unlocked = S.level + 2; store.set("game.unlocked", unlocked); }
+    if (S.level < SKY - 1 && unlocked < S.level + 2) { unlocked = S.level + 2; store.set("game.unlocked", unlocked); }
     renderLevels();
     setSprite("proud");
     sfx.play.chime();
     if (L.space) {
       app.lumi.react("starry", "i guided ten space critters home!! they said 'blorp'. i think it means thank you.", 4000);
-      showCard("starry", "Every critter got home! 🛸", "The space critters waved all of their antennae goodbye. Lumi saved the night (very gently).", "play again from level 1");
+      showCard("starry", "Every critter got home! 🛸", "The space critters waved all of their antennae goodbye. Lumi saved the night (very gently).", "back to the attic");
     } else if (S.level === LANTERN) {
       app.lumi.react("proud", "i FINISHED a game!! all five levels. that counts as finishing something.", 4000);
-      showCard("happy", "The lantern is full!", "You caught the whole sky. Lumi finished something!! Now the lantern is bright enough for space…", "🛸 fly to space ▸");
+      showCard("happy", "The lantern is full!", "You caught the whole sky. Lumi finished something!!", "play again from level 1");
     } else {
       showCard("proud", "Level complete! ✨", `Lumi caught ${S.caught} stars. Level ${S.level + 2} is open.`, "next level ▸");
     }
@@ -150,7 +152,10 @@
   goBtn.addEventListener("click", () => {
     if (S.state === "menu") startLevel();
     else if (S.state === "paused") resume();
-    else if (S.state === "won") toMenu(LEVELS[S.level].space ? 0 : S.level + 1);
+    else if (S.state === "won") {
+      if (LEVELS[S.level].space) { toMenu(0); location.hash = spaceFrom; }
+      else toMenu(S.level < LANTERN ? S.level + 1 : 0);
+    }
     else if (S.state === "lost") { sfx.play.munch(); startLevel(); }
   });
   pauseBtn.addEventListener("click", pause);
@@ -429,16 +434,19 @@
     // decode every picture the game uses up front, so swapping moods never flickers
     ["curious", "determined", "excited", "hurt", "fed", "flop", "proud", "happy", "thinking"].forEach(m => { const i = new Image(); i.src = app.artURL(m, true); });
     resize();
+    // the space level is only for visitors the attic window sent here; anyone else lands on the game's own levels
+    if (LEVELS[S.level].space && !arriving) { S.state = "menu"; S.level = unlocked - 1; }
+    arriving = false;
     if (S.state === "paused") showCard("thinking", "Paused", "Lumi is waiting very patiently. (Lumi is not patient.)", "keep going ▸");
     else if (S.state !== "playing") toMenu(S.level);
   }, pause);
 
   // the attic window: Lumi flies out to the space level
   const toSpace = () => {
-    spaceOpen = true;
-    store.set("game.space", true);
+    spaceFrom = "#" + (app.view() || "room");
+    arriving = true;
     if (S.state === "playing" || S.state === "paused") { S.state = "menu"; stop(); }
-    S.level = LEVELS.findIndex(L => L.space);
+    S.level = SKY;
     renderLevels();
   };
 
