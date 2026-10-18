@@ -300,7 +300,7 @@
     { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 47.7, 21, 17], ["switch", "light switch", 76.7, 43.6, 5.5, 8]] },
     { z: -57, html: desk, cls: "a2-desk" },
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
-    { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
+    { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 74.5, 39.3, 20.6, 47.7]] },
     { z: 0, html: ground, cls: "a2-ground" },
     { z: BED_Z, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 45.4, 78.5, 23.8, 16.3]] },
     { z: 40, html: beam, cls: "a2-boxes" },
@@ -358,8 +358,9 @@
   const found = new Set((Array.isArray(saved) ? saved : []).map(id => id === "paints" ? "moons" : id).filter(id => HOBBY_IDS.includes(id)));
 
   tilt.innerHTML = LAYERS.map(l => {
+    // each thing's name shows in one label above the room (see showTag)
     const hits = (l.hits || []).map(([id, name, x, y, w, h]) =>
-      `<button class="a2-hit" data-spot="${id}" data-sfx="none" aria-label="${name}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%"><span class="a2-tag">${name}</span></button>`).join("");
+      `<button class="a2-hit" data-spot="${id}" data-sfx="none" aria-label="${name}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%"></button>`).join("");
     return `<div class="a2-layer ${l.cls}" style="transform:translateZ(${l.z}px) scale(${zoom(l.z)})">${l.html}${hits}</div>`;
   }).join("");
   const lumi = document.createElement("div");
@@ -545,10 +546,32 @@
     }
   });
   $("#a2-x").addEventListener("click", () => { card.hidden = true; });
+  // The name of the thing under the pointer shows in one label that sits over the whole room, outside the 3D box,
+  // so the bulbs, the curtain rod and the shelf (which hang in front of things) never cover it
+  const tag = document.createElement("span");
+  tag.className = "a2-tag";
+  tag.setAttribute("aria-hidden", "true");
+  stage.append(tag);
+  let tagged = null;
+  const showTag = (b) => {
+    tagged = b;
+    tag.textContent = b.getAttribute("aria-label");
+    const s = stage.getBoundingClientRect(), r = b.getBoundingClientRect(), half = tag.offsetWidth / 2 + 6;
+    const below = r.top - s.top < tag.offsetHeight + 12;
+    tag.classList.toggle("below", below);
+    tag.style.left = `${Math.max(half, Math.min(s.width - half, r.left + r.width / 2 - s.left)).toFixed(1)}px`;
+    tag.style.top = `${((below ? r.bottom : r.top) - s.top).toFixed(1)}px`;
+    tag.classList.add("on");
+  };
+  const hideTag = () => { tagged = null; tag.classList.remove("on"); };
+  tilt.addEventListener("pointerover", (e) => { const b = e.target.closest(".a2-hit"); if (b && e.pointerType !== "touch") showTag(b); });
+  tilt.addEventListener("pointerout", (e) => { if (tagged && !tagged.contains(e.relatedTarget)) hideTag(); });
+  tilt.addEventListener("focusout", hideTag);
   // keyboard: tabbing onto a thing brings Lumi to it
   tilt.addEventListener("focusin", (e) => {
     const b = e.target.closest(".a2-hit");
     if (!b || !b.matches(":focus-visible")) return;
+    showTag(b);
     const s = world.getBoundingClientRect(), r = b.getBoundingClientRect();
     lastMove = Date.now();
     follow((r.left + r.width / 2 - s.left) / s.width, (r.top + r.height / 2 - s.top) / s.height);
@@ -573,6 +596,7 @@
   });
   stage.addEventListener("pointermove", (e) => {
     lastMove = Date.now();
+    if (tagged) showTag(tagged); // the room leans as the pointer moves, so the label follows its thing
     if (phone.matches) {
       if (!drag || e.pointerId !== drag.id) return;
       const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;

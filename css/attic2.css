@@ -34,11 +34,20 @@
 .a2-hit:not(.found)::before { opacity: .55; animation: a2-beckon 2.8s ease-in-out infinite; }
 @keyframes a2-beckon { 50% { opacity: 1; } }
 .a2-hit.found::after { content: "★"; position: absolute; right: -4px; top: -6px; font-size: 18px; color: var(--gold); text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+/* one label for the whole room, on top of every layer (attic2.js puts it over the thing the pointer is on) */
 .a2-tag {
-  position: absolute; left: 50%; top: -6px; translate: -50% -100%; white-space: nowrap; padding: 3px 10px; border-radius: 999px;
-  background: var(--cream); color: var(--ink); font: 600 13px var(--head); opacity: 0; pointer-events: none; transition: opacity .2s;
+  position: absolute; z-index: 3; left: 0; top: 0; translate: -50% calc(-100% - 6px); white-space: nowrap; padding: 3px 10px; border-radius: 999px;
+  background: var(--cream); color: var(--ink); font: 600 13px var(--head); box-shadow: 0 2px 8px rgba(20, 10, 40, .35);
+  opacity: 0; pointer-events: none; transition: opacity .2s;
 }
-.a2-hit:hover .a2-tag, .a2-hit:focus-visible .a2-tag { opacity: 1; }
+.a2-tag.below { translate: -50% 6px; }
+.a2-tag.on { opacity: 1; }
+/* the guitar leans against the wall, so its spot is cut to its tilted shape (a neck and a body): the glow and the click
+   stay on the guitar, and as the cut takes the focus outline away too, a keyboard focus brightens the glow instead */
+.a2-hit[data-spot="guitar"] { border-radius: 0; clip-path: polygon(71% 0, 100% 4%, 81% 42%, 96% 51%, 100% 65%, 86% 91%, 73% 100%, 37% 98%, 4% 91%, 0 81%, 13% 54%, 30% 43%, 51% 38%); }
+.a2-hit[data-spot="guitar"]::before { inset: 0; background: radial-gradient(46% 32% at 53% 67%, rgba(255, 226, 150, .6), transparent), radial-gradient(16% 34% at 72% 29%, rgba(255, 226, 150, .5), transparent); }
+.a2-hit[data-spot="guitar"]:focus-visible::before { opacity: 1; animation: none; filter: brightness(1.3); }
+.a2-hit[data-spot="guitar"]::after { right: auto; left: 76%; top: 1%; translate: -50% 0; }
 .a2-twinkle { animation: a2-twinkle 3.2s ease-in-out infinite; }
 .a2-pulse { animation: a2-pulse 3.6s ease-in-out infinite; }
 @keyframes a2-twinkle { 50% { opacity: .55; } }
