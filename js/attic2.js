@@ -57,7 +57,7 @@
     <rect x="506" y="108" width="64" height="15" rx="3" fill="#f2d488" stroke="#8a6a2a" stroke-width="2"/><text x="538" y="119" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="9" letter-spacing="1.5" fill="#4a3510">MUSEUM</text>
     <rect x="522" y="176" width="32" height="18" rx="2" fill="#fffdf6" stroke="#c9b49b" stroke-width="1.5"/><text x="538" y="189" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="12" fill="#a34063">?!</text>
     <path d="M506 196V168Q506 140 538 140Q570 140 570 168V196Z" fill="#e8f4fb" fill-opacity=".45" stroke="#9db7cf" stroke-width="3"/><circle cx="538" cy="136" r="4" fill="#9db7cf"/><path d="M514 170Q515 154 526 148" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8"/>
-    <g transform="translate(26 50)"><!-- the bead rack hangs lower and to the right, clear of the curtain, the jar and the museum shelf -->
+    <g transform="translate(26 66)"><!-- the bead rack hangs lower and to the right, clear of the curtain, the jar and the museum shelf -->
     <rect x="272" y="184" width="122" height="9" rx="3" fill="#8a5a32" stroke="#4a3020" stroke-width="2"/>
     <rect x="286" y="192" width="8" height="12" rx="2" fill="#6d4425"/><rect x="372" y="192" width="8" height="12" rx="2" fill="#6d4425"/>
     <path d="M290 204Q333 286 376 204" fill="none" stroke="#c9a7ea" stroke-width="2"/>
@@ -128,7 +128,7 @@
   const LAYERS = [
     { z: -130, html: wall, cls: "a2-wall", hits: [["window", "the window", 7, 23, 35, 40]] },
     { z: -105, html: curtains, cls: "a2-curtains" },
-    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 44.6, 21, 17]] },
+    { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 47.7, 21, 17]] },
     { z: -57, html: desk, cls: "a2-desk" },
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
     { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
