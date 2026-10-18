@@ -46,13 +46,13 @@
     return svg.slice(0, halo) + worn + svg.slice(halo);
   };
   // sticker() draws Lumi on a sticker card with a label underneath; the site only wants Lumi itself.
-  // The cream ground shadow suits the cream panels; on the night sky (sky = true) it glows, so it goes.
+  // The cream ground shadows (and the flop's) suit the cream panels; on the night sky (sky = true) they glow, so they go.
   // beads: try a necklace on without wearing it (the bead table's preview)
   app.art = (mood, sky = false, beads = necklace) => {
     const svg = wear(sticker(mood)
       .replace(/<rect x="-23\.2"[^>]*\/>/, "")
       .replace(/<text x="117" y="259"[\s\S]*?<\/text>/, ""), mood, beads);
-    return sky ? svg.replace(/<ellipse [^>]*fill="#faeadb"[^>]*\/>/g, "") : svg;
+    return sky ? svg.replace(/<ellipse [^>]*fill="#(faeadb|f6e3cc)"[^>]*\/>/g, "") : svg;
   };
   // A still picture of a mood (an <img> source). Pictures are drawn once and are cheap to move around,
   // so they're used for thumbnails and the game; the live SVG is kept where the eyes follow you.

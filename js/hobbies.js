@@ -463,7 +463,8 @@
   }
   roomCard.addEventListener("click", (e) => {
     const t = e.target;
-    if (t.closest("[data-beads]")) { beadTray(); return; }
+    // the button that opened a tray is gone once it's drawn, so keyboard focus moves into the tray
+    if (t.closest("[data-beads]")) { beadTray(); $(".bead", roomCard).focus(); return; }
     const bead = t.closest("[data-bead]");
     if (bead) {
       if (strung.length >= 9) { app.toast("nine beads is the limit. (Lumi's neck is very small.)"); return; }
@@ -563,7 +564,7 @@
   }
   roomCard.addEventListener("click", (e) => {
     const t = e.target;
-    if (t.closest("[data-paint]")) { easel(); sfx.play.pop(); return; }
+    if (t.closest("[data-paint]")) { easel(); $(".paint-pot", roomCard).focus(); sfx.play.pop(); return; }
     const pot = t.closest("[data-paint-color]");
     if (pot) {
       brush.color = pot.dataset.paintColor;
