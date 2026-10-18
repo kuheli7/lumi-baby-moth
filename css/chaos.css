@@ -5,6 +5,12 @@
 [data-shape="pocket"] .cz-pocket, [data-shape="phone"] .cz-phone, [data-shape="sideways"] .cz-sideways, [data-shape="tablet"] .cz-tablet,
 [data-shape="wide"] .cz-wide, [data-shape="cinema"] .cz-cinema, [data-shape="tower"] .cz-tower { display: block; }
 
+/* the edition label under the home tagline, so you can see which one you're in */
+.edition { display: inline-block; margin: 10px auto 0; padding: 4px 14px; border-radius: 999px; font-size: 15px; color: #fde7a8; background: rgba(20, 12, 40, .55); border: 1.5px solid rgba(253, 231, 168, .45); box-shadow: 0 0 18px rgba(253, 231, 168, .18); }
+.edition span { color: #cfc2ea; }
+.edition.pop { animation: cz-pop .6s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes cz-pop { 0% { scale: .6; opacity: 0; } 100% { scale: 1; opacity: 1; } }
+
 /* 📟 pocket edition: a little handheld console, with scanlines */
 .cz-pocket { background: linear-gradient(rgba(150, 200, 130, .10), rgba(150, 200, 130, .06)); }   /* a hint of old LCD green */
 .cz-frame { position: absolute; inset: 4px; border: 4px solid rgba(200, 230, 180, .4); border-radius: 20px 20px 48px 20px; box-shadow: inset 0 0 0 3px rgba(20, 12, 40, .7), inset 0 0 50px rgba(150, 200, 130, .2); }
@@ -33,7 +39,7 @@
 .cz-tablet svg path:first-child { fill: #4a3a7c; opacity: .7; }
 
 /* 🌌 widescreen sky: drifting clouds, a ringed planet and a shooting star */
-.cz-cloud { position: absolute; left: -260px; width: 240px; height: 60px; border-radius: 60px; background: rgba(233, 218, 255, .07); animation: cz-drift 70s linear infinite; }
+.cz-cloud { position: absolute; left: -260px; width: 240px; height: 60px; border-radius: 60px; background: rgba(233, 218, 255, .15); animation: cz-drift 70s linear infinite; }
 .cz-cloud::before, .cz-cloud::after { content: ""; position: absolute; border-radius: 50%; background: inherit; }
 .cz-cloud::before { left: 40px; top: -30px; width: 90px; height: 80px; }
 .cz-cloud::after { left: 110px; top: -44px; width: 100px; height: 96px; }
@@ -68,4 +74,5 @@
   .chaos *, .chaos *::before, .chaos *::after { animation: none !important; }
   .cz-shoot, .cz-sideways b { display: none; }
   .cz-bar em { translate: 24px 0; }
+  .edition.pop { animation: none; }
 }

@@ -42,17 +42,26 @@
     <div class="cz-tower">${lanterns("left")}${lanterns("right")}</div>`;
   $(".sky").after(layer);
 
-  const tag = $(".home-tag"), badge = $(".badge.b5");
+  const tag = $(".home-tag"), badge = $(".badge.b5"), edition = $("#edition b");
   let shape = "";
   function apply() {
     // a phone keyboard squashes the height while you type; that isn't a new shape
     if (shape && document.activeElement?.matches("input, textarea")) return false;
     const next = shapeOf();
     if (next === shape) return false;
+    const first = !shape;
     shape = next;
     document.documentElement.dataset.shape = shape;
     const ed = EDITIONS[shape];
     if (tag) tag.textContent = ed.tag;
+    if (edition) {
+      edition.textContent = ed.name;
+      edition.parentElement.classList.remove("pop");
+      void edition.offsetWidth;   // restart the pop animation
+      edition.parentElement.classList.add("pop");
+    }
+    // a little fanfare when a resize unlocks a new edition (not on the first load)
+    if (!first) app.toast(`✨ ${ed.name} unlocked!`, 2600);
     if (badge) badge.title = `${ed.name}: the site changes with your screen's shape. try resizing or turning it!`;
     return true;
   }
