@@ -161,30 +161,31 @@ function sticker(mood) {
   };
 
   // ---------- Wings (the v4 pair, each swinging from its root on the back) ----------
+  // lo scales the lilac wing alone, from where it tucks under the body; up lifts it
   const upL = blob(57, 137, 58, 44, 31, .02, -28, 10);
   const upR = blob(184, 133, 56, 43, 33, .02, 28, 10);
   const loL = "M120 172 C100 168 78 172 60 178 C40 184 30 200 34 214 C38 230 58 236 74 228 C92 218 108 194 120 172 Z";
   const loR = "M120 170 C140 166 160 168 178 174 C198 180 208 194 204 208 C200 224 182 230 168 222 C150 212 132 192 120 170 Z";
-  const wingL = `<g class="wl">
+  const wingL = (lo = 1, up = 0) => `<g class="wl">
     <path d="${upL}" fill="url(#${id}peachL)"/>
     <path d="${upL}" fill="url(#${id}wingBlush)"/>
     <path d="M58 139.5 Q21 143.5 6 150" transform="rotate(-11 27 144)" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
     <path d="${blob(27, 144, 14.2, 13.8, 2, .05)}" fill="${C.ring}"/>
     <path d="${blob(26.6, 144.6, 7.6, 7.2, 5, .06)}" fill="${C.spot}"/>
     <path d="${blob(43, 164, 2.8, 2.5, 8, .1)}" fill="#fff" opacity=".85"/>
-    <path d="${loL}" fill="url(#${id}lilacL)"/>
+    <g transform="translate(120 ${172 - up}) scale(${lo}) translate(-120 -172)"><path d="${loL}" fill="url(#${id}lilacL)"/>
     <path d="M70 203.5 Q47 206.5 36 211.5" transform="rotate(-11 50 207)" fill="none" stroke="url(#${id}veinL)" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="${blob(50, 207, 6.6, 6.2, 9, .07)}" fill="#fff"/></g>`;
-  const wingR = `<g class="wr">
+    <path d="${blob(50, 207, 6.6, 6.2, 9, .07)}" fill="#fff"/></g></g>`;
+  const wingR = (lo = 1, up = 0) => `<g class="wr">
     <path d="${upR}" fill="url(#${id}peachR)"/>
     <path d="${upR}" fill="url(#${id}wingBlush)"/>
     <path d="M182 135 Q219 138 233 145" transform="rotate(11 213 139)" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
     <path d="${blob(213, 139, 13.6, 13.2, 3, .05)}" fill="${C.ring}"/>
     <path d="${blob(213.4, 139.4, 7.3, 7, 7, .06)}" fill="${C.spot}"/>
     <path d="${blob(197, 159, 2.6, 2.3, 4, .1)}" fill="#fff" opacity=".85"/>
-    <path d="${loR}" fill="url(#${id}lilacR)"/>
+    <g transform="translate(120 ${170 - up}) scale(${lo}) translate(-120 -170)"><path d="${loR}" fill="url(#${id}lilacR)"/>
     <path d="M168 196 Q191.5 199.75 201 204.5" transform="rotate(11 188 200)" fill="none" stroke="url(#${id}veinR)" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="${blob(188, 200, 6.2, 5.8, 13, .07)}" fill="#fff"/></g>`;
+    <path d="${blob(188, 200, 6.2, 5.8, 13, .07)}" fill="#fff"/></g></g>`;
   // Free-standing wings for the poses that are not sitting upright (same fills as the v4 pair)
   const peachWing = (cx, cy, rx, ry, rot, seed, spot, side = "L") => {
     const d = blob(cx, cy, rx, ry, seed, .02, rot, 10);
@@ -198,13 +199,13 @@ function sticker(mood) {
 
   // ---------- Antennae: stalks run into the centre of each orb so they always connect ----------
   // twig: [where on the stalk, tip offset, bend offset]; `halo` adds a soft glow behind the orb
-  const drawAnt = (a, w0 = 6.4, w1 = 4.9) => {
+  const drawAnt = (a, w0 = 7.2, w1 = 5.5) => {
     let twig = "";
     if (a.twig) {
       const p = qpt(a.b, a.c, a.o, a.twig[0]);
       const end = [p[0] + a.twig[1][0], p[1] + a.twig[1][1]];
-      twig = `<path d="${taper(p, [p[0] + a.twig[2][0], p[1] + a.twig[2][1]], end, 5.2, 3.2, 12)}" fill="${C.stalk}"/>
-        <circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="1.6" fill="${C.stalk}"/>`;
+      twig = `<path d="${taper(p, [p[0] + a.twig[2][0], p[1] + a.twig[2][1]], end, 5.8, 3.6, 12)}" fill="${C.stalk}"/>
+        <circle cx="${f1(end[0])}" cy="${f1(end[1])}" r="1.8" fill="${C.stalk}"/>`;
     }
     const [ox, oy] = a.o;
     const rays = (a.rays || []).map(deg => {
@@ -259,13 +260,13 @@ function sticker(mood) {
       <path d="${blob(x, y, 5.2 * s, 4.9 * s, e.seed + 1, .06)}" fill="#fff"/>`;
   };
   const openEye = (e, s = 1) => `<g class="pupil"><g class="blink">${eyeBase(e, s)}${hl(e, s, e.hx, e.hy)}</g></g>`;
-  // Closed eyes: ^ (happy) or ‿ (content / asleep), thick near-black strokes with round ends
-  const closedEye = (x, y, w, up, rot = 0, sw = 4.4) => {
-    const d = up ? `M${x - w} ${y + 4} Q${x} ${y - 10} ${x + w} ${y + 4}` : `M${x - w} ${y - 3} Q${x} ${y + 8} ${x + w} ${y - 3}`;
+  // Closed eyes: ^ (happy) or ‿ (content / asleep), thick near-black strokes with round ends; arch deepens the curve
+  const closedEye = (x, y, w, up, rot = 0, sw = 4.4, arch = 0) => {
+    const d = up ? `M${x - w} ${y + 4} Q${x} ${y - 10 - arch} ${x + w} ${y + 4}` : `M${x - w} ${y - 3} Q${x} ${y + 8 + arch} ${x + w} ${y - 3}`;
     return `<path d="${d}" fill="none" stroke="${C.lid}" stroke-width="${sw}" stroke-linecap="round" transform="rotate(${rot} ${x} ${y})"/>`;
   };
-  // Worried eye: the top is cut by a line that rises toward the nose. A dark lid runs the whole
-  // length of the cut, a little past the outer edge, and hooks upward past the inner corner;
+  // Worried eye: the top is cut by a line that rises toward the nose. A dark lid runs along the cut
+  // to outT (past 1 it pokes beyond the outer edge) and flicks up slightly past the inner corner;
   // a blue tear pools at the outer bottom edge
   const tear = (x, y, rx = 7.5, ry = 6.2, rot = 0, op = 1) => `<g transform="rotate(${rot} ${x} ${y})" opacity="${op}">
     <path d="${blob(x, y, rx, ry, 17, .06)}" fill="url(#${id}tear)" stroke="#86aef0" stroke-width="1.2"/>
@@ -286,19 +287,19 @@ function sticker(mood) {
     return [pin, `<clipPath id="${cid}"><path d="M${f1(a[0])} ${f1(a[1])} L${f1(pin[0])} ${f1(pin[1])} Q${f1(c[0])} ${f1(c[1])} ${f1(pout[0])} ${f1(pout[1])} L${f1(b[0])} ${f1(b[1])} L${f1(b[0])} ${f1(e.y + ry * 2)} L${f1(a[0])} ${f1(e.y + ry * 2)} Z"/></clipPath>
       <g clip-path="url(#${cid})">${eyeBase(e, s)}</g>`, pout, c, u, up];
   };
-  const worriedEye = (e, s = 1, outDeg = 10, tearOp = 1) => {
-    const k = e.side, [pin, eye, pout, c] = cutEye(e, s, 52, outDeg, "we", 2.6 * s);
+  const worriedEye = (e, s = 1, outDeg = 10, tearOp = 1, outT = 1.06) => {
+    const k = e.side, [pin, eye, pout, c] = cutEye(e, s, 52, outDeg, "we", 1.2 * s);
     // Piece [t0, t1] of the cut's curve (t past 1 runs on beyond the outer edge), as a quadratic
     const at = (t) => [0, 1].map(i => (1 - t) * (1 - t) * pin[i] + 2 * (1 - t) * t * c[i] + t * t * pout[i]);
     const piece = (t0, t1) => {
       const p0 = at(t0), dt = (t1 - t0) / 2;
       return [p0, [0, 1].map(i => p0[i] + dt * (2 * (1 - t0) * (c[i] - pin[i]) + 2 * t0 * (pout[i] - c[i]))), at(t1)];
     };
-    // The lid follows the arched cut, thickest in the middle; at the inner corner it turns up in a short hook
+    // The lid follows the gently arched cut, thickest in the middle; at the inner corner it flicks up a little
     const back = [pin[0] - (c[0] - pin[0]) * .2, pin[1] - (c[1] - pin[1]) * .2];
-    const tip = [back[0] - k * .6 * s, back[1] - 3.4 * s];
+    const tip = [back[0] - k * .6 * s, back[1] - 1.5 * s];
     return `${eye}
-      <path d="${taper(...piece(0, .5), 2.8 * s, 3.8 * s)} ${taper(...piece(.5, 1.06), 3.8 * s, 1.3 * s)}" fill="${C.eye}"/>
+      <path d="${taper(...piece(0, .5), 2.8 * s, 3.8 * s)} ${taper(...piece(.5, outT), 3.8 * s, 1.3 * s)}" fill="${C.eye}"/>
       <circle cx="${f1(pin[0])}" cy="${f1(pin[1])}" r="${f1(1.4 * s)}" fill="${C.eye}"/>
       <path d="${taper(pin, back, tip, 2.8 * s, 1.2 * s)}" fill="${C.eye}"/>
       <circle cx="${f1(e.x - k * 3.5 * s)}" cy="${f1(e.y - 3 * s)}" r="${f1(4.6 * s)}" fill="#fff"/>
@@ -307,10 +308,10 @@ function sticker(mood) {
   // Determined: the cut drops toward the nose like a lowered brow, with a dark lid along it that pokes
   // a little past the eye at the outer end and only just at the inner one; the shine sits on the inner side
   const fierceEye = (e, s = 1, inDeg = 18, outDeg = 60) => {
-    const [pin, eye, pout, , u] = cutEye(e, s, inDeg, outDeg, "fe"), extIn = .6 * s, extOut = 2.2 * s;
+    const [pin, eye, pout, , u] = cutEye(e, s, inDeg, outDeg, "fe"), extIn = 0, extOut = .9 * s;
     const a = [pin[0] - u[0] * extIn, pin[1] - u[1] * extIn], b = [pout[0] + u[0] * extOut, pout[1] + u[1] * extOut];
     return `${eye}
-      <path d="M${f1(a[0])} ${f1(a[1])} L${f1(b[0])} ${f1(b[1])}" stroke="${C.eye}" stroke-width="${f1(3.8 * s)}" stroke-linecap="round"/>
+      <path d="M${f1(a[0])} ${f1(a[1])} L${f1(b[0])} ${f1(b[1])}" stroke="${C.eye}" stroke-width="${f1(3 * s)}" stroke-linecap="round"/>
       <circle cx="${f1(e.x - e.side * 5.5 * s)}" cy="${f1(e.y - 1 * s)}" r="${f1(4.2 * s)}" fill="#fff"/>`;
   };
   // Starry: a big gold sparkle, a small one toward the outer edge and a white glint toward the nose
@@ -379,8 +380,8 @@ function sticker(mood) {
     const P = (u, v) => `${f1(u * r)} ${f1(v * r)}`;
     const d = `M${P(0, -.42)} C${P(-.22, -.95)} ${P(-1.02, -.92)} ${P(-1, -.28)} C${P(-.98, .28)} ${P(-.4, .62)} ${P(0, .9)} C${P(.4, .62)} ${P(.98, .28)} ${P(1, -.28)} C${P(1.02, -.92)} ${P(.22, -.95)} ${P(0, -.42)} Z`;
     return `<g transform="translate(${x} ${y}) rotate(${rot})"><g class="beat">
-      <path d="${d}" fill="url(#${id}heartG)" stroke="#e98aa0" stroke-width="2.2" stroke-linejoin="round"/>
-      <ellipse cx="${f1(-r * .52)}" cy="${f1(-r * .42)}" rx="${f1(r * .2)}" ry="${f1(r * .11)}" transform="rotate(-40 ${f1(-r * .52)} ${f1(-r * .42)})" fill="#fff" opacity=".75"/></g></g>`;
+      <path d="${d}" fill="url(#${id}heartG)" stroke="#e1707f" stroke-width="3" stroke-linejoin="round"/>
+      <ellipse cx="${f1(r * .52)}" cy="${f1(-r * .42)}" rx="${f1(r * .2)}" ry="${f1(r * .11)}" transform="rotate(40 ${f1(r * .52)} ${f1(-r * .42)})" fill="#fff" opacity=".75"/></g></g>`;
   };
   // Brown paws (the sticker art uses them for cookie-holding, clasping and reaching)
   const bpaw = (x, y, rx, ry, deg, seed, light = [x - 20, y - 30]) => foot(x, y, rx, ry, deg, id, seed, light);
@@ -397,18 +398,19 @@ function sticker(mood) {
   const ground = (cx = 119, cy = 236, rx = 84) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="6.6" fill="${C.shadow}" ${blur(2)}/>`;
 
   // ---------- Sitting rig: v4 parts, each with its own placement per mood ----------
-  // o = { fig, wl, wr, body, head: transforms (fig turns wings, body and head together);
-  //       ant: antennae; feet, face, hands: markup in final position; back, front: unbobbed }
+  // o = { fig, wl, wr, body, head: transforms (fig turns wings, body and head together); lo, loUp: lilac wing scale and lift;
+  //       ant: antennae; feet, face, hands: markup in final position; under: tucked behind the body; back, front: unbobbed }
   const sit = (o) => `
     ${o.back || ""}
     ${o.ground ?? ground()}
     <g class="bob"><g class="${o.cls || ""}">
+      ${o.under || ""}
       <g transform="${o.fig || ""}">
-        <g transform="${o.wl || ""}">${wingL}</g><g transform="${o.wr || ""}">${wingR}</g>
+        <g transform="${o.wl || ""}">${wingL(o.lo, o.loUp)}</g><g transform="${o.wr || ""}">${wingR(o.lo, o.loUp)}</g>
         ${joined(p => body(o.body, o.bodySize, p), p => head(o.head, "", p))}
       </g>
       ${ants(o.ant)}
-      ${o.feet}
+      ${o.feet || ""}
       ${o.face}
       ${o.hands || ""}
     </g></g>
@@ -436,12 +438,12 @@ function sticker(mood) {
       wl: "translate(-4 5)", wr: "translate(-7 0)",
       body: "translate(-4 -4)", bodySize: [52, 34, 15, .06], head: "translate(-3 -4)",
       ant: [
-        { b: [98, 61], c: [88, 39], o: [68, 28], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
-        { b: [136, 59], c: [146, 38], o: [168, 29], r: 16, twig: [.5, [10, 2], [5, -3]] },
+        { b: [98, 61], c: [88, 39], o: [68, 28], r: 16, twig: [.27, [-10, 2], [-5, -3]] },
+        { b: [136, 59], c: [146, 38], o: [168, 29], r: 16, twig: [.27, [10, 2], [5, -3]] },
       ],
       feet: foot(95, 223, 7, 10, -60, id, 2),
-      face: `${blush(73, 153, 13, 10, 21, -10)}${blush(173, 136, 13, 10, 23, 10)}
-        ${closedEye(88, 131, 14, true, -6)}${closedEye(154, 120, 14, true, -6)}
+      face: `${blush(73, 149, 13, 10, 21, -10)}${blush(173, 132, 13, 10, 23, 10)}
+        ${closedEye(88, 127, 14, true, -6, 5.4)}${closedEye(154, 116, 14, true, -6, 5.4)}
         ${laugh(123, 140, 10, -6)}`,
       hands: `${lantern(128, 205, 1.35, 0)}${paw(103, 188, -20, 41, 9.5, 8.5, [128, 203])}${paw(153, 184, 20, 47, 9.5, 8.5, [128, 203])}`,
       back: strokes([dash(28, 68, 11, 58), dash(16, 84, 11, 15), dash(208, 71, 11, -58), dash(219, 85, 11, -15)], "#f28ea3", 3.6),
@@ -475,10 +477,10 @@ function sticker(mood) {
       ],
       feet: foot(59, 214, 9.5, 12, -30, id, 2) + foot(133, 226, 8, 10, 10, id, 5),
       face: `${blush(83, 136, 12.5, 10, 21, 10)}${blush(178, 169, 12.5, 10, 23, 25)}
-        ${closedEye(104, 129, 14, true, 18)}${closedEye(166, 149, 14, true, 18)}
+        ${closedEye(104, 130, 14, true, 18, 5.2, 4)}${closedEye(166, 150, 14, true, 18, 5.2, 4)}
         ${smile(133, 151, 6.5, 18)}`,
-      hands: `${bigHeart(134, 204, 38, 6)}${paw(101.7, 189.4, 6, 41, 10, 9.5)}${paw(168.4, 225, 31, 47, 10, 9.5)}`,
-      back: `${heart(48, 48, 1.75, `fill="${C.heart}" opacity=".9"`, -12)}${heart(228, 116, 1.25, `fill="${C.heart}" opacity=".9"`, 12)}
+      hands: `${bigHeart(134, 204, 38, 14)}${paw(104, 185, 14, 41, 10, 9.5)}${paw(166.5, 220, 39, 47, 10, 9.5)}`,
+      back: `${heart(48, 41, 1.75, `fill="${C.heart}" opacity=".9"`, -26)}${heart(228, 108, 1.25, `fill="${C.heart}" opacity=".9"`, 26)}
         ${strokes([dash(83, 55, 5, -40)], "#e9c3a4", 2.4)}`,
     }),
 
@@ -508,10 +510,11 @@ function sticker(mood) {
         { b: [76, 86], c: [64, 66], o: [28, 73], r: 16, twig: [.55, [-1, 8], [-4, 3]] },
         { b: [118, 68], c: [140, 28], o: [99, 23], r: 16, twig: [.18, [-8, 1], [-4, -3]] },
       ],
-      feet: foot(101, 221, 8, 9.5, -70, id, 2) + foot(122, 223, 7.5, 9, -80, id, 5) + foot(158, 214, 8.5, 10, 60, id, 6),
+      feet: foot(101, 221, 8, 9.5, -70, id, 2) + foot(160, 218, 8.5, 10, 60, id, 6),
       face: `${blush(93, 168, 12.5, 10, 21, -15)}${blush(179, 129, 12.5, 10, 23, -15)}
         ${openEye({ x: 103, y: 146, side: -1, seed: 11 }, .95)}${openEye({ x: 158, y: 121, side: 1, seed: 11 }, .95)}
         ${frown(139, 148, 4.5, -24)}`,
+      hands: `${paw(124, 218, -10, 41, 8.5, 7.6)}${paw(162, 207, 15, 47, 8.5, 7.6)}`,
       back: question(181, 56, 40, "#5e4030"),
     }),
 
@@ -521,8 +524,8 @@ function sticker(mood) {
       body: "translate(4 -11)", bodySize: [52, 34, 15, .06], head: "translate(0 -8)",
       ground: ground(124, 222, 84),
       ant: [
-        { b: [94, 66], c: [88, 43], o: [60, 31], r: 16, twig: [.5, [-10, 2], [-5, -3]] },
-        { b: [141, 61], c: [149, 43], o: [176, 33], r: 16, twig: [.5, [10, 2], [5, -3]] },
+        { b: [94, 66], c: [88, 43], o: [60, 31], r: 16, twig: [.28, [-10, 2], [-5, -3]] },
+        { b: [141, 61], c: [149, 43], o: [176, 33], r: 16, twig: [.28, [10, 2], [5, -3]] },
       ],
       feet: foot(99, 211, 8.5, 11, -50, id, 2) + foot(166, 209, 8.5, 11, 50, id, 5),
       face: `${blush(98, 148, 13, 10, 21, -10)}${blush(184, 129, 13, 10, 23, 10)}
@@ -586,21 +589,21 @@ function sticker(mood) {
       back: strokes([dash(178, 64, 9, -80), dash(189, 68, 9, -60), dash(199, 73, 9, -40)], "#f28ea3", 3),
     }),
 
-    // Head tipped to the side, eyes closed in a content ‿, lantern lifted up on one side
+    // Head tipped to the side, eyes closed in a content ‿, lantern lifted up on one side, standing
     proud: () => {
       const H = "translate(-22 0) rotate(18 121 121.5)";
       return sit({
-        wl: "translate(-2 -21)", wr: "translate(-13 6)",
-        body: "translate(-8 -4) rotate(8 119 196)", bodySize: [50, 34, 14], head: H,
+        wl: "translate(-2 -21)", wr: "translate(-13 6)", lo: 1.15, loUp: 10,
+        body: "translate(-14 -10) rotate(4 119 196)", bodySize: [46, 31, 13, .1], head: H, ground: ground(111, 233, 76),
         ant: [
-          { b: [96, 66], c: [99, 36], o: [76, 24], r: 16, twig: [.5, [-10, 2], [-5, -4]] },
+          { b: [96, 66], c: [99, 36], o: [76, 24], r: 16, twig: [.2, [-10, 2], [-5, -4]] },
           { b: [134, 73], c: [152, 56], o: [181, 44], r: 16, twig: [.4, [9, 6], [6, 0]] },
         ],
-        feet: foot(86, 224, 7, 10.5, -12, id, 2) + foot(134, 222, 7, 10.5, 12, id, 5),
+        under: foot(89, 225, 11, 8, -4, id, 2) + foot(133, 223, 11, 8, 6, id, 5),
         face: `<g transform="${H}">${blush(79, 143, 12, 9.5, 21, -13)}${blush(164, 137, 12, 9.5, 23, 10)}
           ${closedEye(EYE_L.x, EYE_L.y, 12.5, false, TILT)}${closedEye(EYE_R.x, EYE_R.y, 12.5, false, TILT)}
           ${wMouth(121.6, 134.5, 6.5, TILT)}</g>`,
-        hands: `${lantern(68.5, 187, 1.35, -8)}${paw(55, 162, -20, 41, 9.5, 8.5, [68, 187])}${paw(106, 174, 20, 47, 9.5, 8.5, [68, 187])}`,
+        hands: `${lantern(71, 188, 1.4, 10)}${paw(55, 162, -20, 41, 9.5, 8.5, [71, 188])}${paw(104, 176, 20, 47, 9.5, 8.5, [71, 188])}`,
         back: `${star4(23, 53, 15, "#fff3cf", `stroke="${C.gold}" stroke-width="3" stroke-linejoin="round"`)}${star4(209, 83, 8, C.gold)}`,
       });
     },
@@ -608,14 +611,14 @@ function sticker(mood) {
     // Slumped, tears welling, one antenna drooping; the lantern is set down on the ground beside it
     sad: () => sit({
       wl: "translate(-4 -15)", wr: "translate(-2 -10)",
-      body: "translate(-1 -6)", bodySize: [60, 33, 16, .06], head: "translate(0 2)",
+      body: "translate(-1 -6)", bodySize: [60, 33, 16, .06], head: "translate(0 2)", lo: 1.12,
       ant: [
         { b: [86, 77], c: [80, 46], o: [39, 59], r: 15.5, twig: [.45, [-4, 10], [-6, 4]] },
-        { b: [127, 64], c: [129, 40], o: [141, 21], r: 15.5, twig: [.45, [10, 0], [5, -5]] },
+        { b: [127, 64], c: [129, 40], o: [141, 21], r: 15.5, twig: [.28, [10, 0], [5, -5]] },
       ],
       feet: foot(117, 215, 8, 9.5, -20, id, 2) + foot(156, 210, 8.5, 9.5, 30, id, 5),
       face: `${blush(76, 158, 13, 10, 21, -10)}${blush(176, 139, 13, 10, 23, 10)}
-        ${worriedEye({ x: 94, y: 141, side: -1, seed: 11, rot: 5 }, 1.08, -2)}${worriedEye({ x: 156, y: 128, side: 1, seed: 11 }, 1.08, 22)}
+        <g transform="rotate(-12 94 136)">${worriedEye({ x: 94, y: 136, side: -1, seed: 11 }, 1.08, 10)}</g>${worriedEye({ x: 156, y: 128, side: 1, seed: 11 }, 1, 10)}
         ${frown(129, 147, 6)}`,
       front: lantern(79, 202, 1.45, -3, true, false),
       back: `${strokes(["M190 56 q3 -7 9 -4", "M203 71 q4 -6 9 -2"], "#e9c3a4", 3)}
@@ -631,9 +634,9 @@ function sticker(mood) {
         { b: [80, 67], c: [55, 27], o: [21, 94], r: 15.5, twig: [.5, [-1, 9], [-5, 3]] },
         { b: [126, 58], c: [136, 14], o: [159, 79], r: 15.5, twig: [.5, [5, 8], [5, 2]] },
       ],
-      feet: foot(76, 216, 8, 10.5, -35, id, 2) + foot(146, 218, 8, 10.5, 25, id, 5) + foot(183, 203, 7.5, 10, 40, id, 6),
+      feet: foot(76, 216, 8, 10.5, -35, id, 2) + foot(146, 218, 8, 10.5, 25, id, 5),
       face: `${blush(59, 158, 13, 10, 21, -10)}${blush(158, 151, 13, 10, 23, 10)}
-        ${worriedEye({ x: 76, y: 148, side: -1, seed: 11, rot: 5 }, 1, 2, .88)}${worriedEye({ x: 136, y: 144, side: 1, seed: 11 }, 1, 8, .88)}
+        ${worriedEye({ x: 76, y: 145, side: -1, seed: 11 }, 1, 5, .88, .96)}${worriedEye({ x: 136, y: 144, side: 1, seed: 11 }, 1, 5, .88, .96)}
         ${frown(106, 155, 5.5)}`,
       hands: `${strokes(["M107 195.8 Q102.5 199.5 98 200.6", "M117.5 194.6 Q123 197.6 128.5 197.6"], "#e6c4a4", 2.4)}
         ${bpaw(105.5, 180.5, 7.4, 10.5, -12, 7)}${bpaw(114.5, 181.3, 8.6, 12.3, -6, 8)}
@@ -646,20 +649,21 @@ function sticker(mood) {
     // Closed happy eyes, a bitten cookie held in brown paws, hearts and crumbs
     fed: () => sit({
       wl: "translate(5 -11)", wr: "translate(-1 -14)",
-      body: "translate(3 -10)", bodySize: [64, 36, 18, .06], head: "translate(1 -9)",
+      body: "translate(3 -10)", bodySize: [64, 36, 18, .06], head: "translate(1 -9)", lo: 1.18, loUp: 4,
       ground: ground(121, 224, 86),
       ant: [
         { b: [93, 64], c: [76, 38], o: [59, 26], r: 16, twig: [.45, [-10, 2], [-5, -4]] },
         { b: [138, 58], c: [147, 34], o: [169, 24], r: 16, twig: [.45, [10, 0], [5, -5]] },
       ],
-      feet: foot(66, 208, 7, 10.5, -50, id, 2) + foot(159, 210, 7, 10.5, 45, id, 5),
+      feet: foot(66, 208, 7, 10.5, -50, id, 2) + foot(165, 210, 7, 10.5, 45, id, 5),
       face: `${blush(84, 146, 13, 11, 21, -10)}${blush(179, 128, 13, 11, 23, 10)}
         ${closedEye(99, 125, 13, true, -10)}${closedEye(161, 114, 13, true, -10)}
         ${wMouth(132, 133, 9, -8)}`,
-      hands: `${cookie(137, 168, 27, 23)}
+      hands: `${strokes(["M113 199.5 Q107.5 202.5 101.5 202", "M164.5 181 Q169.5 188 176 193.5"], "#e6c4a4", 2.4)}
+        ${cookie(137, 168, 27, 23)}
         <path d="${blob(173, 148, 2.4, 2, 3, .2)}" fill="#c48a50"/><path d="${blob(178, 154, 2, 1.7, 4, .2)}" fill="#c48a50"/>
         ${bpaw(119, 193, 9, 11.5, 35, 7)}${bpaw(158, 172, 9, 12, -15, 8)}`,
-      back: `${heart(26, 62, 1.8, `fill="${C.heart}"`, -14)}${heart(208, 57, 1.15, `fill="${C.heart}"`, 14)}
+      back: `${heart(26, 62, 1.8, `fill="${C.heart}" opacity=".72"`, -32)}${heart(208, 57, 1.15, `fill="${C.heart}" opacity=".72"`, 32)}
         <path d="${blob(46, 226, 3, 2.6, 5, .2)}" fill="#c48a50"/>`,
     }),
 
@@ -708,20 +712,19 @@ function sticker(mood) {
 
     // Peeking out from behind a door: one eye, one antenna, a paw gripping the edge
     peek: () => {
+      // The clip stays put at the door while the figure leans out and back inside it
       const hid = (s) => `<g clip-path="url(#${id}doorClip)">${s}</g>`;
       return `
       <clipPath id="${id}doorClip"><rect x="-30" y="-10" width="193" height="260"/></clipPath>
       ${strokes([dash(44, 69, 9, 55), dash(38, 85, 9, 5)], "#f4c752", 3.2, "glint")}
-      <g class="lean">
-        ${hid(`
-          ${peachWing(71, 123, 32, 55, 0, 31, [68, 128, 13], "L")}
-          ${lilacWing(119, 186, 35, 29, -12, 9, [120, 192, 7], "L")}
+      ${hid(`<g class="lean">
+          <g transform="rotate(120 71 123)">${peachWing(71, 123, 35, 60, 0, 31, [68, 128, 14], "L")}</g>
+          ${lilacWing(132, 182, 35, 29, -12, 9, [133, 188, 7], "L")}
           ${foot(156, 210, 8, 10.5, 10, id, 2)}
           ${head("translate(157 107) scale(.95 1) translate(-120 -123)")}
           ${ants([{ b: [127, 49], c: [118, 29], o: [94, 22], r: 16, twig: [.45, [-9, 3], [-5, -3]] }])}
           ${blush(129, 144, 12, 10, 21)}
-          ${openEye({ x: 139, y: 118, side: 1, seed: 11 }, 1.12)}`)}
-      </g>
+          ${openEye({ x: 139, y: 118, side: 1, seed: 11 }, 1.12)}</g>`)}
       <path d="M163 44 L196 44 Q216 44 216 64 L216 229 L163 229 Z" fill="url(#${id}door)" opacity=".9"/>
       ${strokes(["M184 130 q3 4 2 9", "M194 138 q2 3 1 7"], "#ead6c0", 2.4)}
       <path d="M163 3 L163 229" stroke="#5e4030" stroke-width="4.2" stroke-linecap="round"/>
@@ -744,12 +747,12 @@ function sticker(mood) {
         <path d="M207 34 Q209 52 210 70" fill="none" stroke="#e9b53e" stroke-width="2.4" stroke-linecap="round"/>
       </g>
       <g class="hop">
-        ${peachWing(40, 152, 30, 44, 15, 31, [34, 148, 11], "L")}
+        ${peachWing(40, 152, 30, 44, 3, 31, [33.3, 149.3, 11], "L")}
         ${foot(39, 204, 7.5, 11, 60, id, 2, [80, 160])}
         ${foot(86, 203, 7.5, 11, 30, id, 5, [80, 160])}
         ${fur("line")}${head(H, "", "line")}${fur("fill")}
-        ${lilacWing(68, 183, 36, 28, -10, 9, [66, 188, 7], "L")}
-        ${onlyOver("chm", blob(68, 183, 36, 28, 9, .03, -10, 10), head(H, "", "line"))}
+        ${lilacWing(68, 183, 36, 28, -22, 9, [67.1, 188.3, 7], "L")}
+        ${onlyOver("chm", blob(68, 183, 36, 28, 9, .03, -22, 10), head(H, "", "line"))}
         ${head(H, "", "fill", [4])}
         ${ants([
           { b: [93, 55], c: [80, 32], o: [56, 31], r: 15.5, twig: [.5, [-2, 9], [-5, 4]] },
@@ -760,7 +763,6 @@ function sticker(mood) {
         <g transform="rotate(-22 171 88)"><g class="blink"><path d="${blob(171, 88, 4.2, 10, 12, .05)}" fill="url(#${id}eyeG)"/>
           <ellipse cx="170.6" cy="84.2" rx="1.6" ry="2.9" fill="#fff"/></g></g>
         <path d="${blob(162, 103, 4.6, 5.8, 3, .08)}" fill="#8a3a4c"/><ellipse cx="162.5" cy="106" rx="3" ry="2" fill="#ff8fab"/>
-        ${bpaw(130.5, 175, 8.6, 13, 30, 7)}
         ${bpaw(165.6, 147.6, 7.2, 11.8, 20, 8)}${bpaw(157.6, 145, 7.2, 11.6, 13, 3)}
       </g>
       ${strokes([dash(14, 60, 6, -40), dash(8, 72, 5, 0), dash(28, 46, 5, -70), dash(14, 104, 5, 20)], "#f7d67a", 2.4, "glint")}`;
@@ -810,7 +812,7 @@ function sticker(mood) {
       <radialGradient id="${id}foot" cx=".4" cy=".3"><stop offset="0" stop-color="#94705a"/><stop offset="1" stop-color="#734f3d"/></radialGradient>
       <linearGradient id="${id}tear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3dcfb"/><stop offset="1" stop-color="#7fa9ee"/></linearGradient>
       <radialGradient id="${id}cookie" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#e6b679"/><stop offset=".7" stop-color="#d69c5e"/><stop offset="1" stop-color="#c88a4f"/></radialGradient>
-      <radialGradient id="${id}heartG" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fdd0d9"/><stop offset=".55" stop-color="#f6a3b6"/><stop offset="1" stop-color="#ec8aa2"/></radialGradient>
+      <radialGradient id="${id}heartG" cx=".62" cy=".32" r=".75"><stop offset="0" stop-color="#fdcbd0"/><stop offset=".55" stop-color="#f597a3"/><stop offset="1" stop-color="#ea7c8b"/></radialGradient>
       <radialGradient id="${id}fly" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#fffbe8"/><stop offset=".6" stop-color="#ffefb0"/><stop offset="1" stop-color="#fde08a"/></radialGradient>
       <linearGradient id="${id}door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7e7d2"/><stop offset="1" stop-color="#f9eddc" stop-opacity=".6"/></linearGradient>
     </defs>
