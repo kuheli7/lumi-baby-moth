@@ -101,8 +101,9 @@
   @keyframes fly { 0%, 100% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(-3px, -4px) rotate(-6deg); } }
   .flutter { transform-box: fill-box; transform-origin: left center; animation: flutter .5s ease-in-out infinite alternate; }
   @keyframes flutter { to { transform: scaleX(.72); } }
+  .flutterL { transform-box: fill-box; transform-origin: right center; animation: flutter .5s ease-in-out infinite alternate; }
   @media (prefers-reduced-motion: reduce) {
-    .bob, .wl, .wr, .ray, .glint, .blink, .breathe, .zz text, .shiver, .lean, .hop, .fly, .flutter, .bounce, .beat, .wobble, .dots circle { animation: none; }
+    .bob, .wl, .wr, .ray, .glint, .blink, .breathe, .zz text, .shiver, .lean, .hop, .fly, .flutter, .flutterL, .bounce, .beat, .wobble, .dots circle { animation: none; }
   }
 </style>
 </head>
@@ -871,18 +872,23 @@ function sticker(mood) {
     // Mid-hop after a glowing butterfly: three-quarter view, antennae swept back, paws reaching
     chase: () => {
       const H = "translate(113 108) scale(.9) translate(-120 -123)";
+      // Glowing butterfly, drawn around its body at (0, 0): a pointed forewing and a rounder hindwing
+      // per side, each with a pale spot; the wings on each side flutter in from the body
+      const wings = `<path d="M1 -3 C5 -19 21 -27 27 -19 C32 -12 23 -3 2 0 Z" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M1.5 1.5 C13 0 22 7 19 15 C16 22 6 17 1.5 4 Z" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="18" cy="-15" r="3.4" fill="#fff" opacity=".85"/><circle cx="12" cy="9" r="2.6" fill="#f8b9ac" opacity=".7"/>`;
+      const butterfly = `
+        <path d="M-1 -11 Q-4 -20 -9 -23 M1 -11 Q4 -20 9 -23" fill="none" stroke="#c8902f" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="-9" cy="-23" r="1.9" fill="#e9b53e"/><circle cx="9" cy="-23" r="1.9" fill="#e9b53e"/>
+        <g class="flutterL"><g transform="scale(-1 1)">${wings}</g></g><g class="flutter">${wings}</g>
+        <ellipse cx="0" cy="3" rx="2.4" ry="10.5" fill="#d79a3a"/><circle cx="0" cy="-9" r="3" fill="#d79a3a"/>
+        <path d="M-2 1 L2 1 M-2 5 L2 5 M-1.8 9 L1.8 9" stroke="#f6d283" stroke-width="1" stroke-linecap="round"/>`;
       const fur = (part) => `<g transform="rotate(-25 108 170)">${fluff(scallop(108, 170, 35, 25, 10, 7, .55, .1, .8), `${id}cb`, `url(#${id}furB)`, "", 5.8, LINE, part)}</g>`;
       return `
       ${strokes(["M-10 110 q4 3 8 1"], "#e2c4a6", 2.2)}
       <path d="M232 80 Q246 116 214 134 Q190 148 172 190" fill="none" stroke="#f2c14e" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"/>
       ${star4(138, 26, 9, C.gold)}
-      <g class="fly">
-        <path d="${blob(198, 50, 11, 18, 4, .04, -18)}" class="flutter" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.6"/>
-        <path d="${blob(205, 70, 8, 8, 6, .05)}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4"/>
-        <path d="${blob(221, 40, 15, 22, 2, .04, 22)}" class="flutter" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.6"/>
-        <path d="${blob(219, 64, 9, 9, 8, .05)}" fill="url(#${id}fly)" stroke="#f2c14e" stroke-width="2.4"/>
-        <path d="M207 34 Q209 52 210 70" fill="none" stroke="#e9b53e" stroke-width="2.4" stroke-linecap="round"/>
-      </g>
+      <g class="fly"><g transform="translate(212 52) rotate(-12) scale(.95)">${butterfly}</g></g>
       <g class="hop">
         ${peachWing(40, 152, 30, 44, 3, 31, [33.3, 149.3, 11], "L")}
         ${foot(39, 204, 7.5, 11, 60, id, 2, [80, 160])}
