@@ -13,11 +13,24 @@
   const PAINTS = [["#f6cf6a", "moon gold"], ["#ee8196", "pink"], ["#8fc3e8", "sky blue"], ["#a993d6", "lilac"],
     ["#8fcf9a", "mint"], ["#4b3b7c", "midnight"], [PAPER, "eraser"]];
   const brush = { color: PAINTS[0][0], size: 7, at: null };
-  let paintTools = null;   // undo, redo and clear for the easel that is open
+  let paintTools = null;   // undo, redo, clear and resize for the easel that is open
   let onHang = () => {};   // what to do with a painting that was hung up
+  let onShut = () => {};   // what to show in the card once the easel is put away
+  // the easel covers the whole screen; "done", Escape or hanging the painting puts it away
+  function shut(back = true) {
+    if (!card.classList.contains("a2-easel")) return;
+    card.classList.remove("a2-easel");
+    document.body.classList.remove("a2-painting");
+    paintTools = null;
+    brush.at = null;
+    if (back) onShut();
+  }
   function easel() {
     card.hidden = false;
-    card.innerHTML = `<h3>paint with Lumi</h3>
+    card.classList.add("a2-easel");
+    document.body.classList.add("a2-painting");
+    card.innerHTML = `<div class="easel-head"><h3>paint with Lumi</h3>
+        <button class="btn btn-outline small" data-a2-done aria-label="put the easel away">✓ done</button></div>
       <p>paint anything. it goes up on the attic wall. (it doesn't have to be finished. nothing up here is.)</p>
       <div class="paint-wrap">
         <canvas class="paint-paper" id="a2-paper" role="img" aria-label="Painting paper: paint with your mouse or finger"></canvas>
@@ -33,15 +46,10 @@
         <button class="btn btn-gold small" data-a2-hang data-sfx="none">🖼 hang it up</button>
       </div>`;
     const paper = $("#a2-paper"), wet = $("#a2-wet"), dpr = Math.min(2, devicePixelRatio || 1);
-    const w = paper.clientWidth, h = Math.round(w * .75);
-    for (const cv of [paper, wet]) {
-      cv.width = Math.round(w * dpr);
-      cv.height = Math.round(h * dpr);
-      cv.getContext("2d").scale(dpr, dpr);
-    }
     const pg = paper.getContext("2d"), wg = wet.getContext("2d");
-    // Every stroke is remembered (as its points) so undo and redo can repaint the paper without it:
-    // the painting already hanging is the base, strokes go on top, and "clear" is a step like any other.
+    let w = 0, h = 0;
+    // Every stroke is remembered (as its points, in fractions of the paper) so undo, redo and a resized window
+    // can repaint the paper: the painting already hanging is the base, strokes go on top, and "clear" is a step like any other.
     const strokes = [], undone = [];
     let base = null, now = null;
     const blank = () => { pg.fillStyle = PAPER; pg.fillRect(0, 0, w, h); };
@@ -50,8 +58,8 @@
       wg.lineWidth = size;
       wg.lineCap = wg.lineJoin = "round";
       wg.beginPath();
-      wg.moveTo(...a);
-      wg.lineTo(...b);
+      wg.moveTo(a[0] * w, a[1] * h);
+      wg.lineTo(b[0] * w, b[1] * h);
       wg.stroke();
     };
     const lay = (color) => {
@@ -60,29 +68,47 @@
       pg.globalAlpha = 1;
       wg.clearRect(0, 0, w, h);
     };
+    // the hanging painting sits whole in the middle of the paper, whatever shape the screen is
+    const drawBase = () => {
+      const k = Math.min(w / base.width, h / base.height), bw = base.width * k, bh = base.height * k;
+      pg.drawImage(base, (w - bw) / 2, (h - bh) / 2, bw, bh);
+    };
     const redraw = () => {
       blank();
-      if (base) pg.drawImage(base, 0, 0, w, h);
+      if (base) drawBase();
       for (const st of strokes) {
         if (st.clear) { blank(); continue; }
         st.pts.forEach((p, i) => seg(st.color, st.size, st.pts[Math.max(0, i - 1)], p));
         lay(st.color);
       }
     };
+    // the paper is as big as the space the easel leaves for it
+    const fit = () => {
+      if (brush.at) return;
+      w = paper.clientWidth;
+      h = paper.clientHeight;
+      for (const cv of [paper, wet]) {
+        cv.width = Math.round(w * dpr);
+        cv.height = Math.round(h * dpr);
+        cv.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      redraw();
+    };
     const sync = () => {
       $("[data-a2-undo]", card).disabled = !strokes.length;
       $("[data-a2-redo]", card).disabled = !undone.length;
     };
     const record = (step) => { strokes.push(step); undone.length = 0; sync(); };
-    blank();
+    fit();
     const saved = store.get("painting", null);
     if (saved) { const im = new Image(); im.onload = () => { base = im; redraw(); }; im.src = saved; }
     paintTools = {
       undo: () => { if (!brush.at && strokes.length) { undone.push(strokes.pop()); redraw(); sync(); } },
       redo: () => { if (!brush.at && undone.length) { strokes.push(undone.pop()); redraw(); sync(); } },
       clear: () => { if (!brush.at && (strokes.length || base) && !strokes.at(-1)?.clear) { blank(); record({ clear: true }); } },
+      fit,
     };
-    const point = (e) => { const r = paper.getBoundingClientRect(); return [(e.clientX - r.left) * w / r.width, (e.clientY - r.top) * h / r.height]; };
+    const point = (e) => { const r = paper.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
     const dry = () => {
       if (!brush.at) return;
       brush.at = null;
@@ -107,6 +133,7 @@
     paper.addEventListener("pointercancel", dry);
     wet.style.opacity = brush.color === PAPER ? 1 : .6;
   }
+  addEventListener("resize", () => paintTools?.fit());
 
   // ---------- the guitar: one string, one note. pluck it three times quickly for Lumi's greatest hit ----------
   let plucks = [];
@@ -272,16 +299,19 @@
       paintTools?.clear();
     } else if (t.closest("[data-a2-hang]")) {
       // a small copy is kept (and framed on the wall), so it fits in the browser's storage
-      const small = document.createElement("canvas");
-      small.width = 320;
-      small.height = 240;
-      small.getContext("2d").drawImage($("#a2-paper"), 0, 0, 320, 240);
+      const paper = $("#a2-paper"), small = document.createElement("canvas"), k = 400 / Math.max(paper.width, paper.height);
+      small.width = Math.round(paper.width * k);
+      small.height = Math.round(paper.height * k);
+      small.getContext("2d").drawImage(paper, 0, 0, small.width, small.height);
       const url = small.toDataURL("image/jpeg", .85);
       store.set("painting", url);
       onHang(url);
       sfx.play.chime();
       app.toast("🖼 your painting is on the attic wall now. Lumi is very proud of you.");
       app.lumi.react("proud", "it's going on the wall. next to my unfinished things. it fits right in.", 4000);
+      shut();
+    } else if (t.closest("[data-a2-done]")) {
+      shut();
     } else if (t.closest(".gt-string")) {
       gtPlay(t.closest(".gt-string"));
     } else if (t.closest("[data-a2-lesson]")) {
@@ -304,6 +334,7 @@
     const b = i >= 0 && gtString(Object.keys(GT)[i]);
     if (b) { e.preventDefault(); gtPlay(b); }
   });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && paintTools) shut(); });
   // Ctrl/Cmd+Z undoes a stroke, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y redoes it (only while the easel is open)
   document.addEventListener("keydown", (e) => {
     if (!(e.ctrlKey || e.metaKey) || e.altKey || !paintTools || app.view() !== "attic2" || !$("#a2-paper")) return;
@@ -315,9 +346,9 @@
   });
 
   app.a2quests = {
-    paint: (hung) => { onHang = hung; easel(); $(".paint-pot", card).focus({ preventScroll: true }); },
+    paint: (hung, back) => { onHang = hung; onShut = back; easel(); $(".paint-pot", card).focus({ preventScroll: true }); },
     lesson: () => lesson(),
     pluck,
-    stop: gtStop,
+    stop: () => { gtStop(); shut(false); },
   };
 })();

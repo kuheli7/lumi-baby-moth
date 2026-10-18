@@ -95,10 +95,10 @@
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5" fill="${["#f4a3b8", "#c9a7ea", "#8fc3e8", "#f6cf6a"][i % 4]}" stroke="#4a3020" stroke-opacity=".35" stroke-width="1.2"/><circle cx="${(x - 1.6).toFixed(1)}" cy="${(y - 1.8).toFixed(1)}" r="1.5" fill="#fff" opacity=".7"/>`;
     }).join("")}
     <path transform="translate(333 256) scale(2.1)" d="M0 -6 Q5 0 0 5 Q-5 0 0 -6Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.2"/></g>
-    <rect x="418" y="104" width="62" height="90" rx="14" fill="#d8c6f3" fill-opacity=".55" stroke="#bda3e9" stroke-width="3"/>
+    <g id="a2-jar"><rect x="418" y="104" width="62" height="90" rx="14" fill="#d8c6f3" fill-opacity=".55" stroke="#bda3e9" stroke-width="3"/>
     <rect x="426" y="90" width="46" height="16" rx="4" fill="#f4a3b8" stroke="#c97a92" stroke-width="2"/>
     <path d="M449 94c-18-18-34 2-6 8c-10 8 8 18 6-8c0 26 16 16 6 8c28-6 12-26-6-8Z" fill="#f48fae" stroke="#c97a92" stroke-width="2"/>
-    <g class="a2-twinkle">${star(440, 160, 10)}${star(458, 134, 8)}${star(462, 172, 6)}${star(436, 126, 5)}</g>`);
+    <g class="a2-twinkle" id="a2-jar-stars">${star(440, 160, 10)}${star(458, 134, 8)}${star(462, 172, 6)}${star(436, 126, 5)}</g></g>`);
 
   // things standing on the desk and its lower shelf; the desk itself is real 3D boxes (see desk below).
   // This layer stands at the middle of the desk top's depth (the slab runs from z 45 back to -45), so things sit on it, not in it
@@ -485,11 +485,45 @@
       if (spot.dataset.spot === "bed" && !bedtime) lullaby();
     }
   });
+  // shaking the jar: it wobbles on the shelf, the stars inside tumble into new places, and a few float out of the lid
+  const jarStars = () => {
+    const placed = [];
+    for (const r of [10, 8, 6, 5]) {
+      let x = 0, y = 0;
+      for (let tries = 0; tries < 30; tries++) {
+        x = 428 + r + Math.random() * (42 - 2 * r);
+        y = 118 + r + Math.random() * (66 - 2 * r);
+        if (placed.every(p => Math.hypot(p[0] - x, p[1] - y) > p[2] + r + 1)) break;
+      }
+      placed.push([x, y, r]);
+    }
+    return placed.map(([x, y, r]) => star(+x.toFixed(1), +y.toFixed(1), r)).join("");
+  };
+  let shaking = 0;
+  const shakeJar = () => {
+    const jar = $("#a2-jar", tilt);
+    sfx.play.shiny();
+    react("jar");
+    follow(.68, .42);
+    if (lumiSaid()) lumiSaid().textContent = "Lumi: did the jar just wink?";
+    else card.querySelector(".bead-actions")?.insertAdjacentHTML("afterend", `<p class="a2-said">Lumi: did the jar just wink?</p>`);
+    if (!jar) return;
+    restart(jar, "shake");
+    clearTimeout(shaking);
+    shaking = setTimeout(() => { $("#a2-jar-stars", tilt).innerHTML = jarStars(); }, reduceMotion ? 0 : 320);
+    if (reduceMotion) return;
+    for (let i = 0; i < 5; i++) {
+      jar.insertAdjacentHTML("afterend", `<g class="a2-spark" style="--dx:${Math.round(Math.random() * 60 - 30)}px;--dy:${-50 - Math.round(Math.random() * 40)}px;animation-delay:${(.15 + i * .12).toFixed(2)}s">${star(449, 96, 3 + Math.random() * 2.5, "#fff6dc", "#e8c76a")}</g>`);
+      const s = jar.nextElementSibling;
+      s.addEventListener("animationend", () => s.remove());
+    }
+  };
+  const lumiSaid = () => card.querySelector(".a2-said");
   // the paint easel and the guitar lessons open right here, in this card
   card.addEventListener("click", (e) => {
     if (e.target.closest("[data-a2-paint]")) {
       sfx.play.pop();
-      app.a2quests.paint(hang);
+      app.a2quests.paint(hang, () => open("moons"));
     } else if (e.target.closest("[data-a2-lesson-open]")) {
       sfx.play.pop();
       app.a2quests.lesson();
@@ -499,9 +533,7 @@
       sfx.play.pop();
       newFact();
     } else if (e.target.closest("[data-a2-shake]")) {
-      sfx.play.shiny();
-      app.toast("✨ a star fell out. Lumi put it back. the thumbprint stays.");
-      app.lumi.react("surprised", "did the jar just wink?", 2600);
+      shakeJar();
     } else if (e.target.closest("[data-a2-lullaby]")) {
       lullaby();
     } else if (e.target.closest("[data-a2-space]")) {
