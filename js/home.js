@@ -378,6 +378,41 @@
     }
   }, 4000);
 
+  // ---------- responsive chaos: Lumi notices when the window changes shape ----------
+  // The address bar sliding away on a phone changes only the height, so only a new width or a turn counts.
+  const bestWH = $("#best-wh");
+  const showWH = () => { bestWH.textContent = `${innerWidth} × ${innerHeight}`; };
+  let lastW = innerWidth, wasPortrait = innerHeight > innerWidth, settle = 0, lastToast = 0;
+  addEventListener("resize", () => {
+    showWH();
+    const portrait = innerHeight > innerWidth, turned = portrait !== wasPortrait;
+    if (innerWidth === lastW && !turned) return;
+    const wider = innerWidth > lastW;
+    lastW = innerWidth;
+    wasPortrait = portrait;
+    if (!settle && app.view() === "home" && calm() && pal.mood !== "sleepy") {
+      clearTimeout(pal.timer);
+      setMood(turned ? "surprised" : "confused");
+      say(turned ? "whoa!! the whole world tipped over!" : wider ? "ooh, the sky is getting bigger!" : "hey! it's getting squishy in here!");
+      bump("dizzy");
+      restart(bestWH.parentNode, "bump");
+    }
+    clearTimeout(settle);
+    settle = setTimeout(settled, 600);
+  });
+  function settled() {
+    settle = 0;
+    const w = innerWidth;
+    const line = w < 400 ? "pocket-sized! i fit. barely." : w < 720 ? "phone-sized. cozy." : w < 1100 ? "tablet-sized. so roomy!" : "SO much sky. i could fly for days.";
+    if (app.view() === "home") {
+      if (calm() && pal.mood !== "sleepy") { moodFor("happy", 2000); say(line); }
+    } else if (Date.now() - lastToast > 8000) {
+      lastToast = Date.now();
+      app.toast(`🦋 Lumi: ${line}`);
+    }
+  }
+  showWH();
+
   // ---------- Lumi remembers you ----------
   const daysAway = app.lastVisit ? Math.floor((Date.now() - app.lastVisit) / 864e5) : 0;
   const hello = app.visits === 1
