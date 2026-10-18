@@ -21,13 +21,17 @@
 
   // ---------- Lumi's art ----------
   // sticker() draws Lumi on a sticker card with a label underneath; the site only wants Lumi itself.
-  app.art = (mood) => sticker(mood)
-    .replace(/<rect x="-23\.2"[^>]*\/>/, "")
-    .replace(/<text x="117" y="259"[\s\S]*?<\/text>/, "");
+  // The cream ground shadow suits the cream panels; on the night sky (sky = true) it glows, so it goes.
+  app.art = (mood, sky = false) => {
+    const svg = sticker(mood)
+      .replace(/<rect x="-23\.2"[^>]*\/>/, "")
+      .replace(/<text x="117" y="259"[\s\S]*?<\/text>/, "");
+    return sky ? svg.replace(/<ellipse [^>]*fill="#faeadb"[^>]*\/>/g, "") : svg;
+  };
   // A still picture of a mood (an <img> source). Pictures are drawn once and are cheap to move around,
   // so they're used for thumbnails and the game; the live SVG is kept where the eyes follow you.
   const pictures = {};
-  app.artURL = (mood) => (pictures[mood] ||= URL.createObjectURL(new Blob([app.art(mood)], { type: "image/svg+xml" })));
+  app.artURL = (mood, sky = false) => (pictures[mood + (sky ? ".sky" : "")] ||= URL.createObjectURL(new Blob([app.art(mood, sky)], { type: "image/svg+xml" })));
 
   app.COOKIE = `<svg viewBox="103 181 34 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="${blob(120, 198, 15, 14.5, 13, .05)}" fill="#d9a066" stroke="#c08a55" stroke-width="2"/>

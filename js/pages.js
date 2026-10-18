@@ -155,7 +155,7 @@
   // ======================================================================
   const menu = $("#menu");
   $("#menu-open").addEventListener("click", () => {
-    $("#menu-art").innerHTML = app.art("happy");
+    $("#menu-art").innerHTML = app.art("happy", true);
     menu.showModal();
     app.look();
   });

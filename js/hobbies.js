@@ -217,7 +217,7 @@
   const ROOM = HOBBIES.filter(h => h.room);
   const room = $("#room"), roomHits = $("#room-hits"), roomCard = $("#hobby-card"), foundCount = $("#found-count"), pips = $("#found-pips"), roomSwitch = $("#room-switch");
   $("#room-scene").innerHTML = SCENE;
-  $("#room-lumi").innerHTML = `<img src="${app.artURL("curious")}" alt="">`;
+  $("#room-lumi").innerHTML = `<img src="${app.artURL("curious", true)}" alt="">`;
   roomHits.innerHTML = ROOM.map(h => {
     const [x, y, w, hh] = h.room, [tx, ty, ax] = h.tag;
     return `<button class="hit" data-hobby="${h.id}" data-sfx="none" aria-label="${h.name}"

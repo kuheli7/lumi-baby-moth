@@ -37,7 +37,7 @@
 
   // ---------- the sprite: a still picture of Lumi, swapped per mood ----------
   let spriteMood = "";
-  const setSprite = (m) => { if (m !== spriteMood) { spriteMood = m; sprite.src = app.artURL(m); } };
+  const setSprite = (m) => { if (m !== spriteMood) { spriteMood = m; sprite.src = app.artURL(m, true); } };
   const spriteW = () => Math.min(W * .26, 132);
   const placeSprite = () => {
     const w = spriteW(), shake = S.shake > 0 ? Math.sin(S.t * 60) * 4 : 0;
@@ -247,6 +247,18 @@
     g.fill();
     g.restore();
   }
+  // a soft golden glow behind each star, drawn once and stamped
+  const GLOW = (() => {
+    const c = document.createElement("canvas"), x = c.getContext("2d");
+    c.width = c.height = 64;
+    const grad = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0, "rgba(255, 236, 160, .7)");
+    grad.addColorStop(.4, "rgba(255, 214, 110, .28)");
+    grad.addColorStop(1, "rgba(255, 214, 110, 0)");
+    x.fillStyle = grad;
+    x.fillRect(0, 0, 64, 64);
+    return c;
+  })();
   function draw() {
     if (!W) return;
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -269,8 +281,8 @@
     // falling things
     for (const it of S.items) {
       if (it.type === "star") {
-        g.fillStyle = "rgba(255, 226, 140, .25)";
-        g.beginPath(); g.arc(it.x, it.y, it.size * 1.5, 0, 6.29); g.fill();
+        const r = it.size * 2.2;
+        g.drawImage(GLOW, it.x - r, it.y - r, r * 2, r * 2);
         g.fillStyle = "#f8d46a";
         star(it.x, it.y, it.size, Math.sin(S.t * 2 + it.p) * .3);
       } else if (it.type === "rain") {
@@ -346,7 +358,7 @@
 
   app.onView("play", () => {
     // decode every picture the game uses up front, so swapping moods never flickers
-    ["curious", "determined", "excited", "hurt", "fed", "flop", "proud", "happy", "thinking"].forEach(m => { const i = new Image(); i.src = app.artURL(m); });
+    ["curious", "determined", "excited", "hurt", "fed", "flop", "proud", "happy", "thinking"].forEach(m => { const i = new Image(); i.src = app.artURL(m, true); });
     resize();
     if (S.state === "paused") showCard("thinking", "Paused", "Lumi is waiting very patiently. (Lumi is not patient.)", "keep going ▸");
     else if (S.state !== "playing") toMenu(S.level);
