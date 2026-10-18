@@ -37,8 +37,6 @@
 @keyframes dot { 0%, 100% { opacity: .25; } 40% { opacity: 1; } }
 .fly { transform-origin: 210px 50px; animation: fly 2.4s ease-in-out infinite; }
 @keyframes fly { 0%, 100% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(-3px, -4px) rotate(-6deg); } }
-.flutter { transform-box: fill-box; transform-origin: left center; animation: flutter .5s ease-in-out infinite alternate; }
-@keyframes flutter { to { transform: scaleX(.72); } }
 @media (prefers-reduced-motion: reduce) {
-  .bob, .wl, .wr, .ray, .glint, .blink, .breathe, .zz text, .shiver, .lean, .hop, .fly, .flutter, .bounce, .beat, .wobble, .dots circle { animation: none; }
+  .bob, .wl, .wr, .ray, .glint, .blink, .breathe, .zz text, .shiver, .lean, .hop, .fly, .bounce, .beat, .wobble, .dots circle { animation: none; }
 }
