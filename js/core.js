@@ -316,14 +316,17 @@
   addEventListener("pointerdown", queueLook, { passive: true });
 
   // ---------- router: one screen at a time, picked by the URL hash ----------
-  const TITLES = { home: "", about: "About Lumi", hobbies: "Hobbies", room: "Lumi's Attic", attic2: "Lumi's Attic 2", sheet: "Character Sheet", dress: "Dress up Lumi", play: "Star Catch", story: "Story", guestbook: "Guestbook", chat: "Talk to Lumi", facts: "Useless Facts", credits: "Credits" };
+  const TITLES = { home: "", about: "About Lumi", hobbies: "Hobbies", room: "Lumi's Attic", attic2: "Lumi's Attic", sheet: "Character Sheet", dress: "Dress up Lumi", play: "Star Catch", story: "Story", guestbook: "Guestbook", chat: "Talk to Lumi", facts: "Useless Facts", credits: "Credits" };
   const TAB_OF = { room: "hobbies", attic2: "hobbies", sheet: "home", dress: "hobbies", chat: "home" };
   const hooks = {};
   let current = null;
   app.onView = (name, enter, leave) => { hooks[name] = { enter, leave }; };
   app.view = () => current;
+  // retired pages and where their links go now: the lantern attic (#room) was replaced by Attic 2, but its code stays
+  const RETIRED = { room: "attic2" };
   function show() {
     let name = decodeURIComponent(location.hash.slice(1)) || "home";
+    if (RETIRED[name]) { name = RETIRED[name]; history.replaceState(null, "", "#" + name); }
     if (!(name in TITLES)) name = "home";
     if (name === current) return;
     const first = current === null;

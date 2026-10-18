@@ -30,7 +30,7 @@
 
   let unlocked = Math.max(1, Math.min(SKY, store.get("game.unlocked", 1)));
   const isOpen = (i) => i < unlocked;
-  let spaceFrom = "#room";   // where the space level goes back to: the attic it was entered from
+  let spaceFrom = "#attic2";   // where the space level goes back to: the attic it was entered from
   let arriving = false;      // true only when the attic window has just sent Lumi here
   const cleared = new Set(store.get("game.cleared", []));
   const S = {
@@ -443,7 +443,7 @@
 
   // the attic window: Lumi flies out to the space level
   const toSpace = () => {
-    spaceFrom = "#" + (app.view() || "room");
+    spaceFrom = "#" + (app.view() || "attic2");
     arriving = true;
     if (S.state === "playing" || S.state === "paused") { S.state = "menu"; stop(); }
     S.level = SKY;

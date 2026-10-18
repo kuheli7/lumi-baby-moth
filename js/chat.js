@@ -14,7 +14,7 @@
   const LABEL = { flop: "flop x_x", starry: "SHINY!!", fed: "fed! 🍪", love: "love" };
 
   // chips that take you somewhere instead of saying something
-  const GO = { "play Star Catch ★": "#play", "visit the attic 🏮": "#room", "open the museum": "#facts", "read my story": "#story", "see my hobbies": "#hobbies" };
+  const GO = { "play Star Catch ★": "#play", "visit the attic 🏮": "#attic2", "open the museum": "#facts", "read my story": "#story", "see my hobbies": "#hobbies" };
   const NAME_CHIP = "my name is …";
   const POOL = ["tell me a joke", "what's your hobby?", "here's a cookie 🍪", "what time is it?", "tell me a fact", "where do you live?",
     "are you a butterfly?", "sing me a song", "i love you", "how are you?"];

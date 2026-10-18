@@ -28,9 +28,8 @@ One calm screen at a time on a starry night. Five tabs at the bottom (home, hobb
 | **About Lumi** | the 5-point character sheet above, with a portrait |
 | **Character sheet** | everything needed to draw Lumi again |
 | **Hobbies** | six half-finished projects, with a filter and a suggestion box |
-| **Lumi's attic** | a dark attic where the lantern is your cursor |
+| **Lumi's attic** | a lit 3D diorama of Lumi's attic that leans with your pointer |
 | **Dress up Lumi** | string a bead necklace for Lumi to wear |
-| **Lumi's Attic 2** | the same attic as a lit 3D diorama |
 | **Play (Star Catch)** | a five-level mini game, plus a space level hidden in the attic |
 | **Story** | six scenes with a lantern finale |
 | **Guestbook** | notes from visitors, shared between everyone |
@@ -61,20 +60,19 @@ Not an AI. Lumi answers by rules: the first topic whose words show up in what yo
 - Pluck the one guitar string. Pluck it three times quickly for Lumi's Greatest Hit.
 - A banner leads into the attic.
 
-### Lumi's attic (the lantern attic)
+### Lumi's attic
 
-A dark room where the lantern follows your cursor (or your taps) and finds the hobbies. Switch the lights on if you'd rather not hunt. Find all five.
+The attic as a little 3D diorama. The room is cut into flat layers at different depths and the whole stage leans toward your pointer, so near things slide over far ones while Lumi follows the pointer. Find the five hobbies (the paint easel, the guitar, the bead rack, the jar of stars and the museum shelf); each opens in its own card.
 
-- **Paint** at the easel (with undo and redo). The painting hangs framed on the attic wall and is remembered.
-- **Learn the guitar** with three short lessons: Lumi plays a phrase and you play it back, and the guitar grows from one string to six. Click the strings, or press `A S D F G H` (or `1`–`6`) on a keyboard. Finish a lesson for stars.
-- **Dress up Lumi** (its own page): a big Lumi with a tray of beads at the bottom, with undo, "fill the neck", start over and "wear it". How many beads fit is worked out from the length of the neckline. Lumi then wears the necklace all over the site.
-- Play the **lullaby** on the matchbox bed (Brahms, made with Web Audio). Lumi carries the lantern to bed as a night light.
+- **Paint** at the easel. The painting hangs framed on the attic wall and is remembered.
+- **Learn the guitar** with short lessons: Lumi plays a phrase and you play it back, and the guitar grows from one string to six. Click the strings, or press `A S D F G H` (or `1`–`6`) on a keyboard.
+- **Dress up Lumi** from the bead rack (its own page): string a bead necklace, and Lumi wears it all over the site, here too.
+- Tap the **matchbox bed** and the lullaby starts (Brahms, made with Web Audio): Lumi shrinks to bed size, curls up on the pillow and the lights go down.
+- Flick the **light switch**: in the dark, Lumi's antennae are the only light.
 - Fly out of **the window** to the space level.
-- Leave it quiet for half a minute and Lumi falls asleep mid-hobby.
+- On a phone it goes full-screen: drag to look around, tap to send Lumi flying.
 
-### Lumi's Attic 2
-
-The attic rebuilt as a little 3D diorama. The room is cut into flat layers at different depths and the whole stage leans toward your pointer, so near things slide over far ones while Lumi follows the pointer. Find the five hobbies (the paint easel, the guitar, the bead rack, the jar of stars and the museum shelf); each opens in its own card, with its own copy of the paint and guitar games. There is a light switch (in the dark, Lumi's antennae are the only light), a window, hanging ivy, a potted pothos, a ceiling beam and a matchbox bed that the lullaby puts Lumi into. It shows the necklace you dressed Lumi in. On a phone it goes full-screen: drag to look around, tap to send Lumi flying. Attic 2 and the lantern attic share the painting and the guitar stars, but their code is separate.
+The first attic, a dark room where a lantern followed your cursor, has been retired: its link (`#room`) now opens this one, but its code is still in `js/hobbies.js` and `index.html`.
 
 ### Play: Star Catch
 
@@ -90,7 +88,7 @@ Leave a name and a note (160 characters). Notes are shared between every visitor
 
 ### Museum of useless facts
 
-14 facts, each with its own little illustration drawn in the site's style (`js/fact-art.js`). "Next exhibit" moves along and the museum remembers where you were. The museum shelf in Attic 2 shows a random fact and its picture in its card.
+14 facts, each with its own little illustration drawn in the site's style (`js/fact-art.js`). "Next exhibit" moves along and the museum remembers where you were. The museum shelf in the attic shows a random fact and its picture in its card.
 
 ### Character sheet
 
@@ -116,15 +114,15 @@ py -m http.server 8000
 ## Files
 
 - `index.html`: every screen (the URL hash picks which one shows)
-- `css/lumi.css`: Lumi's motion. `css/style.css`: the layout and look. `css/attic2.css`, `css/sheet.css` and `css/chaos.css` style Attic 2, the character sheet and the background scenery.
+- `css/lumi.css`: Lumi's motion. `css/style.css`: the layout and look. `css/attic2.css`, `css/sheet.css` and `css/chaos.css` style the attic, the character sheet and the background scenery.
 - `js/lumi.js`: Lumi's art. `sticker(mood)` draws Lumi in 18 moods. It is copied from `design/lumi-stickers.html` by `node tools/sync-art.mjs`.
 - `js/core.js`: storage, sound, toasts, counters, the necklace, eye-follow, secrets and the router
 - `js/chaos.js`: the screen-shape editions and their scenery
 - `js/home.js`: Lumi flying, moods, cookies, dozing and remembering you
 - `js/chat.js`: Talk to Lumi (rule-based replies)
-- `js/hobbies.js`: the hobbies page and the lantern attic (easel, guitar lessons, lullaby, window)
+- `js/hobbies.js`: the hobbies page, and the retired lantern attic
 - `js/dress.js`: the dress-up page
-- `js/attic2.js` and `js/attic2-quests.js`: Attic 2 (the diorama, and its easel, guitar and lesson cards)
+- `js/attic2.js` and `js/attic2-quests.js`: the attic (the diorama, and its easel, guitar and lesson cards)
 - `js/sheet.js`: the character sheet page
 - `js/game.js`: Star Catch
 - `js/pages.js`: the story, guestbook, museum, about, credits, menu, moth dust and the cookie secret
