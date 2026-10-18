@@ -337,8 +337,6 @@ body.lit .sky-lit { opacity: 1; }
 /* asleep in bed: the sleepy picture has its lantern lower left, so it's placed by that instead */
 .room.asleep .room-lumi { width: 18%; transform: translate(-22.3%, -70.9%); }
 .room.bedtime .room-dark i { --dark: rgba(8, 6, 24, .97); }
-.bead-maker { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; }
-.bead-lumi svg { display: block; width: 100%; height: auto; overflow: visible; }
 .bead-colors { display: flex; flex-wrap: wrap; gap: 8px; }
 .bead {
   width: 36px; height: 36px; padding: 0; border-radius: 50%; border: 2px solid rgba(90, 60, 110, .25);
@@ -347,10 +345,21 @@ body.lit .sky-lit { opacity: 1; }
 .bead:active { translate: 0 2px; box-shadow: none; }
 .bead-count { margin: 8px 0 0; font-size: 16px; color: var(--muted); }
 .bead-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-@media (max-width: 479px) {
-  .bead-maker { grid-template-columns: 104px 1fr; gap: 10px; }
-  .bead { width: 32px; height: 32px; }
+/* the dress-up page: Lumi big in the middle, the tray of beads at the bottom */
+.dress-stage {
+  display: block; position: relative; width: min(100%, 420px, calc(100vh - 420px)); min-width: min(100%, 230px); margin: 0 auto; padding: 0;
+  aspect-ratio: 1; border: 0; border-radius: 50%; color: inherit; -webkit-tap-highlight-color: transparent;
+  background: radial-gradient(circle closest-side, rgba(255, 220, 140, .22), rgba(255, 220, 140, 0) 100%);
 }
+.dress-stage svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.dress-stage.bump { animation: dress-bump .3s ease-out; }
+@keyframes dress-bump { 40% { transform: scale(1.04); } }
+.dress-count { margin: 4px 0 8px; text-align: center; font: 600 18px var(--head); color: #fde9b0; min-height: 1.4em; }
+.dress-tray { padding: 14px 12px 12px; border-radius: 22px; background: var(--cream); color: var(--text); }
+.dress-tray .bead-colors { justify-content: center; gap: 10px; }
+.dress-tray .bead { width: 42px; height: 42px; }
+.dress-tray .bead-actions { justify-content: center; margin-top: 12px; }
+@media (max-width: 479px) { .dress-tray .bead { width: 38px; height: 38px; } }
 .paint-wrap { position: relative; width: min(100%, 520px); margin: 8px auto 10px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 2px var(--card-line); }
 .paint-wrap canvas { display: block; width: 100%; aspect-ratio: 4 / 3; touch-action: none; }
 .paint-paper { cursor: crosshair; }
@@ -468,7 +477,7 @@ body.lit .sky-lit { opacity: 1; }
 .c-rain { color: #5a8fc0; font-weight: 400; }
 
 /* ---------- story ---------- */
-.story { display: grid; gap: 8px; justify-items: center; text-align: center; }
+.story { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; justify-items: center; text-align: center; }
 .story-art { width: min(64vw, 240px); min-height: 200px; display: grid; place-items: center; }
 .story { touch-action: pan-y; perspective: 1200px; }
 .story.flip-next { animation: flip-next .5s cubic-bezier(.2, .7, .3, 1); transform-origin: left center; }
@@ -477,8 +486,9 @@ body.lit .sky-lit { opacity: 1; }
 @keyframes flip-prev { from { transform: perspective(1200px) rotateY(75deg); opacity: .15; } }
 .story-hint { margin: 10px 0 0; text-align: center; font-size: 15px; color: var(--muted); }
 .story-text { min-height: 7em; margin: 0; font-size: 21px; display: flex; align-items: center; justify-content: center; color: var(--text); }
-.story-side { width: 100%; }
-.story-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.story-side { width: 100%; min-width: 0; }
+.story-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+@media (max-width: 440px) { .story-nav .pager { order: -1; flex-basis: 100%; justify-content: center; } }
 .pager { display: flex; gap: 8px; }
 .pager i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--plum); }
 .pager i.on { background: var(--plum); }
@@ -574,6 +584,13 @@ body.lit .sky-lit { opacity: 1; }
 .menu-list a + a { border-top: 1.5px solid var(--card-line); }
 .menu-list a:hover, .menu-list a[aria-current="page"] { background: var(--lilac-bg); color: var(--berry); }
 .menu-toggles { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+@media (max-height: 800px) {
+  .menu { padding-top: 48px; padding-bottom: 80px; }
+  .menu-art { width: 84px; }
+  .menu h2 { margin-bottom: 10px; font-size: 24px; }
+  .menu-list a { padding: 9px 18px; font-size: 17px; }
+  .menu-toggles { margin-top: 12px; }
+}
 .menu-trees { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 70px; fill: #120d26; pointer-events: none; }
 
 /* ---------- toast, cookie rain, the lantern's light ---------- */
@@ -624,7 +641,7 @@ body.lit .moon { box-shadow: inset -9px 3px 0 0 #fffbe6; filter: drop-shadow(0 0
   .cloud-shade { display: inline; }
   .stage { width: clamp(190px, 33vh, 270px); }
   .home-panel { padding-top: 28px; }
-  .story { grid-template-columns: 300px 1fr; text-align: left; gap: 28px; }
+  .story { grid-template-columns: 300px minmax(0, 1fr); text-align: left; gap: 28px; }
   .story-art { width: 300px; }
   .story-text { font-size: 23px; }
   .story-text { justify-content: flex-start; }
@@ -661,6 +678,6 @@ body.lit .moon { box-shadow: inset -9px 3px 0 0 #fffbe6; filter: drop-shadow(0 0
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .stars, .tint-blue::before, .view, .bubble.say, .stage.squish, .stage.yum, .stage.dizzy, .story.flip-next, .story.flip-prev, .b5.bump, .menu-stars i, .gt-string.hint, .gt-string.oops, .btn.lantern-btn, .slot.full, .menu[open] { animation: none !important; }
+  .stars, .tint-blue::before, .view, .bubble.say, .stage.squish, .stage.yum, .stage.dizzy, .story.flip-next, .story.flip-prev, .b5.bump, .dress-stage.bump, .menu-stars i, .gt-string.hint, .gt-string.oops, .btn.lantern-btn, .slot.full, .menu[open] { animation: none !important; }
   .burst, .rain { display: none; }
 }

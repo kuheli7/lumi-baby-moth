@@ -24,7 +24,7 @@ One calm screen at a time on a starry night, with tabs at the bottom and a menu 
 - **Lumi's attic:** a dark room where Lumi's lantern follows your cursor (or your taps) and finds the hobbies. Then you can do them with Lumi:
   - **paint** at the easel (with undo and redo), and the painting is framed on the attic wall;
   - **learn the guitar** with three short lessons: Lumi plays a phrase and you play it back, and the guitar grows from one string to six;
-  - **string a bead necklace** (up to 11 beads), which Lumi then wears all over the site;
+  - **dress up Lumi** on a page of its own: a big Lumi with a tray of beads at the bottom (how many beads fit is worked out from the length of the neck), and Lumi then wears the necklace all over the site;
   - play the **lullaby** on the matchbox bed (a music box made with Web Audio), and Lumi carries the lantern to bed as a night light;
   - fly out of **the window** to the space level.
   Leave the attic quiet for half a minute and Lumi falls asleep mid-hobby.

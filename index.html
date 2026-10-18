@@ -118,6 +118,27 @@
   </section>
 
   <!-- ================= Lumi's attic (the lantern is your cursor) ================= -->
+  <section class="view" data-view="dress" aria-labelledby="h-dress" hidden>
+    <div class="panel panel-dark dress">
+      <header class="view-head">
+        <a class="back" href="#room" aria-label="Back to the attic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+        <h1 id="h-dress" tabindex="-1">Dress up Lumi</h1>
+      </header>
+      <button class="dress-stage" id="dress-stage" aria-label="Lumi. Tap to change its pose."></button>
+      <p class="dress-count" id="dress-count" aria-live="polite"></p>
+      <div class="dress-tray">
+        <div class="bead-colors" id="dress-beads" role="group" aria-label="Beads"></div>
+        <div class="bead-actions">
+          <button class="btn btn-outline small" id="dress-undo">↶ undo</button>
+          <button class="btn btn-outline small" id="dress-fill" data-sfx="none">✨ fill the neck</button>
+          <button class="btn btn-outline small" id="dress-clear">start over</button>
+          <button class="btn btn-gold small" id="dress-wear" data-sfx="none">✓ wear it</button>
+          <button class="btn btn-outline small" id="dress-off" hidden>take it off</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="view" data-view="room" aria-labelledby="h-room" hidden>
     <div class="panel panel-dark wide">
       <header class="view-head">
@@ -297,6 +318,7 @@
 <script src="js/core.js"></script>
 <script src="js/home.js"></script>
 <script src="js/hobbies.js"></script>
+<script src="js/dress.js"></script>
 <script src="js/game.js"></script>
 <script src="js/pages.js"></script>
 </body>
