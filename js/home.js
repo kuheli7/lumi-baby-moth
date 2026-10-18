@@ -394,7 +394,9 @@
   addEventListener("resize", () => {
     showWH();
     const portrait = innerHeight > innerWidth, turned = portrait !== wasPortrait;
-    if (innerWidth === lastW && !turned) return;
+    // a phone keyboard opening (while typing in the guestbook) squashes the height; that isn't a turn
+    const typing = document.activeElement?.matches("input, textarea");
+    if ((innerWidth === lastW && !turned) || typing) { lastW = innerWidth; wasPortrait = portrait; return; }
     const wider = innerWidth > lastW;
     lastW = innerWidth;
     wasPortrait = portrait;
