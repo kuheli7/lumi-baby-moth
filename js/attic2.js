@@ -16,6 +16,10 @@
   const leaf = (x, y, rot, s = 1) =>
     `<ellipse cx="0" cy="-9" rx="6" ry="11" transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" fill="#5f8a5a" stroke="#3f6a40" stroke-width="1.4"/>`;
   const svg = (inner) => `<svg style="overflow:visible" viewBox="0 0 ${VB_W} ${VB_H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">${inner}</svg>`;
+  // tiny stars out of the window, each blinking on its own beat
+  const tinyStars = [[70, 146, 1.2], [84, 198, 1], [118, 150, 1.4], [128, 236, 1], [168, 146, 1], [206, 152, 1.3], [236, 168, 1], [232, 214, 1.2],
+    [188, 232, 1], [120, 290, 1.3], [74, 238, 1.1], [66, 300, 1], [150, 306, 1.2], [182, 300, 1], [226, 244, 1], [96, 224, 0.9], [196, 130 + 14, 1.1], [136, 190, 0.9]]
+    .map(([x, y, r], i) => `<circle class="a2-blink" cx="${x}" cy="${y}" r="${(r * 1.8).toFixed(1)}" style="--d:${((i * 0.73) % 3).toFixed(2)}s;--t:${(1.8 + (i * 0.37) % 2).toFixed(2)}s"/>`).join("");
   const glint = (list) => list.map(([x, y, r]) => star(x, y, r, "#fde9a6", "#fde9a6")).join("");
 
   // ---------- the layers, far to near ----------
@@ -41,6 +45,7 @@
     <rect x="58" y="132" width="184" height="188" fill="url(#a2-sky)"/>
     <path d="M170 160a32 32 0 1 0 22 54a26 26 0 1 1 -22 -54Z" fill="#fde9a6" stroke="#e8c76a" stroke-width="2"/>
     <g class="a2-twinkle">${glint([[92, 168, 7], [104, 262, 6], [212, 276, 5], [222, 184, 4]])}</g>
+    <g fill="#fff6dc">${tinyStars}</g>
     <path d="M150 132V320M58 226H242" stroke="#7a5538" stroke-width="9"/>
     `);
 
@@ -155,19 +160,19 @@
       <linearGradient id="a2-blanket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dccff8"/><stop offset="1" stop-color="#b3a0e6"/></linearGradient>
       <radialGradient id="a2-cotton" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#fbf3ea"/><stop offset="1" stop-color="#dcc5ad"/></radialGradient>
     </defs>
-    <g transform="translate(392 490) scale(1.18)">
+    <g transform="translate(380 490) scale(1.1)">
     <ellipse cx="6" cy="1" rx="100" ry="9" fill="#2a1830" opacity=".38"/>
     <ellipse cx="4" cy="0" rx="86" ry="4.5" fill="#2a1830" opacity=".3"/>
     ${foot(-60, 1)}${foot(84, 1)}
     <g stroke-width="2" stroke-linejoin="round">
       ${slab(HEAD, "#7f64b8")}
+      <g transform="translate(4 0)"><!-- the mattress, its pillow and the blanket sit a little further right -->
       <path d="M-80 -28L-70 -37H90L80 -28Z" fill="#fbefd9" stroke="#b98a5c"/>
       <path d="M-74 -29.5L-67 -35H85L78 -29.5Z" fill="#b98f62" stroke="none"/>
       <path d="M80 -28L90 -37V-11L80 -2Z" fill="url(#a2-bedside)" stroke="#b98a5c"/>
       <path d="M82 -24L88 -29.5" stroke="#f3dcbc" stroke-width="1.4" opacity=".7"/>
       <rect x="-80" y="-28" width="160" height="26" rx="4" fill="url(#a2-bedfront)" stroke="#b98a5c" stroke-width="2.4"/>
       <path d="M-76 -24.5H76" stroke="#fff8ec" stroke-width="2" stroke-linecap="round" opacity=".8"/>
-      <path d="M-76 -5H76" stroke="#c9a172" stroke-width="2" stroke-linecap="round" opacity=".55"/>
       <ellipse cx="-40" cy="-30" rx="24" ry="4" fill="#8f6a44" opacity=".4" stroke="none"/>
       <!-- a puffy pillow: its top and side show behind the front, which bulges and dips at the middle button -->
       <path d="M-62 -31Q-65 -41 -60 -50Q-43 -54 -25 -50Q-20 -41 -23 -31Q-42 -27 -62 -31Z" transform="translate(6 -5)" fill="#e9dccd" stroke="#d2bba3" stroke-width="1.6"/>
@@ -183,6 +188,7 @@
       <path d="M-24 -38Q-23 -46 -15 -46H-6V-28H-24Z" fill="#f4a3b8" stroke="#c97a92"/><path d="M-19 -44V-30M-13 -45V-30" stroke="#fff" stroke-width="1.5" opacity=".6"/>
       <path d="M-24 -28H80V-23Q67 -17 54 -23Q41 -17 28 -23Q15 -17 2 -23Q-11 -17 -24 -23Z" fill="#c9b7f0" stroke="#9c86d6"/>
       <g fill="#fff" stroke="none" opacity=".75"><circle cx="40" cy="-25" r="1.6"/><circle cx="66" cy="-25" r="1.6"/><circle cx="21" cy="-38" r="1.6"/><circle cx="57" cy="-38" r="1.6"/></g>
+      </g>
       <path d="${HEAD}" fill="url(#a2-board)" stroke="#7f64b8"/>
       <path d="M-86 -6V-50Q-86 -65 -73 -65Q-61 -65 -61 -50V-6Z" fill="none" stroke="#efe6fd" stroke-width="2"/>
       <path d="M-88 -12V-50Q-88 -66 -76 -68" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
@@ -296,7 +302,7 @@
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
     { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
     { z: 0, html: ground, cls: "a2-ground" },
-    { z: BED_Z, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 46.5, 77.5, 25.5, 17.5]] },
+    { z: BED_Z, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 45.4, 78.5, 23.8, 16.3]] },
     { z: 40, html: beam, cls: "a2-boxes" },
     { z: 60, html: lights, cls: "a2-front" },
     { z: 74, html: plantBack, cls: "a2-near" },
@@ -336,7 +342,7 @@
   ];
   const SPOTS = {
     window: ["the window", "out there: the whole night sky, and (Lumi is sure of it) a few space critters who can't find their way home."],
-    bed: ["Lumi's bed", "a matchbox, a cotton-stuffed pillow and a sock for a blanket. Lumi only sleeps after a lullaby."],
+    bed: ["Lumi's bed", "a matchbox, a cotton-stuffed pillow and a sock for a blanket. Lumi only sleeps after a lullaby, so here it comes."],
   };
   const ACTIONS = {
     moons: `<button class="btn btn-gold small" data-a2-paint data-sfx="none">🎨 paint with Lumi</button>`,
@@ -473,7 +479,11 @@
     if (dragged) { dragged = false; return; } // the end of a drag is not a tap
     const spot = e.target.closest("[data-spot]");
     if (spot?.dataset.spot === "switch") { setLights(!lit); sfx.play.pop(); }
-    else if (spot) open(spot.dataset.spot);
+    else if (spot) {
+      open(spot.dataset.spot);
+      // tapping the bed tucks Lumi in: the lullaby starts and she flies off to sleep (tapping it again leaves her asleep)
+      if (spot.dataset.spot === "bed" && !bedtime) lullaby();
+    }
   });
   // the paint easel and the guitar lessons open right here, in this card
   card.addEventListener("click", (e) => {
@@ -596,7 +606,7 @@
   const LULLABY = [["E", .5], ["E", .5], ["G", 2], ["E", .5], ["E", .5], ["G", 2], ["E", .5], ["G", .5], ["C", 1], ["B", 1.5], ["A", .5],
     ["A", 1], ["G", 1], ["D", .5], ["E", .5], ["F", 1], ["D", 1], ["D", .5], ["E", .5], ["F", 2], ["D", .5], ["F", .5],
     ["B", .5], ["A", .5], ["G", 1], ["B", 1], ["C", 3]].map(([n, b]) => [N[n], b]);
-  const PILLOW = [381 / VB_W, 448 / VB_H];   // where she curls up, on the sock blanket
+  const PILLOW = [370 / VB_W, 451 / VB_H];   // where she curls up, on the sock blanket
   let asleep = false, tune = null, wasLit = true, nap = 0;
   const lullabyBtn = () => $("[data-a2-lullaby]", card);
   function lullaby() {
