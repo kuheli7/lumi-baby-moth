@@ -129,7 +129,6 @@
       <ellipse cx="520" cy="352" rx="38" ry="36" fill="#8a5a32"/><ellipse cx="520" cy="408" rx="50" ry="48" fill="#8a5a32"/>
       <ellipse cx="520" cy="352" rx="35" ry="33" fill="#f2dcb4"/><ellipse cx="520" cy="408" rx="47" ry="45" fill="#f2dcb4"/>
       <ellipse cx="520" cy="352" rx="33" ry="31" fill="url(#a2-gtop)"/><ellipse cx="520" cy="408" rx="45" ry="43" fill="url(#a2-gtop)"/>
-      <path d="M520 330V331" stroke="#e0a466" stroke-width="20"/>
       <circle cx="520" cy="372" r="17" fill="none" stroke="#8a5a32" stroke-width="2.5"/><circle cx="520" cy="372" r="15" fill="none" stroke="#f2dcb4" stroke-width="1.2" stroke-dasharray="2 2"/>
       <circle cx="520" cy="372" r="13" fill="#3a2216"/><path d="M509 366A13 13 0 0 1 531 366" fill="none" stroke="#1f120b" stroke-width="4" opacity=".6"/>
       <rect x="503" y="420" width="34" height="8" rx="3" fill="#6f4528" stroke="#4b2e1f" stroke-width="1.2"/><path d="M508 423H532" stroke="#f4ead2" stroke-width="1.6"/>
