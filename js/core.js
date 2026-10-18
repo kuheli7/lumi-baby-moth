@@ -26,7 +26,7 @@
   // The necklace follows the neckline (a squashed ellipse where the head's fluff meets the body's). How many beads
   // fit is worked out from the length of that curve and the smallest bead that still reads as a bead, and
   // the beads shrink to stay side by side as more are added, so no number is written in by hand.
-  const NECK = { rx: 56, ry: 27, cy: 159.5, half: 56, rMax: 5.4, rMin: 3.8 };
+  const NECK = { rx: 56, ry: 27, cy: 159.5, half: 56, rMax: 5.4, rMin: 3.8, tip: 4.5 };
   const neckAt = (deg, k = 1) => [120 + NECK.rx * k * Math.cos(deg * Math.PI / 180), NECK.cy + NECK.ry * k * Math.sin(deg * Math.PI / 180)];
   const neckLength = (() => {
     let len = 0, prev = neckAt(90 - NECK.half);
@@ -70,9 +70,14 @@
     const halo = svg.search(/<circle cx="[\d.]+" cy="[\d.]+" r="[\d.]+" fill="#ffe7a0"/);
     if (!head || halo < 0) return svg;
     // where the neckline's middle lands (in the figure's space) when it rides on the head, and on the body
-    const onHead = at(matrix(`${head[1]} rotate(${head[2]} 120 123)`), 120, NECK.cy + NECK.ry), onBody = body ? at(matrix(body[1]), 119, NECK.cy + NECK.ry) : onHead;
+    const mHead = matrix(`${head[1]} rotate(${head[2]} 120 123)`), mBody = body ? matrix(body[1]) : mHead;
+    const onHead = at(mHead, 120, NECK.cy + NECK.ry), onBody = at(mBody, 119, NECK.cy + NECK.ry);
     const slide = +(onBody[0] - onHead[0]).toFixed(1);
-    const worn = `<g transform="${fig ? fig[1] : ""}"><g transform="translate(${slide} 0)"><g transform="${head[1]}"><g transform="rotate(${head[2]} 120 123)">${app.necklaceSvg(beads)}</g></g></g></g>`;
+    // a tilted head would tilt the necklace with it (its right end rides up); level it to the body instead,
+    // then tip it a little clockwise so its right side drops onto the neck
+    const angle = (m) => Math.atan2(m[1], m[0]) * 180 / Math.PI;
+    const level = +(angle(mBody) - angle(mHead) + NECK.tip).toFixed(1);
+    const worn = `<g transform="${fig ? fig[1] : ""}"><g transform="translate(${slide} 0)"><g transform="${head[1]}"><g transform="rotate(${head[2]} 120 123)"><g transform="rotate(${level} 120 ${NECK.cy + NECK.ry})">${app.necklaceSvg(beads)}</g></g></g></g></g>`;
     return svg.slice(0, halo) + worn + svg.slice(halo);
   };
   // sticker() draws Lumi on a sticker card with a label underneath; the site only wants Lumi itself.
