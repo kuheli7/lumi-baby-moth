@@ -144,6 +144,13 @@
       <text x="264" y="88" text-anchor="middle" font-family="Patrick Hand, cursive" font-size="12" fill="#5c4033">finish 1 thing</text>
       <path d="M240 96 Q264 100 290 95" stroke="#a34063" stroke-width="1.5" fill="none"/></g>
 
+    <!-- the frame for a painting made at the easel (empty until one is hung) -->
+    <g id="rm-art" display="none">
+      <rect x="312" y="40" width="70" height="56" rx="3" fill="#a87a50"/>
+      <rect x="316.5" y="44.5" width="61" height="47" fill="#fffdf6"/>
+      <image id="rm-art-img" x="317" y="45" width="60" height="46" preserveAspectRatio="xMidYMid slice"/>
+    </g>
+
     <!-- shelf and desk -->
     <rect x="384" y="154" width="236" height="12" rx="3" fill="url(#rm-wood)"/>
     <path d="M404 166 v18 l14 -18 Z M600 166 v18 l-14 -18 Z" fill="#b9875a"/>
@@ -305,6 +312,7 @@
     roomCard.innerHTML = `<h3>${h.name}</h3>
       <p>${line ? `<b>Lumi:</b> ${line} ` : ""}${h.note}</p>
       ${h.progress === undefined ? "" : `<div class="progress"><span>progress</span><span class="progress-bar"><i style="--p:${h.progress}%"></i></span><span>${h.progress}%</span></div>`}
+      ${h.id === "moons" ? `<button class="btn btn-gold small" data-paint data-sfx="none">🎨 paint with Lumi</button>` : ""}
       ${h.id === "beads" ? `<button class="btn btn-gold small" data-beads data-sfx="none">📿 string a necklace</button>` : ""}
       ${h.lullaby ? `<button class="btn btn-lilac small" data-lullaby data-sfx="none">${asleep ? "☀️ wake Lumi up" : "♪ play the lullaby"}</button>` : ""}
       ${h.pluck ? `<button class="btn btn-gold small" data-pluck data-sfx="none">🎸 pluck the string</button>` : ""}
@@ -459,6 +467,121 @@
     }
   });
   addEventListener("lumi:wear", () => lumiPicture(asleep ? "sleepy" : "curious"));
+
+  // ---------- the easel: paint with Lumi, and the painting goes up on the attic wall ----------
+  // Each stroke is drawn solid on a "wet" layer shown see-through, then laid onto the paper at the same
+  // strength when you lift the brush, so overlapping strokes darken like watercolour.
+  const PAPER = "#fffdf6";
+  const PAINTS = [["#f6cf6a", "moon gold"], ["#ee8196", "pink"], ["#8fc3e8", "sky blue"], ["#a993d6", "lilac"],
+    ["#8fcf9a", "mint"], ["#4b3b7c", "midnight"], [PAPER, "eraser"]];
+  const brush = { color: PAINTS[0][0], size: 7, at: null };
+  const showArt = (url) => {
+    if (!url) return;
+    $("#rm-art-img").setAttribute("href", url);
+    $("#rm-art").removeAttribute("display");
+  };
+  showArt(store.get("painting", null));
+  function easel() {
+    roomCard.hidden = false;
+    roomCard.innerHTML = `<h3>paint with Lumi</h3>
+      <p>paint anything. it goes up on the attic wall. (it doesn't have to be finished. nothing up here is.)</p>
+      <div class="paint-wrap">
+        <canvas class="paint-paper" id="paint-paper" role="img" aria-label="Painting paper: paint with your mouse or finger"></canvas>
+        <canvas class="paint-wet" id="paint-wet" aria-hidden="true"></canvas>
+      </div>
+      <div class="paint-pots" role="group" aria-label="Paints">${PAINTS.map(([c, n]) =>
+        `<button class="paint-pot${c === PAPER ? " eraser" : ""}" data-paint-color="${c}" style="--c:${c}" aria-label="${n}" aria-pressed="${c === brush.color}" data-sfx="none"></button>`).join("")}</div>
+      <div class="bead-actions">
+        <button class="btn btn-outline small" data-paint-size aria-pressed="${brush.size > 10}">big brush</button>
+        <button class="btn btn-outline small" data-paint-clear>clear</button>
+        <button class="btn btn-gold small" data-paint-hang data-sfx="none">🖼 hang it up</button>
+      </div>`;
+    const paper = $("#paint-paper"), wet = $("#paint-wet"), dpr = Math.min(2, devicePixelRatio || 1);
+    const w = paper.clientWidth, h = Math.round(w * .75);
+    for (const cv of [paper, wet]) {
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      cv.getContext("2d").scale(dpr, dpr);
+    }
+    const pg = paper.getContext("2d"), wg = wet.getContext("2d");
+    pg.fillStyle = PAPER;
+    pg.fillRect(0, 0, w, h);
+    const saved = store.get("painting", null);
+    if (saved) { const im = new Image(); im.onload = () => pg.drawImage(im, 0, 0, w, h); im.src = saved; }
+    const point = (e) => { const r = paper.getBoundingClientRect(); return [(e.clientX - r.left) * w / r.width, (e.clientY - r.top) * h / r.height]; };
+    const stroke = (a, b) => {
+      wg.strokeStyle = brush.color;
+      wg.lineWidth = brush.size;
+      wg.lineCap = wg.lineJoin = "round";
+      wg.beginPath();
+      wg.moveTo(...a);
+      wg.lineTo(...b);
+      wg.stroke();
+    };
+    const dry = () => {
+      if (!brush.at) return;
+      brush.at = null;
+      pg.globalAlpha = brush.color === PAPER ? 1 : .6;
+      pg.drawImage(wet, 0, 0, w, h);
+      pg.globalAlpha = 1;
+      wg.clearRect(0, 0, w, h);
+    };
+    paper.addEventListener("pointerdown", (e) => {
+      try { paper.setPointerCapture(e.pointerId); } catch { /* a pointer that is already gone */ }
+      brush.at = point(e);
+      stroke(brush.at, brush.at);
+    });
+    paper.addEventListener("pointermove", (e) => {
+      if (!brush.at) return;
+      const p = point(e);
+      stroke(brush.at, p);
+      brush.at = p;
+    });
+    paper.addEventListener("pointerup", dry);
+    paper.addEventListener("pointercancel", dry);
+    wet.style.opacity = brush.color === PAPER ? 1 : .6;
+  }
+  roomCard.addEventListener("click", (e) => {
+    const t = e.target;
+    if (t.closest("[data-paint]")) { easel(); sfx.play.pop(); return; }
+    const pot = t.closest("[data-paint-color]");
+    if (pot) {
+      brush.color = pot.dataset.paintColor;
+      roomCard.querySelectorAll("[data-paint-color]").forEach(b => b.setAttribute("aria-pressed", String(b === pot)));
+      $("#paint-wet").style.opacity = brush.color === PAPER ? 1 : .6;
+      sfx.play.plip();
+    } else if (t.closest("[data-paint-size]")) {
+      brush.size = brush.size > 10 ? 7 : 16;
+      t.closest("[data-paint-size]").setAttribute("aria-pressed", String(brush.size > 10));
+    } else if (t.closest("[data-paint-clear]")) {
+      const paper = $("#paint-paper"), g = paper.getContext("2d");
+      g.fillStyle = PAPER;
+      g.fillRect(0, 0, paper.width, paper.height);
+    } else if (t.closest("[data-paint-hang]")) {
+      // a small copy is kept (and framed on the wall), so it fits in the browser's storage
+      const small = document.createElement("canvas");
+      small.width = 320;
+      small.height = 240;
+      small.getContext("2d").drawImage($("#paint-paper"), 0, 0, 320, 240);
+      const url = small.toDataURL("image/jpeg", .85);
+      store.set("painting", url);
+      showArt(url);
+      sfx.play.chime();
+      app.toast("🖼 your painting is on the attic wall now. Lumi is very proud of you.");
+      app.lumi.react("proud", "it's going on the wall. next to my unfinished things. it fits right in.", 4000);
+    }
+  });
+
+  // ---------- dozing: leave the attic quiet for half a minute and Lumi falls asleep mid-hobby ----------
+  let quietSince = Date.now();
+  ["pointerdown", "pointermove", "keydown"].forEach(t => addEventListener(t, () => { quietSince = Date.now(); }, { passive: true }));
+  setInterval(() => {
+    if (app.view() !== "room" || document.hidden || bedtime || Date.now() - quietSince < 30000) return;
+    bedtime = asleep = true;
+    lumiPicture("sleepy");
+    room.classList.add("bedtime", "asleep");
+    app.toast("zzz… Lumi fell asleep while working. classic. (tap the attic to wake it)", 5000);
+  }, 3000);
 
   app.onView("room", () => { sizeRoom(); drawLamp(); }, () => wakeUp(true));
   addEventListener("resize", sizeRoom);

@@ -246,8 +246,8 @@
       else running = false;
     };
     addEventListener("pointermove", (e) => {
-      // no dust while playing Star Catch: it would hide the falling stars
-      if (!on || app.view() === "play" || Math.hypot(e.clientX - lx, e.clientY - ly) < 7) return;
+      // no dust while playing Star Catch (it would hide the falling stars) or over the painting
+      if (!on || app.view() === "play" || e.target.closest?.(".paint-wrap") || Math.hypot(e.clientX - lx, e.clientY - ly) < 7) return;
       lx = e.clientX; ly = e.clientY;
       for (let i = 0; i < 2; i++) {
         parts.push({ x: lx + (Math.random() - .5) * 6, y: ly + (Math.random() - .5) * 6, vx: (Math.random() - .5) * .7, vy: Math.random() * .5 + .1,

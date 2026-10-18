@@ -344,7 +344,23 @@ body.lit .sky-lit { opacity: 1; }
 .bead:active { translate: 0 2px; box-shadow: none; }
 .bead-count { margin: 8px 0 0; font-size: 16px; color: var(--muted); }
 .bead-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-@media (max-width: 479px) { .bead-maker { grid-template-columns: 104px 1fr; gap: 10px; } .bead { width: 32px; height: 32px; } }
+@media (max-width: 479px) {
+  .bead-maker { grid-template-columns: 104px 1fr; gap: 10px; }
+  .bead { width: 32px; height: 32px; }
+}
+.paint-wrap { position: relative; width: min(100%, 520px); margin: 8px auto 10px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 2px var(--card-line); }
+.paint-wrap canvas { display: block; width: 100%; aspect-ratio: 4 / 3; touch-action: none; }
+.paint-paper { cursor: crosshair; }
+.paint-wet { position: absolute; inset: 0; pointer-events: none; }
+.paint-pots { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.paint-pot {
+  width: 36px; height: 36px; padding: 0; border-radius: 50%; background: var(--c);
+  border: 3px solid #fff; box-shadow: 0 0 0 2px var(--card-line);
+}
+.paint-pot.eraser { background: repeating-linear-gradient(45deg, #fffdf6 0 5px, #eee0cf 5px 7px); }
+.paint-pot[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--berry); }
+.hobby-card .bead-actions { justify-content: center; }
+@media (max-width: 479px) { .paint-pots { gap: 6px; } .paint-pot { width: 31px; height: 31px; } }
 .hit-tag.spot { background: #ede4fb; border-color: #b9a6ee; color: var(--plum); }
 .room.lit .room-dark, .room.lit .room-glow { opacity: 0; }
 .room-hits { position: absolute; inset: 0; }
