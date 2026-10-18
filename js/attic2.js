@@ -56,11 +56,12 @@
       <path d="M28 108C28 150 31 196 32 226M50 108C48 150 41 196 35 226M66 108C62 142 54 182 40 224M32 238C26 280 18 316 15 344M35 238C43 280 52 316 55 348M33 238C34 280 34 316 35 350"/></g>
     <g fill="none" stroke="#e2d8fb" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M17 110C17 150 22 196 28 226M27 242C19 280 11 316 10 342M58 110C56 140 50 180 39 218"/></g>
     <g opacity=".75">${star(20, 160, 3, "#fff6dc", "#fff6dc")}${star(48, 136, 2.6, "#fff6dc", "#fff6dc")}${star(36, 190, 2.4, "#fff6dc", "#fff6dc")}${star(22, 300, 3, "#fff6dc", "#fff6dc")}${star(50, 290, 2.6, "#fff6dc", "#fff6dc")}${star(38, 326, 2.4, "#fff6dc", "#fff6dc")}</g>
-    <g stroke="#c97a92" stroke-width="1.6" stroke-linejoin="round">
-      <path d="M31 233L25 250L30 247L33 252ZM35 233L41 250L36 247L33 252Z" fill="#f48fae"/>
-      <path d="M21 226Q33 222 45 226L44 237Q33 233 22 237Z" fill="#f4a3b8"/>
-      <path d="M33 231C24 219 13 223 17 233C21 241 29 237 33 231ZM33 231C42 219 53 223 49 233C45 241 37 237 33 231Z" fill="#f9c4d2"/>
-      <circle cx="33" cy="231" r="3.6" fill="#f48fae"/></g>
+    <g stroke="#47297e" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M31 233L25 250L30 247L33 252ZM35 233L41 250L36 247L33 252Z" fill="#6c3fb8"/>
+      <path d="M21 226Q33 222 45 226L44 237Q33 233 22 237Z" fill="#7e52cc"/>
+      <path d="M33 231C24 219 13 223 17 233C21 241 29 237 33 231ZM33 231C42 219 53 223 49 233C45 241 37 237 33 231Z" fill="#9468de"/>
+      <path d="M31 229C26 224 20 225 21 230M35 229C40 224 46 225 45 230" fill="none" stroke="#d9c6fb" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+      <circle cx="33" cy="231" r="3.6" fill="#6c3fb8"/></g>
     <g fill="#e8c76a" stroke="#a8823a" stroke-width="1.3">${[12, 25, 38, 51, 64].map(x => `<circle cx="${x}" cy="103" r="4" fill="none" stroke-width="2"/>`).join("")}</g>`;
   const curtains = svg(`
     <defs><linearGradient id="a2-drape" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f76cf"/><stop offset=".22" stop-color="#b29ced"/><stop offset=".45" stop-color="#9a82d6"/><stop offset=".7" stop-color="#b8a4ef"/><stop offset="1" stop-color="#8a70c8"/></linearGradient></defs>
@@ -127,25 +128,50 @@
 
   // Lumi's bed, on the rug: a matchbox, a cotton-ball pillow and a sock for a blanket (the same bed as in the lantern attic)
   // drawn around its own foot (0 0), then moved onto the middle of the rug; it stands where the floor is, which is nearer than it looks
-  const bed = svg(`<g transform="translate(392 474) scale(1.3)">
-    <ellipse cx="0" cy="2" rx="94" ry="7" fill="#2a1830" opacity=".35"/>
+  // the head and foot boards are solid slabs: the outline is stacked a few times along the bed's depth, then the face goes on top
+  const slab = (d, side) => [6, 5, 4, 3, 2, 1].map(i => `<path d="${d}" transform="translate(${(i * 1.6).toFixed(1)} ${(-i * 1.4).toFixed(1)})" fill="${side}" stroke="${side}" stroke-width="2"/>`).join("");
+  const foot = (x, back) => `<g transform="translate(${x} 0)" fill="${back ? "#a9845a" : "#c9a87c"}" stroke="#8a6040" stroke-width="1.6"><rect x="-5" y="-6" width="10" height="7" rx="2"/><ellipse cx="0" cy="1" rx="5" ry="2.2"/><ellipse cx="0" cy="-6" rx="5" ry="2.2" fill="${back ? "#c2a074" : "#e0c49a"}"/></g>`;
+  const HEAD = "M-92 -2V-52Q-92 -72 -73 -72Q-55 -72 -55 -52V-2Z", FOOT = "M66 -2V-34Q66 -46 78 -46Q90 -46 90 -34V-2Z";
+  const bed = svg(`<defs>
+      <linearGradient id="a2-bedfront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe9cf"/><stop offset="1" stop-color="#e6c49a"/></linearGradient>
+      <linearGradient id="a2-bedside" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d4b083"/><stop offset="1" stop-color="#b8915f"/></linearGradient>
+      <linearGradient id="a2-board" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2cffa"/><stop offset=".55" stop-color="#c3a3ec"/><stop offset="1" stop-color="#a888dc"/></linearGradient>
+      <linearGradient id="a2-blanket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dccff8"/><stop offset="1" stop-color="#b3a0e6"/></linearGradient>
+      <radialGradient id="a2-cotton" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#fbf3ea"/><stop offset="1" stop-color="#e6d4c2"/></radialGradient>
+    </defs>
+    <g transform="translate(392 474) scale(1.3)">
+    <ellipse cx="6" cy="1" rx="100" ry="9" fill="#2a1830" opacity=".38"/>
+    <ellipse cx="4" cy="0" rx="86" ry="4.5" fill="#2a1830" opacity=".3"/>
+    ${foot(-60, 1)}${foot(84, 1)}
     <g stroke-width="2" stroke-linejoin="round">
-      <circle cx="-68" cy="0" r="5" fill="#c9a87c" stroke="#9a6e44"/><circle cx="72" cy="0" r="5" fill="#c9a87c" stroke="#9a6e44"/>
-      <path d="M-80 -28L-72 -36H88L80 -28Z" fill="#d8b88c" stroke="#b98a5c"/><path d="M80 -28L88 -36V-10L80 -2Z" fill="#e3c79f" stroke="#b98a5c"/>
-      <rect x="-80" y="-28" width="160" height="26" rx="4" fill="#f3dcbc" stroke="#b98a5c" stroke-width="2.4"/>
+      ${slab(HEAD, "#7f64b8")}
+      <path d="M-80 -28L-70 -37H90L80 -28Z" fill="#fbefd9" stroke="#b98a5c"/>
+      <path d="M-74 -29.5L-67 -35H85L78 -29.5Z" fill="#b98f62" stroke="none"/>
+      <path d="M80 -28L90 -37V-11L80 -2Z" fill="url(#a2-bedside)" stroke="#b98a5c"/>
+      <path d="M82 -24L88 -29.5" stroke="#f3dcbc" stroke-width="1.4" opacity=".7"/>
+      <rect x="-80" y="-28" width="160" height="26" rx="4" fill="url(#a2-bedfront)" stroke="#b98a5c" stroke-width="2.4"/>
+      <path d="M-76 -24.5H76" stroke="#fff8ec" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+      <path d="M-76 -5H76" stroke="#c9a172" stroke-width="2" stroke-linecap="round" opacity=".55"/>
       <rect x="-21" y="-19" width="50" height="14" rx="3" fill="#fff6e6" stroke="#e0b98a" stroke-width="1.4"/>
       <text x="4" y="-8.6" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="8" letter-spacing="1.2" fill="#a34063">LUMI</text>
-      <g fill="#fffaf4" stroke="#e3cdb5"><circle cx="-50" cy="-38" r="9"/><circle cx="-30" cy="-37" r="8"/><circle cx="-40" cy="-43" r="10.5"/></g>
-      <path d="M-24 -38Q-23 -46 -15 -46H72Q80 -46 80 -38V-28H-24Z" fill="#c9b7f0" stroke="#9c86d6"/>
+      <ellipse cx="-40" cy="-31" rx="22" ry="4" fill="#8f6a44" opacity=".35" stroke="none"/>
+      <g fill="url(#a2-cotton)" stroke="#e3cdb5"><circle cx="-50" cy="-38" r="9"/><circle cx="-30" cy="-37" r="8"/><circle cx="-40" cy="-43" r="10.5"/></g>
+      <path d="M-24 -38Q-23 -46 -15 -46H72Q80 -46 80 -38V-28H-24Z" fill="url(#a2-blanket)" stroke="#9c86d6"/>
+      <path d="M-15 -46L-9 -50H76Q84 -50 84 -43L80 -38Q80 -46 72 -46Z" fill="#e8defb" stroke="#9c86d6" stroke-width="1.6"/>
       <path d="M-4 -45V-29M14 -45V-29M32 -45V-29M50 -45V-29M66 -45V-29" stroke="#fff" stroke-width="3" opacity=".5"/>
+      <path d="M2 -40Q20 -36 34 -41T64 -39" fill="none" stroke="#9c86d6" stroke-width="1.4" opacity=".5"/>
       <path d="M-24 -38Q-23 -46 -15 -46H-6V-28H-24Z" fill="#f4a3b8" stroke="#c97a92"/><path d="M-19 -44V-30M-13 -45V-30" stroke="#fff" stroke-width="1.5" opacity=".6"/>
       <path d="M-24 -28H80V-23Q67 -17 54 -23Q41 -17 28 -23Q15 -17 2 -23Q-11 -17 -24 -23Z" fill="#c9b7f0" stroke="#9c86d6"/>
       <g fill="#fff" stroke="none" opacity=".75"><circle cx="40" cy="-25" r="1.6"/><circle cx="66" cy="-25" r="1.6"/><circle cx="21" cy="-38" r="1.6"/><circle cx="57" cy="-38" r="1.6"/></g>
-      <path d="M-92 -2V-52Q-92 -72 -73 -72Q-55 -72 -55 -52V-2Z" fill="#c9a7ea" stroke="#8f74c8"/>
-      <path d="M-86 -6V-50Q-86 -65 -73 -65Q-61 -65 -61 -50V-6Z" fill="none" stroke="#e6d8fb" stroke-width="2"/>
+      <path d="${HEAD}" fill="url(#a2-board)" stroke="#7f64b8"/>
+      <path d="M-86 -6V-50Q-86 -65 -73 -65Q-61 -65 -61 -50V-6Z" fill="none" stroke="#efe6fd" stroke-width="2"/>
+      <path d="M-88 -12V-50Q-88 -66 -76 -68" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
       <path d="M-73 -40c-5 -6 -12 -1 -7 4l7 6l7 -6c5 -5 -2 -10 -7 -4z" fill="#f48fae" stroke="#c97a92" stroke-width="1.4"/>
-      <path d="M66 -2V-34Q66 -46 78 -46Q90 -46 90 -34V-2Z" fill="#c9a7ea" stroke="#8f74c8"/>
+      ${slab(FOOT, "#7f64b8")}
+      <path d="${FOOT}" fill="url(#a2-board)" stroke="#7f64b8"/>
+      <path d="M69 -8V-34Q69 -42 76 -43.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".55"/>
     </g>
+    ${foot(-68, 0)}${foot(72, 0)}
     ${star(-73, -58, 4.5, "#f6cf6a", "#d9a93a")}${star(78, -32, 4.5, "#f6cf6a", "#d9a93a")}</g>`);
 
   // The floor is a real plane lying down (rotated 90 degrees, running from the back wall toward you), and the rug
@@ -193,28 +219,35 @@
     return out;
   };
   // pothos leaves: a heart with a pointed tip, base at (0 0), pointing up; k picks the shade
-  const POT_GREEN = [["#5f9a58", "#3c6a3a", "#86bd72"], ["#7fb06a", "#4d7f45", "#a6d08c"]];
+  // shades 0 and 1 for the middle leaves, 2 for the dark ones at the back, 3 for the light ones at the front
+  const POT_GREEN = [["#5f9a58", "#3c6a3a", "#86bd72"], ["#7fb06a", "#4d7f45", "#a6d08c"], ["#3f7444", "#284d2c", "#5f9a5c"], ["#9fd07e", "#5f8f4f", "#d2efb6"]];
   const heart = (x, y, rot, s, k) => {
     const [f, l, h] = POT_GREEN[k];
     return `<g transform="translate(${x} ${y}) rotate(${rot.toFixed(0)}) scale(${s})"><path d="M0 0C-4 2 -14 0 -15 -11C-16 -21 -7 -28 0 -36C7 -28 16 -21 15 -11C14 0 4 2 0 0Z" fill="${f}" stroke="${l}" stroke-width="1.6"/><path d="M0 -2C-9 -3 -12 -12 -10 -20C-7 -26 -3 -30 0 -33Z" fill="${h}" opacity=".45"/><path d="M0 -1V-30" stroke="${l}" stroke-width="1.2" opacity=".7"/></g>`;
   };
-  const stem = (x0, y0, cx, cy, x1, y1) => `<path d="M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}" fill="none" stroke="#4d7f45" stroke-width="2.4" stroke-linecap="round"/>`;
-  // [tip x, tip y, bend x, bend y, size, shade]
+  const stem = (x0, y0, cx, cy, x1, y1, c = "#4d7f45") => `<path d="M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/>`;
+  // [tip x, tip y, bend x, bend y, size, shade]; the plant is three layers of leaves (back, middle, front), so they shift apart when the room leans
+  const POTHOS_BACK = [[-14, 400, 10, 436, 1.05, 2], [4, 372, 20, 424, 1.15, 2], [24, 358, 28, 420, 1.2, 2], [44, 366, 36, 422, 1.15, 2],
+    [64, 384, 44, 430, 1.1, 2], [78, 408, 52, 440, 1, 2]];
   const POTHOS = [[-4, 418, 18, 446, 1, 0], [10, 398, 22, 436, 1.1, 1], [30, 386, 28, 428, 1.2, 0], [50, 396, 36, 432, 1.1, 1],
     [70, 418, 48, 444, 1, 0], [2, 446, 18, 462, .85, 1], [58, 446, 44, 460, .85, 1], [40, 410, 30, 440, .8, 0]];
+  const POTHOS_FRONT = [[-8, 466, 10, 458, 1, 3], [16, 438, 24, 452, 1, 3], [44, 442, 38, 454, 1, 3], [12, 496, 12, 474, .8, 3]];
+  const pothos = (set, c) => set.map(([ex, ey, cx, cy, s, k]) => stem(30, 468, cx, cy, ex, ey, c) + heart(ex, ey, Math.atan2(ey - cy, ex - cx) * 180 / Math.PI + 90, s, k)).join("");
+  const plantBack = svg(pothos(POTHOS_BACK, "#2f5a33"));
+  const plantFront = svg(`${pothos(POTHOS_FRONT, "#5f8f4f")}
+    ${stem(50, 468, 70, 470, 64, 500, "#5f8f4f")}${heart(58, 476, 150, .55, 3)}${heart(66, 488, 80, .5, 1)}${heart(64, 501, 175, .45, 3)}`);
   const near = svg(`
     ${strand(-10, -6, 40, 10, 124, 4, 9, 1.15)}${strand(10, -8, 0, 60, 34, 118, 9, 1.3)}${strand(95, -6, 100, 30, 90, 60, 5, 1)}${strand(40, -8, 50, 40, 22, 74, 5, 1.1)}
     ${strand(610, -6, 560, 12, 470, 2, 9, 1.15)}${strand(592, -8, 606, 50, 584, 100, 8, 1.25)}${strand(540, -6, 530, 36, 546, 70, 5, 1.05)}${strand(570, -8, 556, 30, 580, 56, 4, 1.1)}
     <g><!-- a little potted pothos in the front corner: heart leaves on curly stems, one trailing over the rim -->
       <ellipse cx="30" cy="468" rx="25" ry="4.5" fill="#4a2f22"/>
-      ${POTHOS.map(([ex, ey, cx, cy, s, k]) => stem(30, 468, cx, cy, ex, ey) + heart(ex, ey, Math.atan2(ey - cy, ex - cx) * 180 / Math.PI + 90, s, k)).join("")}
+      ${pothos(POTHOS)}
       <path d="M4 476H56L50 528H10Z" fill="#d9876a" stroke="#a85a45" stroke-width="2.5" stroke-linejoin="round"/>
       <path d="M42 477H55L49.5 527H38Z" fill="#b8634c" opacity=".45"/>
       <path d="M11 480L14 524" stroke="#f3b79d" stroke-width="3" stroke-linecap="round" opacity=".6"/>
       <path d="M30 494c-3.5 -4 -9 -1 -5.5 3l5.5 5l5.5 -5c3.5 -4 -2 -7 -5.5 -3z" fill="#f4a3b8" stroke="#c97a92" stroke-width="1.2"/>
       <rect x="0" y="464" width="60" height="14" rx="4" fill="#e89a7c" stroke="#a85a45" stroke-width="2.5"/>
       <path d="M5 468H44" stroke="#f7c4ad" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
-      ${stem(50, 468, 70, 470, 64, 500)}${heart(58, 476, 150, .55, 1)}${heart(66, 488, 80, .5, 0)}${heart(64, 501, 175, .45, 1)}
     </g>`);
   const desk = [
     box({ x: 2.2, y: 71.7, w: 2.2, h: 20.4, z: -32, d: 10, cls: "leg" }),
@@ -241,7 +274,9 @@
     { z: 15, html: bed, cls: "a2-bed", hits: [["bed", "Lumi's bed", 45.5, 73.6, 28, 18]] },
     { z: 40, html: beam, cls: "a2-boxes" },
     { z: 60, html: lights, cls: "a2-front" },
+    { z: 74, html: plantBack, cls: "a2-near" },
     { z: 90, html: near, cls: "a2-near" },
+    { z: 97, html: plantFront, cls: "a2-near" },
     { z: 100, html: svg(`<rect x="-140" y="-140" width="880" height="800" fill="url(#a2-vig)"/>`), cls: "a2-vignette" },
   ];
   const LUMI_Z = 25;
