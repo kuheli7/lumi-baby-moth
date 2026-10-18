@@ -39,7 +39,8 @@
 .cz-tablet svg path:first-child { fill: #4a3a7c; opacity: .7; }
 
 /* 🌌 widescreen sky: drifting clouds, a ringed planet and a shooting star */
-.cz-cloud { position: absolute; left: -260px; width: 240px; height: 60px; border-radius: 60px; background: rgba(233, 218, 255, .15); animation: cz-drift 70s linear infinite; }
+/* each cloud is solid and faded as one piece, so where its puffs overlap it is not any whiter */
+.cz-cloud { position: absolute; left: -260px; width: 240px; height: 60px; border-radius: 60px; background: rgb(233, 218, 255); opacity: .15; animation: cz-drift 70s linear infinite; }
 .cz-cloud::before, .cz-cloud::after { content: ""; position: absolute; border-radius: 50%; background: inherit; }
 .cz-cloud::before { left: 40px; top: -30px; width: 90px; height: 80px; }
 .cz-cloud::after { left: 110px; top: -44px; width: 100px; height: 96px; }

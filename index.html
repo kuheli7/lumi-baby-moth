@@ -261,17 +261,21 @@
         <h1 id="h-story" tabindex="-1">Lumi's Story</h1>
       </header>
       <div class="story">
-        <div class="story-art" id="story-art"></div>
-        <div class="story-side">
+        <!-- only this page flips; the buttons and dots stay put underneath -->
+        <div class="story-page">
+          <div class="story-art" id="story-art"></div>
           <p class="story-text" id="story-text" aria-live="polite"></p>
-          <div class="story-nav">
-            <button class="btn btn-outline small" id="story-prev">‹ back</button>
-            <span class="pager" id="story-pager" aria-hidden="true"></span>
-            <button class="btn btn-outline small" id="story-next">next ›</button>
-          </div>
-          <p class="story-hint"><span class="fine-only">scroll, or use the ← → keys, to turn the page</span><span class="touch-only">swipe sideways to turn the page</span></p>
         </div>
       </div>
+    </div>
+    <!-- the page controls live outside the book, on the sky underneath it -->
+    <div class="story-controls">
+      <div class="story-nav">
+        <button class="btn btn-outline small" id="story-prev">‹ back</button>
+        <span class="pager" id="story-pager" aria-hidden="true"></span>
+        <button class="btn btn-outline small" id="story-next">next ›</button>
+      </div>
+      <p class="story-hint"><span class="fine-only">scroll, or use the ← → keys, to turn the page</span><span class="touch-only">swipe sideways to turn the page</span></p>
     </div>
   </section>
 
@@ -412,6 +416,7 @@
 <script src="js/attic2.js"></script>
 <script src="js/sheet.js"></script>
 <script src="js/game.js"></script>
+<script src="js/fact-art.js"></script>
 <script src="js/pages.js"></script>
 </body>
 </html>

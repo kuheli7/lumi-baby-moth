@@ -7,6 +7,24 @@
   const drop = (x, y, s) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 -6 Q5 0 0 5 Q-5 0 0 -6Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.2"/>`;
   const heartPath = (x, y, s, fill) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 -2 C-3 -7 -10 -4 -6 2 L0 7 L6 2 C10 -4 3 -7 0 -2 Z" fill="${fill}"/>`;
 
+  // a graduated necklace: pearls, lilac, dew-drop, rose and gold beads on a curved string, with a gem pendant
+  const necklaceIcon = (() => {
+    const at = (t) => [(1 - t) ** 2 * 8 + 2 * (1 - t) * t * 32 + t * t * 56, (1 - t) ** 2 * 10 + 2 * (1 - t) * t * 52 + t * t * 10];
+    const tints = [["#fffaf0", "#dccbb8"], ["#d9c2f2", "#a98bd6"], ["#cfeafa", "#8fc3e8"], ["#fbd0da", "#e98aa3"], ["#fbe39a", "#e0b13f"]];
+    const beads = [.06, .13, .2, .27, .34, .41, .59, .66, .73, .8, .87, .94].map((t, i) => {
+      const [x, y] = at(t), r = 2.6 + 2 * (1 - Math.abs(2 * t - 1)), [fill, line] = tints[i % tints.length];
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${fill}" stroke="${line}" stroke-width="1.1"/>` +
+        `<circle cx="${(x - r * .32).toFixed(1)}" cy="${(y - r * .32).toFixed(1)}" r="${(r * .3).toFixed(1)}" fill="#fff" opacity=".85"/>`;
+    }).join("");
+    return `<path d="M8 10 Q32 52 56 10" fill="none" stroke="#a98bd6" stroke-width="1.6" stroke-linecap="round"/>` +
+      `<circle cx="8" cy="10" r="2.4" fill="none" stroke="#d9a520" stroke-width="1.6"/><circle cx="56" cy="10" r="2.4" fill="none" stroke="#d9a520" stroke-width="1.6"/>` +
+      beads +
+      `<circle cx="32" cy="31" r="2.3" fill="none" stroke="#d9a520" stroke-width="1.6"/>` +
+      `<path d="M32 33.5 Q40.5 42 32 55 Q23.5 42 32 33.5Z" fill="#f4b6c9" stroke="#d9a520" stroke-width="1.8" stroke-linejoin="round"/>` +
+      `<path d="M28.6 42 Q29 38.6 31.4 36.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".9"/>` +
+      star4(32, 45, 3.4, "#fffaf0") + star4(54, 46, 3.2, "#f6cf6a") + star4(11, 42, 2.6, "#c9a7ea");
+  })();
+
   // small hand-drawn icons, 64×64
   const ICON = {
     moons: `<g transform="rotate(-6 32 31)"><rect x="10" y="13" width="44" height="34" rx="4" fill="#fffdf6" stroke="#e3cdb5" stroke-width="2"/>
@@ -17,9 +35,7 @@
       ${star4(26, 45, 4, "#f2b450")}${star4(38, 42, 3.4, "#f2b450")}
       <rect x="18" y="14" width="28" height="9" rx="3" fill="#a34063"/>${star4(44, 13, 5.5, "#f6cf6a")}
       <path d="M20 28 Q19 36 21 44" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/>`,
-    beads: `<path d="M8 20 Q32 56 56 20" fill="none" stroke="#c9a7ea" stroke-width="2"/>
-      ${drop(19, 36, 1.7)}${drop(32, 42, 1.7)}${drop(45, 36, 1.7)}
-      <path d="M56 20 L60 13" stroke="#9aa3ad" stroke-width="2" stroke-linecap="round"/>`,
+    beads: necklaceIcon,
     guitar: `<g transform="rotate(32 32 34)">
       <rect x="29.5" y="6" width="5" height="26" fill="#8a5a32"/><rect x="27" y="1" width="10" height="9" rx="2.5" fill="#6f4528"/>
       <circle cx="32" cy="35" r="10" fill="#8a5a32"/><circle cx="32" cy="47" r="12.5" fill="#8a5a32"/>
@@ -608,6 +624,7 @@
   ];
   const gtSave = store.get("guitar", null);
   const gtStars = Array.isArray(gtSave) && gtSave.length === 3 ? gtSave.map(n => n | 0) : [0, 0, 0];
+  const GT_KEYS = "asdfgh";   // the keyboard plays the strings left to right (1–6 work too)
   let gt = null;   // the lesson that is open: { i, notes, phase: "listen" | "play" | "done", pos, mistakes, miss, timers, shown }
   // the guitar on the attic wall grows a string for every one learned: 1, then 3, then all 6
   function showStrings() {
@@ -689,10 +706,11 @@
       <p class="gt-words"><b>${L.name}</b><br>“${L.words}”</p>
       <p class="gt-say" id="gt-say" role="status" aria-live="polite"></p>
       <div class="gt-dots" id="gt-dots" aria-hidden="true">${[...L.notes].map(() => "<i></i>").join("")}</div>
-      <div class="gt-strings" id="gt-strings" role="group" aria-label="Guitar strings">${Object.keys(GT).map(n => {
+      <div class="gt-strings" id="gt-strings" role="group" aria-label="Guitar strings">${Object.keys(GT).map((n, k) => {
         const on = L.strings.includes(n);
-        return `<button class="gt-string${on ? "" : " locked"}" data-note="${n}" style="--c:${GT[n][1]}" aria-label="${n} string${on ? "" : " (coming soon)"}"${on ? "" : ' aria-disabled="true" tabindex="-1"'} data-sfx="none"><span>${n}</span>${on ? "" : "<small>soon</small>"}</button>`;
+        return `<button class="gt-string${on ? "" : " locked"}" data-note="${n}" style="--c:${GT[n][1]}" aria-label="${n} string${on ? "" : " (coming soon)"}"${on ? "" : ' aria-disabled="true" tabindex="-1"'} data-sfx="none"><span>${n}</span>${on ? `<kbd class="fine-only" aria-hidden="true">${GT_KEYS[k].toUpperCase()}</kbd>` : "<small>soon</small>"}</button>`;
       }).join("")}</div>
+      <p class="gt-keys fine-only">or use your keyboard: the keys A S D F G H play the strings, left to right.</p>
       <div class="bead-actions">
         <button class="btn btn-outline small" data-gt-again>▶ listen again</button>
         <button class="btn btn-outline small" data-gt-show aria-pressed="${gt.shown}">show the notes</button>
@@ -741,6 +759,13 @@
   });
   showStrings();
 
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || app.view() !== "room" || roomCard.hidden || !$("#gt-strings")) return;
+    if (e.target.closest?.("input, textarea") || $("#menu").open) return;
+    const k = GT_KEYS.indexOf(e.key.toLowerCase()), i = k >= 0 ? k : /^[1-6]$/.test(e.key) ? +e.key - 1 : -1;
+    const b = i >= 0 && gtString(Object.keys(GT)[i]);
+    if (b) { e.preventDefault(); gtPlay(b); }
+  });
   // Ctrl/Cmd+Z undoes a stroke, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y redoes it (only while the easel is open)
   document.addEventListener("keydown", (e) => {
     if (!(e.ctrlKey || e.metaKey) || e.altKey || !paintTools || app.view() !== "room" || !$("#paint-paper")) return;

@@ -113,12 +113,29 @@
 
   const stuff = svg(`
     <ellipse cx="500" cy="468" rx="56" ry="9" fill="#2a1830" opacity=".35"/>
-    <g transform="translate(-16 16) rotate(14 520 380)">
-      <rect x="513" y="206" width="14" height="124" fill="#8a5a32"/><rect x="507" y="184" width="26" height="30" rx="6" fill="#6f4528"/>
+    <defs>
+      <radialGradient id="a2-gtop" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="#f6c88a"/><stop offset=".65" stop-color="#e0a466"/><stop offset="1" stop-color="#c4874a"/></radialGradient>
+      <linearGradient id="a2-gneck" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a06a3c"/><stop offset=".5" stop-color="#8a5a32"/><stop offset="1" stop-color="#5e3a20"/></linearGradient>
+    </defs>
+    <g transform="translate(-16 16) rotate(14 520 380)"><!-- a real guitar has depth: its rim and the side of the neck show to the right -->
+      ${[6, 5, 4, 3, 2, 1].map(i => `<g transform="translate(${(i * 1.5).toFixed(1)} ${(i * .5).toFixed(1)})" fill="#5a3520"><rect x="513" y="206" width="14" height="124"/><ellipse cx="520" cy="352" rx="38" ry="36"/><ellipse cx="520" cy="408" rx="50" ry="48"/></g>`).join("")}
+      <path d="M552 330Q566 352 558 378Q578 396 570 432" fill="none" stroke="#8a5a32" stroke-width="1.6" opacity=".7"/>
+      <rect x="513" y="206" width="14" height="124" fill="url(#a2-gneck)"/>
+      <path d="M513 222H527M513 238H527M513 253H527M513 267H527M513 280H527M513 292H527M513 303H527M513 313H527" stroke="#e8d9b8" stroke-width="1.2"/>
+      <circle cx="520" cy="245" r="1.6" fill="#f4ead2"/><circle cx="520" cy="273" r="1.6" fill="#f4ead2"/><circle cx="520" cy="298" r="1.6" fill="#f4ead2"/>
+      <path d="M507 214V190Q507 182 515 182H525Q533 182 533 190V214Z" fill="#6f4528" stroke="#4b2e1f" stroke-width="1.5"/><path d="M533 190L536 192V212L533 214Z" fill="#4b2e1f"/>
+      <g fill="#e8c76a" stroke="#a8823a" stroke-width="1"><circle cx="504" cy="190" r="3"/><circle cx="504" cy="200" r="3"/><circle cx="504" cy="210" r="3"/><circle cx="537" cy="190" r="3"/><circle cx="537" cy="200" r="3"/><circle cx="537" cy="210" r="3"/></g>
+      <rect x="512" y="204" width="16" height="3" rx="1" fill="#f4ead2"/>
       <ellipse cx="520" cy="352" rx="38" ry="36" fill="#8a5a32"/><ellipse cx="520" cy="408" rx="50" ry="48" fill="#8a5a32"/>
-      <ellipse cx="520" cy="352" rx="34" ry="32" fill="#e0a466"/><ellipse cx="520" cy="408" rx="46" ry="44" fill="#e0a466"/>
-      <circle cx="520" cy="372" r="13" fill="#4b2e1f"/>${star(498, 424, 6, "#f8b0bf", "#d27792")}
-      <path d="M516 190V396M520 190V396M524 190V396" stroke="#fbf7ec" stroke-width="1.3"/>
+      <ellipse cx="520" cy="352" rx="35" ry="33" fill="#f2dcb4"/><ellipse cx="520" cy="408" rx="47" ry="45" fill="#f2dcb4"/>
+      <ellipse cx="520" cy="352" rx="33" ry="31" fill="url(#a2-gtop)"/><ellipse cx="520" cy="408" rx="45" ry="43" fill="url(#a2-gtop)"/>
+      <path d="M520 330V331" stroke="#e0a466" stroke-width="20"/>
+      <circle cx="520" cy="372" r="17" fill="none" stroke="#8a5a32" stroke-width="2.5"/><circle cx="520" cy="372" r="15" fill="none" stroke="#f2dcb4" stroke-width="1.2" stroke-dasharray="2 2"/>
+      <circle cx="520" cy="372" r="13" fill="#3a2216"/><path d="M509 366A13 13 0 0 1 531 366" fill="none" stroke="#1f120b" stroke-width="4" opacity=".6"/>
+      <rect x="503" y="420" width="34" height="8" rx="3" fill="#6f4528" stroke="#4b2e1f" stroke-width="1.2"/><path d="M508 423H532" stroke="#f4ead2" stroke-width="1.6"/>
+      <path d="M492 334Q496 322 508 320M482 392Q484 376 494 368" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+      ${star(494, 434, 6, "#f8b0bf", "#d27792")}
+      <path d="M516 190V424M520 190V424M524 190V424" stroke="#fbf7ec" stroke-width="1.3"/>
     </g>
     <g transform="translate(111 -8)">
       <ellipse cx="442" cy="482" rx="34" ry="6" fill="#2a1830" opacity=".35"/>
@@ -236,15 +253,17 @@
     [64, 384, 44, 430, 1.1, 2], [78, 408, 52, 440, 1, 2]];
   const POTHOS = [[-4, 418, 18, 446, 1, 0], [10, 398, 22, 436, 1.1, 1], [30, 386, 28, 428, 1.2, 0], [50, 396, 36, 432, 1.1, 1],
     [70, 418, 48, 444, 1, 0], [2, 446, 18, 462, .85, 1], [58, 446, 44, 460, .85, 1], [40, 410, 30, 440, .8, 0]];
-  const POTHOS_FRONT = [[-8, 466, 10, 458, 1, 3], [16, 438, 24, 452, 1, 3], [44, 442, 38, 454, 1, 3], [12, 496, 12, 474, .8, 3]];
+  const POTHOS_FRONT = [[-4, 462, 12, 458, .9, 3], [16, 438, 24, 452, 1, 3], [44, 442, 38, 454, 1, 3], [10, 484, 14, 472, .7, 3]];
+  // the plant stands a little in from the corner: its front leaves lean the most, and right at the edge they got cut off
+  const PLANT_AT = "translate(50 -8)";
   const pothos = (set, c) => set.map(([ex, ey, cx, cy, s, k]) => stem(30, 468, cx, cy, ex, ey, c) + heart(ex, ey, Math.atan2(ey - cy, ex - cx) * 180 / Math.PI + 90, s, k)).join("");
-  const plantBack = svg(pothos(POTHOS_BACK, "#2f5a33"));
-  const plantFront = svg(`${pothos(POTHOS_FRONT, "#5f8f4f")}
-    ${stem(50, 468, 70, 470, 64, 500, "#5f8f4f")}${heart(58, 476, 150, .55, 3)}${heart(66, 488, 80, .5, 1)}${heart(64, 501, 175, .45, 3)}`);
+  const plantBack = svg(`<g transform="${PLANT_AT}">${pothos(POTHOS_BACK, "#2f5a33")}</g>`);
+  const plantFront = svg(`<g transform="${PLANT_AT}">${pothos(POTHOS_FRONT, "#5f8f4f")}
+    ${stem(50, 468, 74, 466, 72, 488, "#5f8f4f")}${heart(60, 472, 120, .55, 3)}${heart(70, 478, 70, .5, 1)}${heart(72, 488, 150, .45, 3)}</g>`);
   const near = svg(`
     ${strand(-10, -6, 40, 10, 124, 4, 9, 1.15)}${strand(10, -8, 0, 60, 34, 118, 9, 1.3)}${strand(95, -6, 100, 30, 90, 60, 5, 1)}${strand(40, -8, 50, 40, 22, 74, 5, 1.1)}
     ${strand(610, -6, 560, 12, 470, 2, 9, 1.15)}${strand(592, -8, 606, 50, 584, 100, 8, 1.25)}${strand(540, -6, 530, 36, 546, 70, 5, 1.05)}${strand(570, -8, 556, 30, 580, 56, 4, 1.1)}
-    <g><!-- a little potted pothos in the front corner: heart leaves on curly stems, one trailing over the rim -->
+    <g transform="${PLANT_AT}"><!-- a little potted pothos in the front corner: heart leaves on curly stems, one trailing over the rim -->
       <ellipse cx="30" cy="468" rx="25" ry="4.5" fill="#4a2f22"/>
       ${pothos(POTHOS)}
       <path d="M4 476H56L50 528H10Z" fill="#d9876a" stroke="#a85a45" stroke-width="2.5" stroke-linejoin="round"/>
@@ -406,7 +425,11 @@
   };
   const bar = (p) => `<div class="progress"><span>progress</span><span class="progress-bar"><i style="--p:${p}%"></i></span><span>${p}%</span></div>`;
   // the museum card shows a fact right here
-  const newFact = () => { const el = $(".a2-fact", card); if (el) el.textContent = `“${FACTS[Math.floor(Math.random() * FACTS.length)]}”`; };
+  const newFact = () => {
+    const el = $(".a2-fact", card), art = $(".a2-fact-art", card), i = Math.floor(Math.random() * FACTS.length);
+    if (el) el.textContent = `“${FACTS[i]}”`;
+    if (art) art.innerHTML = app.factArt(i);
+  };
   const open = (id) => {
     const h = id === "guitar" ? { ...HOBBIES.guitar, ...app.a2guitar() } : HOBBIES[id], fresh = !!h && !found.has(id);
     if (h) {
@@ -418,7 +441,7 @@
     const all = fresh && found.size === HOBBY_IDS.length;
     react(id);
     say(name, note, (all ? `<p class="a2-all">⭐ you found all five!! (finished: none of them. that's the tradition.)</p>` : "")
-      + (id === "museum" ? `<p class="a2-fact"></p>` : "")
+      + (id === "museum" ? `<div class="a2-fact-art"></div><p class="a2-fact"></p>` : "")
       + (h ? bar(h.progress) : "") + (ACTIONS[id] ? `<div class="bead-actions">${ACTIONS[id]}</div>` : "")
       + (id === "bed" ? `<div class="bead-actions"><button class="btn btn-lilac small" data-a2-lullaby data-sfx="none">${bedtime ? "☀️ wake Lumi up" : "♪ play the lullaby"}</button></div>` : ""));
     if (id === "museum") newFact();

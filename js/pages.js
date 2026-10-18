@@ -18,12 +18,12 @@
   const storyArt = $("#story-art"), storyText = $("#story-text"), storyPrev = $("#story-prev"), storyNext = $("#story-next"), pager = $("#story-pager");
   let page = 0;
   const isLit = () => document.body.classList.contains("lit");
-  const storyBox = $(".story");
+  const storyBox = $(".story"), storyPage = $(".story-page");
   function renderStory(turn = 0) {
     const p = STORY[page];
     storyArt.innerHTML = app.art(p.finale && isLit() ? "happy" : p.mood);
     // turn: 1 flips the page forward, -1 back
-    if (turn && !reduceMotion) { storyBox.classList.remove("flip-next", "flip-prev"); restart(storyBox, turn > 0 ? "flip-next" : "flip-prev"); }
+    if (turn && !reduceMotion) { storyPage.classList.remove("flip-next", "flip-prev"); restart(storyPage, turn > 0 ? "flip-next" : "flip-prev"); }
     storyText.textContent = p.finale && isLit() ? "…and the whole night lit up. The end (for now). ✨" : p.text;
     storyPrev.disabled = page === 0;
     storyNext.classList.toggle("lantern-btn", !!p.finale);
@@ -240,6 +240,7 @@
   const showFact = () => {
     factEl.textContent = FACTS[factIdx];
     factNum.textContent = String(factIdx + 1).padStart(2, "0");
+    $("#fact-art").innerHTML = app.factArt(factIdx);
   };
   $("#fact-next").addEventListener("click", () => {
     factIdx = (factIdx + 1) % FACTS.length;
@@ -247,7 +248,6 @@
     showFact();
   });
   showFact();
-  app.onView("facts", () => { $("#fact-art").innerHTML = app.art("thinking"); });
   app.onView("about", () => { $("#about-art").innerHTML = app.art("curious"); });
 
   // ======================================================================

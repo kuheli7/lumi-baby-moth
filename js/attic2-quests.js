@@ -146,6 +146,7 @@
         : `learned ${n} strings. the rest are coming soon (for real this time).`,
     };
   };
+  const GT_KEYS = "asdfgh";   // the keyboard plays the strings left to right (1–6 work too)
   let gt = null;   // the lesson that is open: { i, notes, phase: "listen" | "play" | "done", pos, mistakes, miss, timers, shown }
   const gtStop = () => { if (gt) { gt.timers.forEach(clearTimeout); gt.timers = []; } };
   const gtString = (note) => $(`#a2-strings [data-note="${note}"]`);
@@ -215,10 +216,11 @@
       <p class="gt-words"><b>${L.name}</b><br>“${L.words}”</p>
       <p class="gt-say" id="a2-say" role="status" aria-live="polite"></p>
       <div class="gt-dots" id="a2-dots" aria-hidden="true">${[...L.notes].map(() => "<i></i>").join("")}</div>
-      <div class="gt-strings" id="a2-strings" role="group" aria-label="Guitar strings">${Object.keys(GT).map(n => {
+      <div class="gt-strings" id="a2-strings" role="group" aria-label="Guitar strings">${Object.keys(GT).map((n, k) => {
         const on = L.strings.includes(n);
-        return `<button class="gt-string${on ? "" : " locked"}" data-note="${n}" style="--c:${GT[n][1]}" aria-label="${n} string${on ? "" : " (coming soon)"}"${on ? "" : ' aria-disabled="true" tabindex="-1"'} data-sfx="none"><span>${n}</span>${on ? "" : "<small>soon</small>"}</button>`;
+        return `<button class="gt-string${on ? "" : " locked"}" data-note="${n}" style="--c:${GT[n][1]}" aria-label="${n} string${on ? "" : " (coming soon)"}"${on ? "" : ' aria-disabled="true" tabindex="-1"'} data-sfx="none"><span>${n}</span>${on ? `<kbd class="fine-only" aria-hidden="true">${GT_KEYS[k].toUpperCase()}</kbd>` : "<small>soon</small>"}</button>`;
       }).join("")}</div>
+      <p class="gt-keys fine-only">or use your keyboard: the keys A S D F G H play the strings, left to right.</p>
       <div class="bead-actions">
         <button class="btn btn-outline small" data-a2-again>▶ listen again</button>
         <button class="btn btn-outline small" data-a2-show aria-pressed="${gt.shown}">show the notes</button>
@@ -294,6 +296,13 @@
       t.closest("[data-a2-show]").setAttribute("aria-pressed", String(gt.shown));
       gtDots();
     }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || app.view() !== "attic2" || card.hidden || !$("#a2-strings")) return;
+    if (e.target.closest?.("input, textarea") || $("#menu").open) return;
+    const k = GT_KEYS.indexOf(e.key.toLowerCase()), i = k >= 0 ? k : /^[1-6]$/.test(e.key) ? +e.key - 1 : -1;
+    const b = i >= 0 && gtString(Object.keys(GT)[i]);
+    if (b) { e.preventDefault(); gtPlay(b); }
   });
   // Ctrl/Cmd+Z undoes a stroke, Ctrl/Cmd+Shift+Z or Ctrl/Cmd+Y redoes it (only while the easel is open)
   document.addEventListener("keydown", (e) => {

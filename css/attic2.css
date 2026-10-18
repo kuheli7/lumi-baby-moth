@@ -154,4 +154,6 @@
   .a2-sheet { left: auto; width: min(380px, 46vw); top: calc(60px + env(safe-area-inset-top)); bottom: 8px; right: 8px; }
   .a2-card { max-height: 100%; }
 }
+.a2-fact-art { width: min(190px, 60%); margin: 6px auto 0; }
+.a2-fact-art svg { display: block; width: 100%; height: auto; }
 .a2-fact { margin: 8px 0 6px; padding: 8px 12px; border-radius: 12px; background: #efe7fb; color: var(--ink); font-size: 17px; line-height: 1.3; }
