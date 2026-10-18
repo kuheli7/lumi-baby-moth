@@ -55,7 +55,10 @@
 .a2-ground { transform-style: preserve-3d; }
 .a2-plane {
   position: absolute; left: -30%; top: 92.08%; width: 160%; height: 400px; transform-origin: 50% 0;
-  background: repeating-linear-gradient(90deg, rgba(42, 24, 48, .3) 0 2px, transparent 2px 7%), linear-gradient(#4f3338, #6b4549);
+  background:
+    radial-gradient(ellipse 22% 30% at 37% 12%, rgba(190, 180, 255, .14), transparent),   /* moonlight from the window */
+    radial-gradient(ellipse 30% 35% at 50% 25%, rgba(255, 210, 140, .12), transparent),   /* and Lumi's glow */
+    repeating-linear-gradient(90deg, rgba(42, 24, 48, .3) 0 2px, transparent 2px 7%), linear-gradient(#4f3338, #6b4549);
 }
 .a2-rug {
   position: absolute; left: 29.2%; top: 60px; width: 41.6%; height: 170px; border-radius: 50%;
@@ -63,7 +66,7 @@
   outline: 3px dotted #e1cfae; outline-offset: 5px; box-shadow: 0 0 26px 10px rgba(20, 8, 30, .4);
 }
 /* the desk: real boxes (front, back, sides, top) inside the 3D room */
-.a2-desk { transform-style: preserve-3d; }
+.a2-desk, .a2-boxes { transform-style: preserve-3d; }
 .a2-box { position: absolute; transform-style: preserve-3d; --c: #8a5a32; --cs: #6d4425; --ct: #b07a46; }
 .a2-box .f { position: absolute; display: block; background: var(--c); box-shadow: inset 0 0 0 2px rgba(74, 48, 32, .85); }
 .a2-box .fr, .a2-box .bk { inset: 0; }
@@ -71,6 +74,10 @@
 .a2-box .lf { left: 0; transform-origin: left; transform: rotateY(90deg); }
 .a2-box .rt { right: 0; transform-origin: right; transform: rotateY(-90deg); }
 .a2-box .tp { left: 0; top: 0; width: 100%; transform-origin: top; transform: rotateX(-90deg); background: var(--ct); }
+.a2-box .bt { left: 0; bottom: 0; width: 100%; transform-origin: bottom; transform: rotateX(90deg); background: var(--cb, var(--cs)); }
+.a2-box.sill { --c: #8a5a32; --cs: #6d4425; --ct: #b07a46; }
+.a2-box.beam { --c: #6b4528; --cs: #55341c; --cb: #45291a; }
+.a2-box.beam .fr { background: linear-gradient(#7a5032, #5e3c22); }
 .a2-box.slab { --c: #7a4e2b; --cs: #5e3a20; }
 .a2-box.slab .tp {
   background:

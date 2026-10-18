@@ -24,6 +24,8 @@
       <linearGradient id="a2-wall" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="520"><stop offset="0" stop-color="#2d2250"/><stop offset=".55" stop-color="#5a3f55"/><stop offset="1" stop-color="#7a5348"/></linearGradient>
       <linearGradient id="a2-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1850"/><stop offset="1" stop-color="#3f3086"/></linearGradient>
       <radialGradient id="a2-lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".85"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
+      <radialGradient id="a2-warm" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffcf86" stop-opacity=".32"/><stop offset=".6" stop-color="#ffb07a" stop-opacity=".1"/><stop offset="1" stop-color="#ffb07a" stop-opacity="0"/></radialGradient>
+      <radialGradient id="a2-vig" cx=".5" cy=".46" r=".62"><stop offset=".62" stop-color="#140a26" stop-opacity="0"/><stop offset="1" stop-color="#140a26" stop-opacity=".55"/></radialGradient>
     </defs>
     <rect x="-140" y="-140" width="880" height="800" fill="url(#a2-wall)"/>
     <g stroke="#2a1830" stroke-opacity=".28" stroke-width="2">${Array.from({ length: 11 }, (_, i) => `<path d="M${i * 55 + 20} 0V440"/>`).join("")}</g>
@@ -32,12 +34,13 @@
     <path d="M0 0H255L0 200Z" fill="#7a5538" stroke="#4a3020" stroke-width="3"/>
     <path d="M600 0H345L600 185Z" fill="#7a5538" stroke="#4a3020" stroke-width="3"/>
     <rect width="600" height="26" fill="#6b4528" stroke="#4a3020" stroke-width="3"/>
+    <circle cx="380" cy="150" r="260" fill="url(#a2-warm)"/><!-- the warm spill of the star lamp and the fairy lights -->
     <rect x="44" y="118" width="212" height="216" rx="6" fill="#7a5538" stroke="#4a3020" stroke-width="3"/>
     <rect x="58" y="132" width="184" height="188" fill="url(#a2-sky)"/>
     <path d="M170 160a32 32 0 1 0 22 54a26 26 0 1 1 -22 -54Z" fill="#fde9a6" stroke="#e8c76a" stroke-width="2"/>
     <g class="a2-twinkle">${glint([[92, 168, 7], [104, 262, 6], [212, 276, 5], [222, 184, 4]])}</g>
     <path d="M150 132V320M58 226H242" stroke="#7a5538" stroke-width="9"/>
-    <rect x="40" y="326" width="220" height="14" rx="4" fill="#8a5a32" stroke="#4a3020" stroke-width="3"/>`);
+    `);
 
   const curtains = svg(`
     <path d="M26 100C60 112 70 200 52 300C46 330 30 350 14 360C-6 300 -2 160 26 100Z" fill="#9a82d6" stroke="#6f58ae" stroke-width="3"/>
@@ -51,7 +54,6 @@
       <g id="a2-planet"><ellipse cx="300" cy="109" rx="20" ry="7.5" fill="none" stroke="#9a82d6" stroke-width="3" transform="rotate(-20 300 109)"/><circle cx="300" cy="109" r="12" fill="#c9a7ea" stroke="#9a82d6" stroke-width="2"/></g>
       <image id="a2-art" x="262" y="82" width="76" height="54" display="none" preserveAspectRatio="xMidYMid slice"/></g>
     <g transform="rotate(6 338 150)"><rect x="318" y="128" width="40" height="44" fill="#f6a9bd" stroke="#d27792" stroke-width="2"/>${star(338, 150, 11, "#fff6dc", "#e8c76a")}</g>
-    <path d="M392 196H586" stroke="#6d4425" stroke-width="16" stroke-linecap="round"/><path d="M392 196H586" stroke="#a97a4c" stroke-width="10" stroke-linecap="round"/>
     <path d="M420 204V234M560 204V234" stroke="#6d4425" stroke-width="6"/>
     <rect x="506" y="108" width="64" height="15" rx="3" fill="#f2d488" stroke="#8a6a2a" stroke-width="2"/><text x="538" y="119" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="9" letter-spacing="1.5" fill="#4a3510">MUSEUM</text>
     <rect x="522" y="176" width="32" height="18" rx="2" fill="#fffdf6" stroke="#c9b49b" stroke-width="1.5"/><text x="538" y="189" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="12" fill="#a34063">?!</text>
@@ -65,6 +67,7 @@
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5" fill="${["#f4a3b8", "#c9a7ea", "#8fc3e8", "#f6cf6a"][i % 4]}" stroke="#4a3020" stroke-opacity=".35" stroke-width="1.2"/><circle cx="${(x - 1.6).toFixed(1)}" cy="${(y - 1.8).toFixed(1)}" r="1.5" fill="#fff" opacity=".7"/>`;
     }).join("")}
     <path transform="translate(333 256) scale(2.1)" d="M0 -6 Q5 0 0 5 Q-5 0 0 -6Z" fill="#cfeafa" stroke="#8fc3e8" stroke-width="1.2"/></g>
+    <circle class="a2-pulse" cx="449" cy="150" r="64" fill="url(#a2-lamp)" opacity=".45"/>
     <rect x="418" y="104" width="62" height="90" rx="14" fill="#d8c6f3" fill-opacity=".55" stroke="#bda3e9" stroke-width="3"/>
     <rect x="426" y="90" width="46" height="16" rx="4" fill="#f4a3b8" stroke="#c97a92" stroke-width="2"/>
     <path d="M449 94c-18-18-34 2-6 8c-10 8 8 18 6-8c0 26 16 16 6 8c28-6 12-26-6-8Z" fill="#f48fae" stroke="#c97a92" stroke-width="2"/>
@@ -73,6 +76,7 @@
   // things standing on the desk and its lower shelf; the desk itself is real 3D boxes (see desk below).
   // This layer stands at the middle of the desk top's depth (the slab runs from z 45 back to -45), so things sit on it, not in it
   const props = svg(`
+    <ellipse cx="66" cy="427" rx="40" ry="3.5" fill="#2a1830" opacity=".4"/>
     <g stroke-width="2" stroke-linejoin="round"><!-- two books, with their tops and right sides showing -->
       <path d="M30 414L36 408H100L94 414Z" fill="#cdb8f2" stroke="#8068c0"/><path d="M94 414L100 408V420L94 426Z" fill="#9a80d4" stroke="#8068c0"/>
       <rect x="30" y="414" width="64" height="12" rx="2" fill="#b79be8" stroke="#8068c0"/>
@@ -86,6 +90,7 @@
     ${star(206, 326, 24, "#fff1b8", "#e8c76a")}`);
 
   const stuff = svg(`
+    <ellipse cx="500" cy="468" rx="56" ry="9" fill="#2a1830" opacity=".35"/>
     <g transform="translate(-16 16) rotate(14 520 380)">
       <rect x="513" y="206" width="14" height="124" fill="#8a5a32"/><rect x="507" y="184" width="26" height="30" rx="6" fill="#6f4528"/>
       <ellipse cx="520" cy="352" rx="38" ry="36" fill="#8a5a32"/><ellipse cx="520" cy="408" rx="50" ry="48" fill="#8a5a32"/>
@@ -105,6 +110,8 @@
 
   const lights = svg(`
     <path d="M-10 36Q150 92 300 48T610 70" fill="none" stroke="#4a3020" stroke-width="2.5"/>
+    ${[[60, 66], [150, 80], [240, 70], [330, 56], [420, 58], [500, 68], [570, 76]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="22" fill="url(#a2-lamp)" opacity=".55"/>`).join("")}
+    <circle class="a2-pulse" cx="390" cy="126" r="70" fill="url(#a2-lamp)" opacity=".6"/>
     <g class="a2-twinkle">${[[60, 66], [150, 80], [240, 70], [330, 56], [420, 58], [500, 68], [570, 76]].map(([x, y], i) =>
       `<circle cx="${x}" cy="${y}" r="7" fill="${i % 2 ? "#ffd7e2" : "#fff1b8"}" stroke="#e8c76a" stroke-width="1.5"/>`).join("")}</g>
     <path d="M390 58V108" stroke="#4a3020" stroke-width="2"/>${star(390, 126, 18, "#fff1b8", "#e8c76a")}
@@ -113,8 +120,38 @@
 
   // The desk is built, not drawn: boxes with a front, sides and a top, so tilting the room shows its depth.
   // x, y, w, h are % of the stage; z is the front face's depth and d how far the box runs back (px)
-  const box = ({ x, y, w, h, z, d, cls = "" }) =>
-    `<div class="a2-box ${cls}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;transform:translateZ(${z}px)"><i class="f fr"></i><i class="f bk" style="transform:translateZ(${-d}px)"></i><i class="f lf" style="width:${d}px"></i><i class="f rt" style="width:${d}px"></i><i class="f tp" style="height:${d}px"></i></div>`;
+  // things above eye level (bottom: true) show their underside instead of their top
+  const box = ({ x, y, w, h, z, d, cls = "", bottom = false }) =>
+    `<div class="a2-box ${cls}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;transform:translateZ(${z}px)"><i class="f fr"></i><i class="f bk" style="transform:translateZ(${-d}px)"></i><i class="f lf" style="width:${d}px"></i><i class="f rt" style="width:${d}px"></i>${bottom ? `<i class="f bt" style="height:${d}px"></i>` : `<i class="f tp" style="height:${d}px"></i>`}</div>`;
+  // the window sill sticks out of the wall, the jar and museum shelf is a real plank, and a beam runs across the ceiling up front
+  const sill = box({ x: 6.67, y: 62.7, w: 36.67, h: 2.7, z: 18, d: 18, cls: "sill" });
+  const wallShelf = box({ x: 65.3, y: 36.5, w: 32.3, h: 2.7, z: 14, d: 30, cls: "shelf", bottom: true });
+  const beam = box({ x: -5, y: -1.5, w: 110, h: 5, z: 0, d: 46, cls: "beam", bottom: true });
+
+  // ivy that hangs into the room right in front of you: the nearest layer, so it slides the most when the room leans
+  const IVY = [["#6f9a5f", "#45703f"], ["#8bb370", "#557f4b"]];
+  const ivyLeaf = (x, y, rot, s, k) =>
+    `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(0)}) scale(${s.toFixed(2)})"><path d="M0 0C-8 -5 -9 -15 0 -23C9 -15 8 -5 0 0Z" fill="${IVY[k][0]}" stroke="${IVY[k][1]}" stroke-width="1.3"/><path d="M0 -3V-17" stroke="${IVY[k][1]}" stroke-width="1" opacity=".6"/></g>`;
+  // a stem along a curve with leaves on alternate sides, getting smaller toward the tip
+  const strand = (x0, y0, cx, cy, x1, y1, n, s0 = 1) => {
+    let out = `<path d="M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}" fill="none" stroke="#3f6a40" stroke-width="2.6" stroke-linecap="round"/>`;
+    for (let i = 1; i <= n; i++) {
+      const t = i / n, u = 1 - t;
+      const x = u * u * x0 + 2 * u * t * cx + t * t * x1, y = u * u * y0 + 2 * u * t * cy + t * t * y1;
+      const a = Math.atan2(2 * u * (cy - y0) + 2 * t * (y1 - cy), 2 * u * (cx - x0) + 2 * t * (x1 - cx)) * 180 / Math.PI;
+      out += ivyLeaf(x, y, a + 90 + (i % 2 ? 55 : -55) + (i * 37 % 20 - 10), s0 * (1.05 - .35 * t), i % 3 ? 0 : 1);
+    }
+    return out;
+  };
+  const near = svg(`
+    ${strand(-10, -6, 40, 10, 124, 4, 9, 1.15)}${strand(10, -8, 0, 60, 34, 118, 9, 1.3)}${strand(95, -6, 100, 30, 90, 60, 5, 1)}${strand(40, -8, 50, 40, 22, 74, 5, 1.1)}
+    ${strand(610, -6, 560, 12, 470, 2, 9, 1.15)}${strand(592, -8, 606, 50, 584, 100, 8, 1.25)}${strand(540, -6, 530, 36, 546, 70, 5, 1.05)}${strand(570, -8, 556, 30, 580, 56, 4, 1.1)}
+    <g><!-- a little potted plant in the front corner -->
+      ${[[-70, 1.7], [-45, 2], [-20, 2.3], [5, 2.2], [30, 2], [55, 1.6], [-8, 1.6]].map(([r, s], i) => ivyLeaf(28, 472, r, s, i % 2)).join("")}
+      <path d="M6 476H50L44 532H12Z" fill="#d9876a" stroke="#a85a45" stroke-width="2.5" stroke-linejoin="round"/>
+      <rect x="1" y="466" width="54" height="13" rx="4" fill="#e89a7c" stroke="#a85a45" stroke-width="2.5"/>
+      <path d="M14 494Q28 500 42 494" fill="none" stroke="#f3b79d" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+    </g>`);
   const desk = [
     box({ x: 2.2, y: 71.7, w: 2.2, h: 20.4, z: -32, d: 10, cls: "leg" }),
     box({ x: 39.8, y: 71.7, w: 2.2, h: 20.4, z: -32, d: 10, cls: "leg" }),
@@ -129,13 +166,18 @@
   // z in px (negative is farther away); hits are [id, name, left%, top%, width%, height%]
   const LAYERS = [
     { z: -130, html: wall, cls: "a2-wall", hits: [["window", "the window", 7, 23, 35, 40]] },
+    { z: -130, html: sill, cls: "a2-boxes" },
     { z: -105, html: curtains, cls: "a2-curtains" },
+    { z: -70, html: wallShelf, cls: "a2-boxes" },
     { z: -70, html: shelf, cls: "a2-shelf", hits: [["jar", "resin jar of stars", 68, 16, 14, 24], ["museum", "museum of useless facts", 83.5, 20, 12.5, 18], ["beads", "dew-drop beads", 49.3, 47.7, 21, 17]] },
     { z: -57, html: desk, cls: "a2-desk" },
     { z: -10, html: props, cls: "a2-props", hits: [["moons", "watercolor moons", 2, 60, 24, 12]] },
     { z: -25, html: stuff, cls: "a2-stuff", hits: [["guitar", "the guitar", 73.5, 55, 22, 30]] },
     { z: 0, html: ground, cls: "a2-ground" },
+    { z: 40, html: beam, cls: "a2-boxes" },
     { z: 60, html: lights, cls: "a2-front" },
+    { z: 90, html: near, cls: "a2-near" },
+    { z: 100, html: svg(`<rect x="-140" y="-140" width="880" height="800" fill="url(#a2-vig)"/>`), cls: "a2-vignette" },
   ];
   const LUMI_Z = 25;
   const zoom = (z) => ((PERSPECTIVE - z) / PERSPECTIVE).toFixed(4);
