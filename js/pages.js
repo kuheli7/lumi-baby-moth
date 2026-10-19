@@ -329,7 +329,8 @@
   showTrail();
 
   // ======================================================================
-  //  Secret: type "cookie" anywhere (outside a text box) for a cookie storm
+  //  Secret: type "cookie" anywhere (outside a text box) for a cookie storm,
+  //  or, on a phone, shake it and the cookies shake loose
   // ======================================================================
   let typed = "";
   addEventListener("keydown", (e) => {
@@ -337,6 +338,28 @@
     typed = (typed + e.key.toLowerCase()).slice(-6);
     if (typed !== "cookie") return;
     typed = "";
+    cookieStorm();
+  });
+
+  // a shake is three hard jolts within a second; a storm can't start again for a few seconds
+  let jolts = [], lastStorm = 0;
+  addEventListener("devicemotion", (e) => {
+    const a = e.accelerationIncludingGravity;
+    if (!a || a.x == null) return;
+    const now = performance.now(), force = Math.abs(Math.hypot(a.x, a.y, a.z) - 9.8);
+    if (force < 9 || now - (jolts[jolts.length - 1] || 0) < 120) return;
+    jolts = jolts.filter(t => now - t < 1000).concat(now);
+    if (jolts.length < 3 || now - lastStorm < 5000) return;
+    jolts = [];
+    lastStorm = now;
+    cookieStorm();
+  });
+  // iPhones only share the motion after asking, and only from a tap, so feeding Lumi a cookie asks once
+  if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+    $("#feed").addEventListener("click", () => { DeviceMotionEvent.requestPermission().catch(() => {}); }, { once: true });
+  }
+
+  function cookieStorm() {
     app.secret("cookie");
     toast("🍪 COOKIE STORM! you found a secret.");
     if (!reduceMotion) {
@@ -353,7 +376,7 @@
       }
     }
     setTimeout(app.lumi.feed, 500);
-  });
+  }
 
   // cookie icons on buttons
   $$(".cookie-ico").forEach(el => { el.innerHTML = app.COOKIE; });

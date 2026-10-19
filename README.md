@@ -98,7 +98,7 @@ One page with everything needed to draw Lumi again: the facts, four views (front
 
 - A **moth-dust** sparkle trail that follows your pointer (a button in the menu turns it off).
 - Soft click sounds on every button, all made with the Web Audio API, and a mute button that is remembered.
-- **Three hidden secrets** (the credits page keeps count): one for typing `cookie` anywhere, one for Lumi's Greatest Hit on the one string, and one for flying out of the attic window.
+- **Three hidden secrets** (the credits page keeps count): one for typing `cookie` anywhere (or shaking your phone), one for Lumi's Greatest Hit on the one string, and one for flying out of the attic window.
 - Retro web badges on the credits page ("best viewed at 3 AM").
 - It respects *reduce motion*, works with a keyboard, and uses real buttons, labels and live regions.
 - Your name, painting, necklace, cookies, game progress, hobbies and chat are saved in your browser's storage, and the site still works if that is blocked.
