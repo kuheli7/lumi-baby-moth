@@ -105,7 +105,7 @@ One page with everything needed to draw Lumi again: the facts, four views (front
 
 ## Made to run well
 
-- Plain HTML, CSS and JS: no libraries, no build step, and the scripts load with `defer` so the page paints before they run, and the fonts come from the site itself, so the first paint never waits on another server.
+- Plain HTML, CSS and JS: no libraries and no build step.
 - Tested on a real phone while building, plus tablet and desktop sizes, keyboard-only use and *reduce motion*; the browser console stays free of errors.
 - Every page keeps to about 150 words or fewer. The story is told with pictures and motion, not walls of text.
 - The mute button is always on screen, and sound never starts until you tap something.
@@ -136,7 +136,6 @@ py -m http.server 8000
 - `js/fact-art.js`: the 14 museum illustrations, as SVG strings
 - `design/`: Lumi's reference art and the pages the SVG was drawn and checked in (`lumi-stickers.html` is the source the site's art is copied from; the others are style pickers and emote sets), plus expression references and inspiration boards
 - `tools/sync-art.mjs`: copies the art from `design/lumi-stickers.html` into the site
-- `fonts/`: the two fonts (latin letters only) and their SIL Open Font License files
 - `og.png` and `favicon.svg`: the link preview and the tab icon
 - `writeup-draft.md` and `haX.baby-brief-and-audit.docx`: the hackathon write-up draft and the brief
 
@@ -144,6 +143,6 @@ py -m http.server 8000
 
 - Lumi is an original character by Lumi's human.
 - Lumi's reference sketches were made with ChatGPT image generation, and Lumi was then drawn as SVG code with Claude. The attic, the hobby icons, the necklace and the museum illustrations are hand-written SVG code too (no generated images).
-- Fonts: [Fredoka](https://fonts.google.com/specimen/Fredoka) and [Patrick Hand](https://fonts.google.com/specimen/Patrick+Hand), SIL Open Font License. They are served from the site's own `fonts/` folder, next to their licence files.
+- Fonts: [Fredoka](https://fonts.google.com/specimen/Fredoka) and [Patrick Hand](https://fonts.google.com/specimen/Patrick+Hand), SIL Open Font License.
 - Sounds are synthesized in the browser with the Web Audio API. No audio files and no libraries. The lullaby is Brahms' Lullaby and the guitar lessons teach Twinkle, Twinkle (both traditional, public domain).
 - The shared guestbook runs on [Supabase](https://supabase.com).
