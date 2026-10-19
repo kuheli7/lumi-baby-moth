@@ -109,6 +109,7 @@ One page with everything needed to draw Lumi again: the facts, four views (front
 - Tested on a real phone while building, plus tablet and desktop sizes, keyboard-only use and *reduce motion*; the browser console stays free of errors.
 - Every page keeps to about 150 words or fewer. The story is told with pictures and motion, not walls of text.
 - The mute button is always on screen, and sound never starts until you tap something.
+- Lighthouse on mobile (19 October 2026): 82 performance, 100 accessibility, 100 best practices, 100 SEO.
 
 ## Run it
 
